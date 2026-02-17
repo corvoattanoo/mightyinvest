@@ -1,0 +1,36 @@
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Stock Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Stock List -->
+        <div class="col-span-1 bg-white shadow rounded-lg p-4">
+            <h2 class="text-xl font-semibold mb-2">Stocks</h2>
+
+             <div class="max-h-96 overflow-y-auto pr-2">
+            <ul class="space-y-2">
+                <li *ngFor="let stock of stocks" (click)="selectStock(stock)"
+                    class="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
+                    [class.bg-blue-50]="selectedStock?.id === stock.id">
+                    <span class="font-medium">{{ stock.symbol }}</span>
+                    <span class="text-gray-600">${{ stock.price }}</span>
+                </li>
+            </ul>
+            </div>
+        </div>
+
+        <!-- Chart Area -->
+        <div class="col-span-2 bg-white shadow rounded-lg p-4">
+            <h2 class="text-xl font-semibold mb-2" *ngIf="selectedStock">
+                {{ selectedStock.name }} ({{ selectedStock.symbol }}) History
+            </h2>
+            <h2 class="text-xl font-semibold mb-2 text-gray-400" *ngIf="!selectedStock">
+                Select a stock to view history
+            </h2>
+
+            <div *ngIf="selectedStock" class="w-full h-64 flex items-center justify-center">
+                <!-- Chart Canvas will go here -->
+                <canvas #stockChart id="stockChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
