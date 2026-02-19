@@ -2,7 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StockController;
-
+use App\Http\Controllers\AuthController;
 
 Route::get('/stocks', [StockController::class, 'index']);
 Route::get('/stocks/{id}/history', [StockController::class, 'history']);
+//user routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'getUser']);
+});
