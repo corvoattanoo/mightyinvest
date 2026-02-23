@@ -21,7 +21,7 @@ export class AuthService {
         private router: Router,
         @Inject(PLATFORM_ID) platformId: object
     ) {
-        this.isBrowser = isPlatformBrowser(platformId);
+        this.isBrowser = isPlatformBrowser(platformId);// buraya bak
         // Restore user state from localStorage on app start (browser only)
         if (this.isBrowser && this.getToken()) {
             this.fetchCurrentUser().subscribe();

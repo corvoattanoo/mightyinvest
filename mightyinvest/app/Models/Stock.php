@@ -12,7 +12,13 @@ class Stock extends Model
         'name',
         'user_id'
     ];
-    public function histories(){
+    public function histories()
+    {
         return $this->hasMany(StockHistory::class);
+    }
+
+    public function portfolios()
+    {
+        return $this->hasMany(Portfolio::class);
     }
 }
