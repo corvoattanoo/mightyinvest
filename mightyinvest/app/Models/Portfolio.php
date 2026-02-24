@@ -11,11 +11,9 @@ class Portfolio extends Model
         'user_id',
         'stock_id',
         'quantity',
+        'average_price',
         'name',
-        'purchase_price',
-        'currency',
         'description',
-        'is_active',
     ];
 
     protected $appends = ['current_value', 'profit', 'profit_percentage'];

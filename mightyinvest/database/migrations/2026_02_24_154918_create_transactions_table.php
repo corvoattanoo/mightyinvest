@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('portfolios', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('stock_id')->constrained()->onDelete('cascade');
+            $table->enum('type' , ['buy' , 'sell']);
             $table->integer('quantity');
-            $table->string('name'); // Portfolio name
-            $table->string('currency', 3)->default('USD'); // Currency of the portfolio
-            $table->string('description', 255); // Description of the portfolio
+            $table->decimal('purchase_price', 12, 2);
+            $table->timestamp('exacuted_at')->useCurrent();
             $table->timestamps();
-            $table->unique(['user_id', 'stock_id']); // Aynı stock 2 kere açılmasın
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('portfolios');
+        Schema::dropIfExists('transactions');
     }
 };
