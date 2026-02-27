@@ -24,7 +24,7 @@ class TransactionController extends Controller
             'stock_id' => $validated['stock_id'],
             'type' => 'buy',
             'quantity' => $validated['quantity'],
-            'price' => $validated['purchase_price'],
+            'purchase_price' => $validated['purchase_price'],
         ]);
 
         // Portfolio güncelle veya oluştur
@@ -47,6 +47,8 @@ class TransactionController extends Controller
                 'stock_id' => $validated['stock_id'],
                 'quantity' => $validated['quantity'],
                 'average_price' => $validated['purchase_price'],
+                'name' => 'Default', // Migration expects a name
+                'description' => 'Automatically created', // Migration expects description
             ]);
         }
 
@@ -82,7 +84,7 @@ class TransactionController extends Controller
             'stock_id' => $validated['stock_id'],
             'type' => 'sell',
             'quantity' => $validated['quantity'],
-            'price' => $validated['price'],
+            'purchase_price' => $validated['price'],
         ]);
 
         // Portfolio güncelle veya sil

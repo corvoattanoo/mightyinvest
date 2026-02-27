@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'app-login',
@@ -13,8 +14,8 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LoginComponent {
     loginForm: FormGroup;
-    isLoading = false;
-    errorMessage = '';
+    isLoading = signal(false);
+    errorMessage = signal('');
 
     constructor(
         private fb: FormBuilder,
@@ -36,17 +37,20 @@ export class LoginComponent {
             return;
         }
 
-        this.isLoading = true;
-        this.errorMessage = '';
+        this.isLoading.set(true) // deger atarjen signale .set
+        this.errorMessage.set('');
 
-        this.authService.login(this.loginForm.value).subscribe({
-            next: () => {
-                this.router.navigate(['/dashboard']);
-            },
-            error: (err) => {
-                this.isLoading = false;
-                this.errorMessage = err.error?.message || 'Invalid email or password.';
-            },
-        });
+        this.authService.login(this.loginForm.value)
+            .pipe(finalize(() => this.isLoading.set(false)))// fail or success finalize the loading
+            .subscribe({
+                next: () => {
+                    this.router.navigate(['/dashboard']);
+                },
+                error: (err) => {
+                    console.error('Bileşene hata ulaştı! Loading kapatılıyor.', err);
+                    this.isLoading.set(false);
+                    this.errorMessage.set(err.error?.message || 'Invalid email or password.');
+                },
+            });
     }
 }

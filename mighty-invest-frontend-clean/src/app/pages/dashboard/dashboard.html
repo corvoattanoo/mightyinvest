@@ -2,7 +2,9 @@
     <div class="dashboard-header">
         <h1 class="text-2xl font-bold mb-4">Stock Dashboard</h1>
         <button class="logout-btn" (click)="logout()">Logout</button>
+        <button class="logout-btn" (click)="getPortfolio()">portfolio</button>
     </div>
+
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Stock List -->
@@ -33,6 +35,36 @@
             <div *ngIf="selectedStock" class="w-full h-64 flex items-center justify-center">
                 <canvas #stockChart id="stockChart"></canvas>
             </div>
+        </div>
+        <!-- Portfolio Section -->
+        <div class="col-span-3 bg-white shadow rounded-lg p-4 mt-4">
+            <h2 class="text-xl font-semibold mb-2">My Portfolio</h2>
+
+            <div *ngIf="portfolioLoading" class="text-gray-400">Loading...</div>
+            <div *ngIf="portfolioError" class="text-red-500">{{ portfolioError }}</div>
+
+            <div *ngIf="!portfolioLoading && portfolioData.length === 0 && !portfolioError" class="text-gray-400">
+                No holdings yet. Click "Portfolio" to load, or buy a stock first.
+            </div>
+
+            <table *ngIf="portfolioData.length > 0" class="w-full text-left">
+                <thead>
+                    <tr class="border-b">
+                        <th class="py-2">Symbol</th>
+                        <th class="py-2">Name</th>
+                        <th class="py-2">Quantity</th>
+                        <th class="py-2">Avg Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of portfolioData" class="border-b hover:bg-gray-50">
+                        <td class="py-2 font-medium">{{ item.symbol }}</td>
+                        <td class="py-2">{{ item.name }}</td>
+                        <td class="py-2">{{ item.quantity }}</td>
+                        <td class="py-2">${{ item.average_price }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

@@ -5,6 +5,8 @@ import { StockService } from '../../services/stock.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Stock, StockHistory } from '../../models/stock.model';
 import { Chart, registerables } from 'chart.js';
+import { PortfolioService } from '../../core/services/portfolio.service';
+
 
 Chart.register(...registerables);
 
@@ -26,7 +28,8 @@ export class DashboardComponent implements OnInit {
     constructor(
         private stockService: StockService,
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private portfolioService: PortfolioService, //Önce PortfolioService’i inject
     ) { }
 
     ngOnInit(): void {
@@ -50,6 +53,32 @@ export class DashboardComponent implements OnInit {
 
     logout(): void {
         this.authService.logout();
+    }
+
+    portfolioData: any[] = [];
+    portfolioLoading = false;
+    portfolioError = '';
+
+    getPortfolio(): void {
+        this.portfolioLoading = true;
+        this.portfolioError = '';
+        this.portfolioService.getPortfolio().subscribe({
+            next: (res) => {
+                // Store results in portfolioData, NOT in stocks (stocks is the global list)
+                this.portfolioData = res.map((item: any) => ({
+                    ...item.stock,
+                    quantity: item.quantity,
+                    average_price: item.average_price
+                }));
+                this.portfolioLoading = false;
+                console.log('Portfolio:', this.portfolioData);
+            },
+            error: (err) => {
+                this.portfolioError = 'Failed to load portfolio.';
+                this.portfolioLoading = false;
+                console.error(err);
+            }
+        });
     }
 
     renderChart(): void {

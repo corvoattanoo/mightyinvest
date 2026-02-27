@@ -7,8 +7,8 @@
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
 
-            <div *ngIf="errorMessage" class="alert alert-error">
-                {{ errorMessage }}
+            <div *ngIf="errorMessage()" class="alert alert-error">
+                {{ errorMessage() }}
             </div>
 
             <div class="form-group">
@@ -31,9 +31,9 @@
                 </span>
             </div>
 
-            <button type="submit" class="btn-primary" [disabled]="isLoading">
-                <span *ngIf="!isLoading">Sign In</span>
-                <span *ngIf="isLoading" class="spinner"></span>
+            <button type="submit" class="btn-primary" [disabled]="isLoading()">
+                <span *ngIf="!isLoading()">Sign In</span>
+                <span *ngIf="isLoading()" class="spinner"></span>
             </button>
 
         </form>

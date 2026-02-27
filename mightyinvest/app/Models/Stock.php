@@ -10,7 +10,7 @@ class Stock extends Model
     protected $fillable =[
         'symbol',
         'name',
-        'user_id'
+        'price'
     ];
     public function histories()
     {

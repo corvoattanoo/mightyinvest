@@ -27,13 +27,13 @@ class Portfolio extends Model
     // Total profit/loss in currency
     public function getProfitAttribute()
     {
-        return $this->current_value - ($this->quantity * $this->purchase_price);
+        return $this->current_value - ($this->quantity * $this->average_price);
     }
 
     // Profit/Loss percentage
     public function getProfitPercentageAttribute()
     {
-        $costBasis = $this->quantity * $this->purchase_price;
+        $costBasis = $this->quantity * $this->average_price;
         if ($costBasis == 0) return 0;
         return ($this->profit / $costBasis) * 100;
     }
