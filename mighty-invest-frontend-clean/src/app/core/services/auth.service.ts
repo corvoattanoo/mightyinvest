@@ -12,6 +12,7 @@ export class AuthService {
     private apiUrl = 'http://127.0.0.1:8000/api';
     private readonly TOKEN_KEY = 'auth_token';
     private isBrowser: boolean;
+    private USER_KEY = 'auth_user';
 
     private currentUserSubject = new BehaviorSubject<User | null>(null);//Uygulama içinde "aktif kullanıcı kim?" bilgisini reaktif tutar.
     public currentUser$ = this.currentUserSubject.asObservable();
@@ -21,10 +22,24 @@ export class AuthService {
         private router: Router,
         @Inject(PLATFORM_ID) platformId: object
     ) {
-        this.isBrowser = isPlatformBrowser(platformId);// buraya bak
-        // Restore user state from localStorage on app start (browser only)
-        if (this.isBrowser && this.getToken()) {
-            this.fetchCurrentUser().subscribe();
+        this.isBrowser = isPlatformBrowser(platformId);
+
+        if (this.isBrowser) {
+            // Restore token and user state from localStorage on app start
+            const token = localStorage.getItem(this.TOKEN_KEY);
+            const userJson = localStorage.getItem(this.USER_KEY);
+
+            if (token && userJson) {
+                try {
+                    const user = JSON.parse(userJson);
+                    this.currentUserSubject.next(user);
+                    // Fetch fresh data from API in background to ensure sync
+                    this.fetchCurrentUser().subscribe();
+                } catch (error) {
+                    console.error('Error parsing stored user', error);
+                    this.clearSession();
+                }
+            }
         }
     }
 
@@ -49,7 +64,13 @@ export class AuthService {
 
     fetchCurrentUser(): Observable<{ user: User }> {
         return this.http.get<{ user: User }>(`${this.apiUrl}/user`).pipe(
-            tap((response) => this.currentUserSubject.next(response.user))
+            tap((response) => {
+                this.currentUserSubject.next(response.user);
+                // Update stored user too
+                if (this.isBrowser) {
+                    localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+                }
+            })
         );
     }
 
@@ -69,6 +90,8 @@ export class AuthService {
     private handleAuthSuccess(response: AuthResponse): void {
         if (this.isBrowser) {
             localStorage.setItem(this.TOKEN_KEY, response.token);
+            // localStorage sadece string saklayabilir, bu yüzden objeyi string'e çeviriyoruz
+            localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
         }
         this.currentUserSubject.next(response.user);
     }
@@ -76,6 +99,7 @@ export class AuthService {
     private clearSession(): void {
         if (this.isBrowser) {
             localStorage.removeItem(this.TOKEN_KEY);
+            localStorage.removeItem(this.USER_KEY);
         }
         this.currentUserSubject.next(null);
         this.router.navigate(['/login']);

@@ -1,10 +1,17 @@
-<app-navbar></app-navbar>
+<div class="flex h-screen bg-[#090b0e] overflow-hidden">
+    <!-- Fixed Sidebar -->
+    <app-sidebar class="w-64 flex-shrink-0 border-r border-gray-800/50"></app-sidebar>
 
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        <!-- Navbar at the top of the content area -->
+        <app-navbar></app-navbar>
 
-<app-sidebar></app-sidebar>
+        <!-- Dynamic Content -->
+        <main class="flex-1 overflow-y-auto bg-[#090b0e]">
+            <router-outlet></router-outlet>
+        </main>
 
-<router-outlet></router-outlet>
-
-
-
-<app-footer></app-footer>
+        <app-footer></app-footer>
+    </div>
+</div>
