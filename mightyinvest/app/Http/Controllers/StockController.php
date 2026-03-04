@@ -17,6 +17,17 @@ class StockController extends Controller
             ->orderBy('recorded_at')
             ->get();
     }
+
+    public function search(Request $request){
+        $q = $request->query('q');
+        if(!$q){
+            return [];
+        }
+        return Stock::where('symbol', 'LIKE', "%{$q}%")//like search operator
+            ->orWhere('name', 'LIKE', "%{$q}%")//if symbol doesnt match look for name
+            ->limit(5)// max return 5 result
+            ->get();//run
+    }
 }
 
 

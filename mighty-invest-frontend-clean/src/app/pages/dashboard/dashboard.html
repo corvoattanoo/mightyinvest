@@ -1,14 +1,30 @@
 <div class="container mx-auto p-4">
     <div class="dashboard-header">
         <h1 class="text-2xl font-bold mb-4">Stock Dashboard</h1>
-        <button class="logout-btn" (click)="logout()">Logout</button>
-        <button class="logout-btn" (click)="getPortfolio()">portfolio</button>
+        <div class="flex gap-2">
+            <button class="logout-btn" (click)="getPortfolio()">Portfolio</button>
+            <button class="logout-btn" (click)="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- KPI Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <app-stat-card title="Total Balance" value="$142,590.24" percentage="12.5" trend="up" icon="account_balance">
+        </app-stat-card>
+
+        <app-stat-card title="Daily Profit" value="+$1,840.12" percentage="2.1" trend="up" icon="trending_up">
+        </app-stat-card>
+
+        <app-stat-card title="Open Positions" value="14" percentage="5.4" trend="down" icon="layers">
+        </app-stat-card>
     </div>
 
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Stock List -->
-        <div class="col-span-1 bg-white shadow rounded-lg p-4">
+
+
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+     <!--   <div class="col-span-1 bg-white shadow rounded-lg p-4">
             <h2 class="text-xl font-semibold mb-2">Stocks</h2>
 
             <div class="max-h-96 overflow-y-auto pr-2">
@@ -23,7 +39,7 @@
             </div>
         </div>
 
-        <!-- Chart Area -->
+        
         <div class="col-span-2 bg-white shadow rounded-lg p-4">
             <h2 class="text-xl font-semibold mb-2" *ngIf="selectedStock">
                 {{ selectedStock.name }} ({{ selectedStock.symbol }}) History
@@ -35,6 +51,11 @@
             <div *ngIf="selectedStock" class="w-full h-64 flex items-center justify-center">
                 <canvas #stockChart id="stockChart"></canvas>
             </div>
+        </div> -->
+
+        <!-- Watchlist Section -->
+        <div class="col-span-3 lg:col-span-1">
+            <app-watchlist [stocks]="watchlistStocks" (add)="onAddStock($event)"></app-watchlist>
         </div>
         <!-- Portfolio Section -->
         <div class="col-span-3 bg-white shadow rounded-lg p-4 mt-4">

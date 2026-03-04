@@ -18,4 +18,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/buy', [TransactionController::class, 'buy']);
     Route::post('/sell', [TransactionController::class, 'sell']);
     Route::get('transactions', [TransactionController::class, 'history']);
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::get('/watchlist', [WatchlistController::class, 'index']);
+    Route::post('/watchlist', [WatchlistController::class, 'store']);
+    Route::delete('/watchlist/{id}',[WatchlistController::class, 'destroy']);
+    Route::get('stocks/search', [StockController::class, 'search']);
+});
 });

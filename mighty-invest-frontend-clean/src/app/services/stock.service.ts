@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Stock, StockHistory } from '../models/stock.model';
 
@@ -11,11 +11,26 @@ export class StockService {
 
     constructor(private http: HttpClient) { }
 
-    getStocks(): Observable<Stock[]> {
-        return this.http.get<Stock[]>(`${this.apiUrl}/stocks`);
+    getStocks(symbol?: string): Observable<Stock[]> {
+        let params = new HttpParams();
+        if (symbol) {
+            params = params.set('symbol', symbol);
+        }
+        return this.http.get<Stock[]>(`${this.apiUrl}/stocks`, { params });
     }
 
     getStockHistory(stockId: number): Observable<StockHistory[]> {
         return this.http.get<StockHistory[]>(`${this.apiUrl}/stocks/${stockId}/history`);
+    }
+
+    searchStocks(query: string): Observable<Stock[]>{
+        return this.http.get<Stock[]>(`${this.apiUrl}/stocks/search?q=${query}`);
+    }
+    getWatchlist():Observable<Stock[]>{
+        return this.http.get<Stock[]>(`${this.apiUrl}/watchlist`);
+    }
+
+    addToWatchlist(stockId: number): Observable<any>{
+        return this.http.post(`${this.apiUrl}/watchlist`, {stock_id: stockId});
     }
 }

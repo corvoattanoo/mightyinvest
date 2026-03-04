@@ -50,4 +50,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Portfolio::class);
     }
+
+    public function watchlist(){
+        return $this->belongsToMany(Stock::class, 'watchlist');
+    }
 }

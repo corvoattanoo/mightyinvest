@@ -10,10 +10,13 @@ import { PortfolioService } from '../../core/services/portfolio.service';
 
 Chart.register(...registerables);
 
+import { StatCardComponent } from './components/stat-card/stat-card';
+import { WatchlistComponent } from './components/watchlist/watchlist'
+
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, StatCardComponent, WatchlistComponent],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css',
 })
@@ -22,6 +25,7 @@ export class DashboardComponent implements OnInit {
     selectedStock: Stock | null = null;
     history: StockHistory[] = [];
     chart: any;
+    watchlistStocks: Stock[] = [];
 
     @ViewChild('stockChart') stockChart!: ElementRef<HTMLCanvasElement>;
 
@@ -30,7 +34,14 @@ export class DashboardComponent implements OnInit {
         private authService: AuthService,
         private router: Router,
         private portfolioService: PortfolioService, //Önce PortfolioService’i inject
-    ) { }
+    ) { 
+        this.stockService.getWatchlist().subscribe({
+        next: (data) => {
+            this.watchlistStocks = data;
+        },
+        error: (error) => { console.error('Error loading watchlist:', error)}
+    });
+    }
 
     ngOnInit(): void {
         this.stockService.getStocks().subscribe({
@@ -40,6 +51,26 @@ export class DashboardComponent implements OnInit {
             error: (error) => {
                 console.error('Error loading stocks:', error);
             }
+        });
+    }
+
+    onAddStock(symbol: string) {
+        this.stockService.getStocks(symbol).subscribe({
+            next: (data) => {
+                if (data && data.length > 0) {
+                    const stock = data[0];
+
+                    if (!this.watchlistStocks.some(s => s.id === stock.id)) {
+                                this.watchlistStocks.push(stock);
+                        console.log('stock added to the watchlist:', stock.symbol);
+                    } else {
+                        console.log('stock already in watchlist:', stock.symbol);
+                    }
+                } else {
+                    console.warn('No stock found for stock', symbol)
+                }
+            },
+            error: (err) => console.error('error fetching stock:', err)
         });
     }
 

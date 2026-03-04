@@ -1,0 +1,17 @@
+<div class="glass-gradient border border-primary/20 rounded-2xl p-6 shadow-xl shadow-primary/5">
+    <div class="flex items-center justify-between mb-4">
+        <p class="text-slate-400 text-sm font-semibold">{{ title }}</p>
+        <span class="material-symbols-outlined text-primary">{{ icon }}</span>
+    </div>
+    <h2 class="text-3xl font-extrabold text-white mb-2">{{ value }}</h2>
+    <div class="flex items-center gap-2">
+        <span class="flex items-center text-sm font-bold px-2 py-0.5 rounded"
+            [ngClass]="trend === 'up' ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'">
+            <span class="material-symbols-outlined !text-sm">
+                {{ trend === 'up' ? 'arrow_upward' : 'arrow_downward' }}
+            </span>
+            {{ percentage }}%
+        </span>
+        <span class="text-slate-500 text-xs">from last month</span>
+    </div>
+</div>
