@@ -5,6 +5,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WatchlistController;
 
 Route::get('/stocks', [StockController::class, 'index']);
 Route::get('/stocks/{id}/history', [StockController::class, 'history']);

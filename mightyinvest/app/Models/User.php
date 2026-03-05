@@ -52,6 +52,6 @@ class User extends Authenticatable
     }
 
     public function watchlist(){
-        return $this->belongsToMany(Stock::class, 'watchlist');
+        return $this->belongsToMany(Stock::class, 'watchlists');
     }
 }

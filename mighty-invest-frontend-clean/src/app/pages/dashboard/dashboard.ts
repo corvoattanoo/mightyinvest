@@ -34,13 +34,13 @@ export class DashboardComponent implements OnInit {
         private authService: AuthService,
         private router: Router,
         private portfolioService: PortfolioService, //Önce PortfolioService’i inject
-    ) { 
+    ) {
         this.stockService.getWatchlist().subscribe({
-        next: (data) => {
-            this.watchlistStocks = data;
-        },
-        error: (error) => { console.error('Error loading watchlist:', error)}
-    });
+            next: (data) => {
+                this.watchlistStocks = data;
+            },
+            error: (error) => { console.error('Error loading watchlist:', error) }
+        });
     }
 
     ngOnInit(): void {
@@ -52,25 +52,38 @@ export class DashboardComponent implements OnInit {
                 console.error('Error loading stocks:', error);
             }
         });
+        this.stockService.getWatchlist().subscribe({
+            next: (data) => {
+                this.watchlistStocks = data;
+            },
+            error: (error) => { console.error('Error loading watchlist:', error) }
+        });
     }
 
     onAddStock(symbol: string) {
-        this.stockService.getStocks(symbol).subscribe({
+        this.stockService.searchStocks(symbol).subscribe({
             next: (data) => {
                 if (data && data.length > 0) {
                     const stock = data[0];
+                    console.log("Api response: ", data);
 
                     if (!this.watchlistStocks.some(s => s.id === stock.id)) {
+                        // DB'ye kaydetmek için addToWatchlist çağırıyoruz:
+                        this.stockService.addToWatchlist(stock.id).subscribe({
+                            next: () => {
                                 this.watchlistStocks.push(stock);
-                        console.log('stock added to the watchlist:', stock.symbol);
+                                console.log('stock added to the database and watchlist:', stock.symbol);
+                            },
+                            error: (err) => console.error('Error adding to watchlist database:', err)
+                        });
                     } else {
                         console.log('stock already in watchlist:', stock.symbol);
                     }
                 } else {
-                    console.warn('No stock found for stock', symbol)
+                    console.warn('No stock found for symbol:', symbol)
                 }
             },
-            error: (err) => console.error('error fetching stock:', err)
+            error: (err) => console.error('error fetching stock details:', err)
         });
     }
 
