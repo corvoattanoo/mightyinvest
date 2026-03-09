@@ -22,43 +22,66 @@
 
 
 
-     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
-     <!--   <div class="col-span-1 bg-white shadow rounded-lg p-4">
-            <h2 class="text-xl font-semibold mb-2">Stocks</h2>
-
-            <div class="max-h-96 overflow-y-auto pr-2">
-                <ul class="space-y-2">
-                    <li *ngFor="let stock of stocks" (click)="selectStock(stock)"
-                        class="p-2 hover:bg-gray-100 cursor-pointer rounded flex justify-between items-center"
-                        [class.bg-blue-50]="selectedStock?.id === stock.id">
-                        <span class="font-medium">{{ stock.symbol }}</span>
-                        <span class="text-gray-600">${{ stock.price }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        
-        <div class="col-span-2 bg-white shadow rounded-lg p-4">
-            <h2 class="text-xl font-semibold mb-2" *ngIf="selectedStock">
-                {{ selectedStock.name }} ({{ selectedStock.symbol }}) History
-            </h2>
-            <h2 class="text-xl font-semibold mb-2 text-gray-400" *ngIf="!selectedStock">
-                Select a stock to view history
-            </h2>
-
-            <div *ngIf="selectedStock" class="w-full h-64 flex items-center justify-center">
-                <canvas #stockChart id="stockChart"></canvas>
-            </div>
-        </div> -->
-
-        <!-- Watchlist Section -->
-        <div class="col-span-3 lg:col-span-1">
+    <div class="grid grid-cols-12 gap-6">
+        <!-- Watchlist Section (Narrow) -->
+        <div class="col-span-12 lg:col-span-3">
             <app-watchlist [stocks]="watchlistStocks" (add)="onAddStock($event)"></app-watchlist>
         </div>
-        <!-- Portfolio Section -->
-        <div class="col-span-3 bg-white shadow rounded-lg p-4 mt-4">
+
+        <!-- Main Chart Section (Wide) -->
+        <div class="col-span-12 lg:col-span-9 flex flex-col gap-6">
+            <div
+                class="bg-surface-dark/40 border border-border-dark rounded-2xl p-6 h-full flex flex-col min-h-[500px]">
+                <div class="flex items-center justify-between mb-6">
+                    <div *ngIf="selectedStock">
+                        <h2 class="text-xl font-bold text-white">{{ selectedStock.name }}</h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider">{{ selectedStock.symbol }} / USD</p>
+                    </div>
+                    <div *ngIf="!selectedStock">
+                        <h2 class="text-xl font-bold text-slate-400">Interactive Price Chart</h2>
+                        <p class="text-xs text-slate-600 italic">Select a stock to view detailed history</p>
+                    </div>
+
+                    <div class="flex bg-slate-800/50 p-1 rounded-lg border border-border-dark">
+                        <button
+                            class="px-3 py-1 text-[10px] font-bold text-slate-400 hover:text-white transition-colors">1H</button>
+                        <button class="px-3 py-1 text-[10px] font-bold bg-primary text-black rounded-md">1D</button>
+                        <button
+                            class="px-3 py-1 text-[10px] font-bold text-slate-400 hover:text-white transition-colors">1W</button>
+                        <button
+                            class="px-3 py-1 text-[10px] font-bold text-slate-400 hover:text-white transition-colors">1M</button>
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full relative min-h-[300px] flex items-center justify-center">
+                    <canvas #stockChart *ngIf="selectedStock"></canvas>
+                    <div *ngIf="!selectedStock" class="text-slate-600 text-sm italic">
+                        Real-time data visualization will appear here
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-4 pt-6 border-t border-border-dark" *ngIf="selectedStock">
+                    <div class="flex-1">
+                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Buy Price</p>
+                        <p class="text-lg font-bold text-white">${{ selectedStock.price }}</p>
+                    </div>
+                    <div class="flex-1 border-l border-border-dark pl-4" *ngIf="selectedStock">
+                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Sell Price</p>
+                        <p class="text-lg font-bold text-white">${{ selectedStock.price }}</p>
+                    </div>
+                    <div class="flex-[2] flex gap-3">
+                        <button
+                            class="flex-1 bg-surface-dark border border-border-dark hover:bg-white/5 text-white font-bold rounded-xl transition-all">SELL</button>
+                        <button
+                            class="flex-1 bg-primary hover:shadow-[0_0_20px_rgba(75,192,192,0.3)] text-black font-bold rounded-xl transition-all">BUY
+                            {{ selectedStock.symbol }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Section (Full Width Bottom for now) -->
+        <div class="col-span-12 bg-white shadow rounded-lg p-4 mt-4">
             <h2 class="text-xl font-semibold mb-2">My Portfolio</h2>
 
             <div *ngIf="portfolioLoading" class="text-gray-400">Loading...</div>

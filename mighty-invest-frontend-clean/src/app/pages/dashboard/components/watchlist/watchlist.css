@@ -1,3 +1,14 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.watchlist-container {
+    height: 550px;
+    /* Fixed height for consistent UI */
+    min-height: 550px;
+}
+
 .search-container {
     position: relative;
 }
@@ -35,4 +46,30 @@
 
 .search-result-item:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #4bc0c0;
+    /* Primary color used in charts */
+}
+
+/* Firefox support */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }

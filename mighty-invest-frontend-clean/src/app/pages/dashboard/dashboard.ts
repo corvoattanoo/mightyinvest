@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StockService } from '../../services/stock.service';
@@ -34,19 +34,14 @@ export class DashboardComponent implements OnInit {
         private authService: AuthService,
         private router: Router,
         private portfolioService: PortfolioService, //Önce PortfolioService’i inject
-    ) {
-        this.stockService.getWatchlist().subscribe({
-            next: (data) => {
-                this.watchlistStocks = data;
-            },
-            error: (error) => { console.error('Error loading watchlist:', error) }
-        });
-    }
+        private cdRef: ChangeDetectorRef
+    ){}
 
     ngOnInit(): void {
         this.stockService.getStocks().subscribe({
             next: (data) => {
                 this.stocks = data;
+                this.cdRef.detectChanges();
             },
             error: (error) => {
                 console.error('Error loading stocks:', error);
@@ -55,6 +50,7 @@ export class DashboardComponent implements OnInit {
         this.stockService.getWatchlist().subscribe({
             next: (data) => {
                 this.watchlistStocks = data;
+                this.cdRef.detectChanges();
             },
             error: (error) => { console.error('Error loading watchlist:', error) }
         });
@@ -73,6 +69,7 @@ export class DashboardComponent implements OnInit {
                             next: () => {
                                 this.watchlistStocks.push(stock);
                                 console.log('stock added to the database and watchlist:', stock.symbol);
+                                this.cdRef.detectChanges();
                             },
                             error: (err) => console.error('Error adding to watchlist database:', err)
                         });
@@ -92,6 +89,7 @@ export class DashboardComponent implements OnInit {
         this.stockService.getStockHistory(stock.id).subscribe((data) => {
             this.history = data;
             this.renderChart();
+            this.cdRef.detectChanges();
         });
     }
 

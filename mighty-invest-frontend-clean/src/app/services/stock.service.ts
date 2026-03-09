@@ -30,7 +30,11 @@ export class StockService {
         return this.http.get<Stock[]>(`${this.apiUrl}/watchlist`);
     }
 
-    addToWatchlist(stockId: number): Observable<any>{
-        return this.http.post(`${this.apiUrl}/watchlist`, {stock_id: stockId});
+    addToWatchlist(stockId: number): Observable<any> {
+        return this.http.post(`${this.apiUrl}/watchlist`, { stock_id: stockId });
+    }
+
+    removeFromWatchlist(stockId: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/watchlist/${stockId}`);
     }
 }
