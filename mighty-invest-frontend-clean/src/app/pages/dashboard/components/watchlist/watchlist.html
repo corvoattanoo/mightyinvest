@@ -12,6 +12,7 @@
         </div>
 
         <div *ngFor="let stock of stocks"
+        (click)="onSelectStock(stock)"
             class="p-4 flex items-center justify-between border-b border-border-dark/50 hover:bg-white/5 cursor-pointer transition-colors group">
             <div class="flex items-center gap-3">
                 <div

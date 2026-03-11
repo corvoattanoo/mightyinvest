@@ -28,10 +28,13 @@ export class WatchlistComponent {
             distinctUntilChanged(),
             switchMap(query => query ? this.stockService.searchStocks(query) : of([]))
         ).subscribe(
-            results => 
-                {this.searchResult = results;
+            results => {
+                this.searchResult = results;
                 this.cdRef.detectChanges();
             });
+    }
+    onSelectStock(stock: Stock){
+        this.stockService.selectStock(stock);
     }
 
     onSearchType() {
@@ -61,7 +64,7 @@ export class WatchlistComponent {
             this.stockService.removeFromWatchlist(stockId).subscribe({
                 next: () => {
                     console.log('Stock is deleted'),
-                    this.stocks = this.stocks.filter(s => s.id !== stockId);
+                        this.stocks = this.stocks.filter(s => s.id !== stockId);
                     console.log('Stock is deleted from UI and Backend');
                     this.cdRef.detectChanges();
                 },

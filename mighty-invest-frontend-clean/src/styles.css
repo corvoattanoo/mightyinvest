@@ -1,3 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+/* 1. Tüm sitenin scrollbar genişliğini ayarla */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* 2. Arka planı (track) koyu yap */
+::-webkit-scrollbar-track {
+  background: #090b0e; /* Dashboard arka plan renginle aynı */
+}
+
+/* 3. Kayan parçayı (thumb) şık ve yuvarlak yap */
+::-webkit-scrollbar-thumb {
+  background: #1f2937; /* Biraz daha açık bir gri/lacivert */
+  border-radius: 5px;
+  border: 2px solid #090b0e; /* Track ile arasında boşluk varmış gibi gösterir */
+}
+
+/* 4. Mouse ile üzerine geldiğinde parlasın */
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* Firefox için (onlar farklı bir yöntem kullanıyor) */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #1f2937 #090b0e;
+}

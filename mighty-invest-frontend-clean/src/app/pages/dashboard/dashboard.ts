@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit {
         private router: Router,
         private portfolioService: PortfolioService, //Önce PortfolioService’i inject
         private cdRef: ChangeDetectorRef
-    ){}
+    ) { }
 
     ngOnInit(): void {
         this.stockService.getStocks().subscribe({
@@ -54,6 +54,11 @@ export class DashboardComponent implements OnInit {
             },
             error: (error) => { console.error('Error loading watchlist:', error) }
         });
+        this.stockService.selectedStock$.subscribe(stock => {
+            if(stock){
+                this.selectStock(stock);
+            }
+        })
     }
 
     onAddStock(symbol: string) {
