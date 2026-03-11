@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, takeUntil } from 'rxjs';
 import { User } from '../../models/auth.model';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
@@ -15,11 +15,12 @@ import { StockService } from '../../services/stock.service';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnDestroy {
   currentUser$: Observable<User | null>;
   searchTerm: string = '';
   searchResult: Stock[] = [];
   private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
   constructor(private authService: AuthService,private stockService: StockService,private cdRef: ChangeDetectorRef  
   ) {
@@ -28,7 +29,8 @@ export class NavbarComponent {
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(query => query ? this.stockService.searchStocks(query) : of([]))
-    ).subscribe(
+    ).pipe(takeUntil(this.destroy$))
+    .subscribe(
       result => {
         this.searchResult = result;
         this.cdRef.detectChanges();
@@ -48,11 +50,9 @@ export class NavbarComponent {
   logout() {
     this.authService.logout();
   }
-  // {
-  //   this.currentUser$ = this.authService.currentUser$;
-  // }
-
-  // logout() {
-  //   this.authService.logout();
-  // }
+  
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

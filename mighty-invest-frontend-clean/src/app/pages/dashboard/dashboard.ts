@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StockService } from '../../services/stock.service';
@@ -12,6 +12,7 @@ Chart.register(...registerables);
 
 import { StatCardComponent } from './components/stat-card/stat-card';
 import { WatchlistComponent } from './components/watchlist/watchlist'
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-dashboard',
@@ -20,12 +21,13 @@ import { WatchlistComponent } from './components/watchlist/watchlist'
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit,  OnDestroy{
     stocks: Stock[] = [];
     selectedStock: Stock | null = null;
     history: StockHistory[] = [];
     chart: any;
     watchlistStocks: Stock[] = [];
+    private destroy$ = new Subject<void>();
 
     @ViewChild('stockChart') stockChart!: ElementRef<HTMLCanvasElement>;
 
@@ -38,7 +40,8 @@ export class DashboardComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.stockService.getStocks().subscribe({
+        this.stockService.getStocks().pipe(takeUntil(this.destroy$))
+        .subscribe({
             next: (data) => {
                 this.stocks = data;
                 this.cdRef.detectChanges();
@@ -47,14 +50,16 @@ export class DashboardComponent implements OnInit {
                 console.error('Error loading stocks:', error);
             }
         });
-        this.stockService.getWatchlist().subscribe({
+        this.stockService.getWatchlist().pipe(takeUntil(this.destroy$))
+        .subscribe({
             next: (data) => {
                 this.watchlistStocks = data;
                 this.cdRef.detectChanges();
             },
             error: (error) => { console.error('Error loading watchlist:', error) }
         });
-        this.stockService.selectedStock$.subscribe(stock => {
+        this.stockService.selectedStock$.pipe(takeUntil(this.destroy$))
+        .subscribe(stock => {
             if(stock){
                 this.selectStock(stock);
             }
@@ -62,7 +67,8 @@ export class DashboardComponent implements OnInit {
     }
 
     onAddStock(symbol: string) {
-        this.stockService.searchStocks(symbol).subscribe({
+        this.stockService.searchStocks(symbol).pipe(takeUntil(this.destroy$))
+        .subscribe({
             next: (data) => {
                 if (data && data.length > 0) {
                     const stock = data[0];
@@ -70,7 +76,8 @@ export class DashboardComponent implements OnInit {
 
                     if (!this.watchlistStocks.some(s => s.id === stock.id)) {
                         // DB'ye kaydetmek için addToWatchlist çağırıyoruz:
-                        this.stockService.addToWatchlist(stock.id).subscribe({
+                        this.stockService.addToWatchlist(stock.id).pipe(takeUntil(this.destroy$))
+                        .subscribe({
                             next: () => {
                                 this.watchlistStocks.push(stock);
                                 console.log('stock added to the database and watchlist:', stock.symbol);
@@ -91,7 +98,8 @@ export class DashboardComponent implements OnInit {
 
     selectStock(stock: Stock): void {
         this.selectedStock = stock;
-        this.stockService.getStockHistory(stock.id).subscribe((data) => {
+        this.stockService.getStockHistory(stock.id).pipe(takeUntil(this.destroy$))
+        .subscribe((data) => {
             this.history = data;
             this.renderChart();
             this.cdRef.detectChanges();
@@ -109,7 +117,8 @@ export class DashboardComponent implements OnInit {
     getPortfolio(): void {
         this.portfolioLoading = true;
         this.portfolioError = '';
-        this.portfolioService.getPortfolio().subscribe({
+        this.portfolioService.getPortfolio().pipe(takeUntil(this.destroy$))
+        .subscribe({
             next: (res) => {
                 // Store results in portfolioData, NOT in stocks (stocks is the global list)
                 this.portfolioData = res.map((item: any) => ({
@@ -161,5 +170,9 @@ export class DashboardComponent implements OnInit {
                 }
             });
         }, 0);
+    }
+    ngOnDestroy(): void {
+        this.destroy$.next();// "Bileşen yok oluyor!" sinyalini gönder
+        this.destroy$.complete()// Kanalı tamamen kapat
     }
 }

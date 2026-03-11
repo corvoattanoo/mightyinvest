@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Stock } from '../../../../models/stock.model';
-import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { StockService } from '../../../../services/stock.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { StockService } from '../../../../services/stock.service';
     templateUrl: './watchlist.html',
     styleUrl: './watchlist.css',
 })
-export class WatchlistComponent {
+export class WatchlistComponent implements OnDestroy {
     @Input() title: string = '';
     @Input() stocks: Stock[] = [];
 
@@ -21,9 +21,11 @@ export class WatchlistComponent {
     searchTerm: string = '';
     searchResult: Stock[] = [];
     private searchSubject = new Subject<string>();
+    private destroy$ = new Subject<void>();
 
     constructor(private stockService: StockService, private cdRef: ChangeDetectorRef) {
         this.searchSubject.pipe(
+            takeUntil(this.destroy$),
             debounceTime(300),
             distinctUntilChanged(),
             switchMap(query => query ? this.stockService.searchStocks(query) : of([]))
@@ -42,7 +44,8 @@ export class WatchlistComponent {
     }
 
     selectSearchType(stock: Stock) {
-        this.stockService.addToWatchlist(stock.id).subscribe(() => {
+        this.stockService.addToWatchlist(stock.id).pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
             this.stocks.push(stock);
             this.searchTerm = '';
             this.searchResult = [];
@@ -61,7 +64,8 @@ export class WatchlistComponent {
         event.stopPropagation();// tiklamanin yukari sicramasini engelledik
 
         if (confirm('You want to remove this stock from watchlist?')) {
-            this.stockService.removeFromWatchlist(stockId).subscribe({
+            this.stockService.removeFromWatchlist(stockId).pipe(takeUntil(this.destroy$))
+            .subscribe({
                 next: () => {
                     console.log('Stock is deleted'),
                         this.stocks = this.stocks.filter(s => s.id !== stockId);
@@ -71,6 +75,11 @@ export class WatchlistComponent {
                 error: (e) => { console.log('Deletion is interupted', e) }
             });
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
 
