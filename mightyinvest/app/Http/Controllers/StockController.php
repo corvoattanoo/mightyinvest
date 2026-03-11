@@ -5,9 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Stock; // bunu ekle, yoksa Stock bulunamaz
 use App\Models\StockHistory;
+use App\Services\FinnhubService;
 
 class StockController extends Controller
 {
+    protected $finnhubService;
+
+    public function __construct(FinnhubService $finnhubService){
+        $this->finnhubService = $finnhubService;
+    }
+
+    public function quote($symbol){
+        $data = $this->finnhubService->getQuote($symbol);
+        return response()->json($data);
+    }
+
     public function index(){
         return Stock::all();
     }
