@@ -13,7 +13,7 @@ export class StockService {
 
     constructor(private http: HttpClient) { }
 
-    selectStock(stock: Stock){
+    selectStock(stock: Stock) {
         this.selectedStockSubject.next(stock);
     }
 

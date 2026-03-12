@@ -3,6 +3,7 @@
 namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Finnhub API ile iletisimi saglayan servis.
@@ -20,12 +21,18 @@ class FinnhubService
     }
 
     public function getQuote($symbol){  
-        $response = Http::get("{$this->baseUrl}/quote", [
+
+        $cacheKey = "stock_quote_{$symbol}";
+        //60 saniye bu anahtar altinda veriyi sakla
+        return Cache::remember($cacheKey, 60, function ()
+        use ($symbol){
+            //api istegi atma ve veriyi isimlendirme(mapping) islemini buraya tasiiyrouz
+            $response = Http::get("{$this->baseUrl}/quote", [
             'symbol' => $symbol,
             'token' => $this->apiKey
         ])->json();
-        
-        return [
+
+         return [
             'current_price' => $response['c'] ?? 0,
             'high_price' => $response['h'] ?? 0,
             'low_price' => $response['l'] ?? 0,
@@ -35,6 +42,10 @@ class FinnhubService
             'precent_change' => $response['dp'] ?? 0,
             'timestamp' => $response['t'] ?? 0,
         ];
-    }
 
+        });
+        
+        
+       
+    }
 }
