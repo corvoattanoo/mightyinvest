@@ -13,6 +13,10 @@ export class StockService {
 
     constructor(private http: HttpClient) { }
 
+    getCandles(symbol: string, range: string ='1M'):Observable<any[]>{
+        return this.http.get<any[]>(`${this.apiUrl}/stocks/candles/${symbol}?range=${range}`);
+    }
+
     getStockQuote(symbol: string){
         return this.http.get<Stock>(`${this.apiUrl}/stocks/quote/${symbol}`);
     }

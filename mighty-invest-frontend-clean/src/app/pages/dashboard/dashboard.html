@@ -55,21 +55,12 @@
                         <h2 class="text-xl font-bold text-slate-400">Interactive Price Chart</h2>
                         <p class="text-xs text-slate-600 italic">Select a stock to view detailed history</p>
                     </div>
-
-                    <div class="flex bg-slate-800/50 p-1 rounded-lg border border-border-dark">
-                        <button
-                            class="px-3 py-1 text-[10px] font-bold text-slate-400 hover:text-white transition-colors">1H</button>
-                        <button class="px-3 py-1 text-[10px] font-bold bg-primary text-black rounded-md">1D</button>
-                        <button
-                            class="px-3 py-1 text-[10px] font-bold text-slate-400 hover:text-white transition-colors">1W</button>
-                        <button
-                            class="px-3 py-1 text-[10px] font-bold text-slate-400 hover:text-white transition-colors">1M</button>
-                    </div>
                 </div>
 
-                <div class="flex-1 w-full relative min-h-[300px] flex items-center justify-center">
-                    <canvas #stockChart *ngIf="selectedStock"></canvas>
-                    <div *ngIf="!selectedStock" class="text-slate-600 text-sm italic">
+                <div class="flex-1 w-full relative min-h-[400px]">
+                    <app-stock-chart *ngIf="selectedStock" [symbol]="selectedStock.symbol"></app-stock-chart>
+                    <div *ngIf="!selectedStock"
+                        class="text-slate-600 text-sm italic h-full flex items-center justify-center">
                         Real-time data visualization will appear here
                     </div>
                 </div>

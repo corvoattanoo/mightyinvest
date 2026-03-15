@@ -1,1 +1,9 @@
-<!-- Stock Chart Content -->
+<div class="chart-wrapper">
+    <div class="range-selector">
+        <button [class.active]="currentRange === '1H'" (click)="setRange('1H')">1H</button>
+        <button [class.active]="currentRange === '1D'" (click)="setRange('1D')">1D</button>
+        <button [class.active]="currentRange === '1W'" (click)="setRange('1W')">1W</button>
+        <button [class.active]="currentRange === '1M'" (click)="setRange('1M')">1M</button>
+    </div>
+    <div #chartContainer class="chart-container"></div>
+</div>

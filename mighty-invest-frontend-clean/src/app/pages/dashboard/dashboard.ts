@@ -4,20 +4,19 @@ import { Router } from '@angular/router';
 import { StockService } from '../../services/stock.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Stock, StockHistory } from '../../models/stock.model';
-import { Chart, registerables } from 'chart.js';
 import { PortfolioService } from '../../core/services/portfolio.service';
 
 
-Chart.register(...registerables);
 
 import { StatCardComponent } from './components/stat-card/stat-card';
 import { WatchlistComponent } from './components/watchlist/watchlist'
 import { Subject, takeUntil } from 'rxjs';
+import { StockChartComponent } from './components/stock-chart/stock-chart';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, StatCardComponent, WatchlistComponent],
+    imports: [CommonModule, StatCardComponent, WatchlistComponent, StockChartComponent],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css',
 })
@@ -25,11 +24,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     stocks: Stock[] = [];
     selectedStock: Stock | null = null;
     history: StockHistory[] = [];
-    chart: any;
     watchlistStocks: Stock[] = [];
     private destroy$ = new Subject<void>();
-
-    @ViewChild('stockChart') stockChart!: ElementRef<HTMLCanvasElement>;
 
     constructor(
         private stockService: StockService,
@@ -97,12 +93,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     selectStock(stock: Stock): void {
+        console.log('Seçilen Hisse Bilgileri:', stock);
         this.selectedStock = stock;
 
         this.stockService.getStockHistory(stock.id).pipe(takeUntil(this.destroy$))
             .subscribe((data) => {
+                console.log('Hisse Geçmişi (Raw):', data);
                 this.history = data;
-                this.renderChart();
+
                 this.cdRef.detectChanges();
             })
         // fire the real data from finnhub
@@ -143,41 +141,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     console.error(err);
                 }
             });
-    }
-
-    renderChart(): void {
-        if (this.chart) {
-            this.chart.destroy();
-        }
-
-        setTimeout(() => {
-            if (!this.stockChart) return;
-            const ctx = this.stockChart.nativeElement.getContext('2d');
-            if (!ctx) return;
-
-            const labels = this.history.map(h => new Date(h.recorded_at).toLocaleTimeString());
-            const prices = this.history.map(h => h.price);
-
-            this.chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `${this.selectedStock?.name} Price`,
-                        data: prices,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
-                }
-            });
-        }, 0);
     }
     ngOnDestroy(): void {
         this.destroy$.next();// "Bileşen yok oluyor!" sinyalini gönder
