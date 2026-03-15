@@ -10,6 +10,7 @@ use App\Http\Controllers\WatchlistController;
 Route::get('/stocks', [StockController::class, 'index']);
 Route::get('/stocks/{id}/history', [StockController::class, 'history']);
 Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
+Route::get('/stocks/candles/{symbol}',[StockController::class, 'candles']);
 //user routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);

@@ -13,6 +13,10 @@ export class StockService {
 
     constructor(private http: HttpClient) { }
 
+    getStockQuote(symbol: string){
+        return this.http.get<Stock>(`${this.apiUrl}/stocks/quote/${symbol}`);
+    }
+
     selectStock(stock: Stock) {
         this.selectedStockSubject.next(stock);
     }

@@ -12,7 +12,10 @@
         <app-stat-card title="Total Balance" value="$142,590.24" percentage="12.5" trend="up" icon="account_balance">
         </app-stat-card>
 
-        <app-stat-card title="Daily Profit" value="+$1,840.12" percentage="2.1" trend="up" icon="trending_up">
+        <app-stat-card [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
+            [value]="(selectedStock ? (selectedStock.change | currency) : '+$1,840.12') || ''"
+            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '2.1') : '2.1'"
+            [trend]="(selectedStock?.change || 0) >= 0 ? 'up' : 'down'" [icon]="'trending_up'">
         </app-stat-card>
 
         <app-stat-card title="Open Positions" value="14" percentage="5.4" trend="down" icon="layers">
@@ -36,6 +39,17 @@
                     <div *ngIf="selectedStock">
                         <h2 class="text-xl font-bold text-white">{{ selectedStock.name }}</h2>
                         <p class="text-xs text-slate-500 uppercase tracking-wider">{{ selectedStock.symbol }} / USD</p>
+                    </div>
+
+                    <div class="flex flex-col items-start" *ngIf="selectedStock && selectedStock.current_price">
+                        <span class="text-2xl font-bold text-white">
+                            ${{selectedStock.current_price | number: '1.2-2'}}
+                        </span>
+                        <span [ngClass]="(selectedStock.change || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
+                            class="text-xs font-bold">
+                            {{ (selectedStock.change || 0) >= 0 ? '▲' : '▼' }}
+                            {{ selectedStock.change | number:'1.2-2' }} ({{ selectedStock.percent_change }}%)
+                        </span>
                     </div>
                     <div *ngIf="!selectedStock">
                         <h2 class="text-xl font-bold text-slate-400">Interactive Price Chart</h2>

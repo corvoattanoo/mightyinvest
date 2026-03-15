@@ -21,7 +21,7 @@ import { Subject, takeUntil } from 'rxjs';
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css',
 })
-export class DashboardComponent implements OnInit,  OnDestroy{
+export class DashboardComponent implements OnInit, OnDestroy {
     stocks: Stock[] = [];
     selectedStock: Stock | null = null;
     history: StockHistory[] = [];
@@ -41,69 +41,77 @@ export class DashboardComponent implements OnInit,  OnDestroy{
 
     ngOnInit(): void {
         this.stockService.getStocks().pipe(takeUntil(this.destroy$))
-        .subscribe({
-            next: (data) => {
-                this.stocks = data;
-                this.cdRef.detectChanges();
-            },
-            error: (error) => {
-                console.error('Error loading stocks:', error);
-            }
-        });
+            .subscribe({
+                next: (data) => {
+                    this.stocks = data;
+                    this.cdRef.detectChanges();
+                },
+                error: (error) => {
+                    console.error('Error loading stocks:', error);
+                }
+            });
         this.stockService.getWatchlist().pipe(takeUntil(this.destroy$))
-        .subscribe({
-            next: (data) => {
-                this.watchlistStocks = data;
-                this.cdRef.detectChanges();
-            },
-            error: (error) => { console.error('Error loading watchlist:', error) }
-        });
+            .subscribe({
+                next: (data) => {
+                    this.watchlistStocks = data;
+                    this.cdRef.detectChanges();
+                },
+                error: (error) => { console.error('Error loading watchlist:', error) }
+            });
         this.stockService.selectedStock$.pipe(takeUntil(this.destroy$))
-        .subscribe(stock => {
-            if(stock){
-                this.selectStock(stock);
-            }
-        })
+            .subscribe(stock => {
+                if (stock) {
+                    this.selectStock(stock);
+                }
+            })
     }
 
     onAddStock(symbol: string) {
         this.stockService.searchStocks(symbol).pipe(takeUntil(this.destroy$))
-        .subscribe({
-            next: (data) => {
-                if (data && data.length > 0) {
-                    const stock = data[0];
-                    console.log("Api response: ", data);
+            .subscribe({
+                next: (data) => {
+                    if (data && data.length > 0) {
+                        const stock = data[0];
+                        console.log("Api response: ", data);
 
-                    if (!this.watchlistStocks.some(s => s.id === stock.id)) {
-                        // DB'ye kaydetmek için addToWatchlist çağırıyoruz:
-                        this.stockService.addToWatchlist(stock.id).pipe(takeUntil(this.destroy$))
-                        .subscribe({
-                            next: () => {
-                                this.watchlistStocks.push(stock);
-                                console.log('stock added to the database and watchlist:', stock.symbol);
-                                this.cdRef.detectChanges();
-                            },
-                            error: (err) => console.error('Error adding to watchlist database:', err)
-                        });
+                        if (!this.watchlistStocks.some(s => s.id === stock.id)) {
+                            // DB'ye kaydetmek için addToWatchlist çağırıyoruz:
+                            this.stockService.addToWatchlist(stock.id).pipe(takeUntil(this.destroy$))
+                                .subscribe({
+                                    next: () => {
+                                        this.watchlistStocks.push(stock);
+                                        console.log('stock added to the database and watchlist:', stock.symbol);
+                                        this.cdRef.detectChanges();
+                                    },
+                                    error: (err) => console.error('Error adding to watchlist database:', err)
+                                });
+                        } else {
+                            console.log('stock already in watchlist:', stock.symbol);
+                        }
                     } else {
-                        console.log('stock already in watchlist:', stock.symbol);
+                        console.warn('No stock found for symbol:', symbol)
                     }
-                } else {
-                    console.warn('No stock found for symbol:', symbol)
-                }
-            },
-            error: (err) => console.error('error fetching stock details:', err)
-        });
+                },
+                error: (err) => console.error('error fetching stock details:', err)
+            });
     }
 
     selectStock(stock: Stock): void {
         this.selectedStock = stock;
+
         this.stockService.getStockHistory(stock.id).pipe(takeUntil(this.destroy$))
-        .subscribe((data) => {
-            this.history = data;
-            this.renderChart();
-            this.cdRef.detectChanges();
-        });
+            .subscribe((data) => {
+                this.history = data;
+                this.renderChart();
+                this.cdRef.detectChanges();
+            })
+        // fire the real data from finnhub
+        this.stockService.getStockQuote(stock.symbol).pipe(takeUntil(this.destroy$))
+            .subscribe((quoteData) => {
+                this.selectedStock = { ...this.selectedStock, ...quoteData };
+                this.cdRef.detectChanges();
+            })
+
     }
 
     logout(): void {
@@ -118,23 +126,23 @@ export class DashboardComponent implements OnInit,  OnDestroy{
         this.portfolioLoading = true;
         this.portfolioError = '';
         this.portfolioService.getPortfolio().pipe(takeUntil(this.destroy$))
-        .subscribe({
-            next: (res) => {
-                // Store results in portfolioData, NOT in stocks (stocks is the global list)
-                this.portfolioData = res.map((item: any) => ({
-                    ...item.stock,
-                    quantity: item.quantity,
-                    average_price: item.average_price
-                }));
-                this.portfolioLoading = false;
-                console.log('Portfolio:', this.portfolioData);
-            },
-            error: (err) => {
-                this.portfolioError = 'Failed to load portfolio.';
-                this.portfolioLoading = false;
-                console.error(err);
-            }
-        });
+            .subscribe({
+                next: (res) => {
+                    // Store results in portfolioData, NOT in stocks (stocks is the global list)
+                    this.portfolioData = res.map((item: any) => ({
+                        ...item.stock,
+                        quantity: item.quantity,
+                        average_price: item.average_price
+                    }));
+                    this.portfolioLoading = false;
+                    console.log('Portfolio:', this.portfolioData);
+                },
+                error: (err) => {
+                    this.portfolioError = 'Failed to load portfolio.';
+                    this.portfolioLoading = false;
+                    console.error(err);
+                }
+            });
     }
 
     renderChart(): void {

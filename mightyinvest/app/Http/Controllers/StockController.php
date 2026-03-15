@@ -6,13 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\Stock; // bunu ekle, yoksa Stock bulunamaz
 use App\Models\StockHistory;
 use App\Services\FinnhubService;
+use App\Services\PolygonService;
 
 class StockController extends Controller
 {
     protected $finnhubService;
+    protected $polygonService;
 
-    public function __construct(FinnhubService $finnhubService){
+    
+    public function __construct(FinnhubService $finnhubService, PolygonService $polygonService){
         $this->finnhubService = $finnhubService;
+        $this->polygonService = $polygonService;
+    }
+    public function candles($symbol, Request $request){
+        $range = $request->query('range', '1M');
+        $data = $this->polygonService->getCandles($symbol, $range);
+        return response()->json($data);
     }
 
     public function quote($symbol){

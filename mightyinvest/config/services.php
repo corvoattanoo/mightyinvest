@@ -16,6 +16,9 @@ return [
     'finnhub' => [
         'key' => env('FINNHUB_API_KEY'),
     ],
+    'polygonio' => [
+        'key' => env('POLYGON_API_KEY'),
+    ],
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),

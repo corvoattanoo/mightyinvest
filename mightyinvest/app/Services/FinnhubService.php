@@ -39,13 +39,78 @@ class FinnhubService
             'open_price' => $response['o'] ?? 0,
             'previous_close' => $response['pc'] ?? 0,
             'change' => $response['d'] ?? 0,
-            'precent_change' => $response['dp'] ?? 0,
+            'percent_change' => $response['dp'] ?? 0,
             'timestamp' => $response['t'] ?? 0,
         ];
 
-        });
-        
-        
-       
+        }); 
     }
+    protected $range_config = [
+            '1H' => [
+                'resolution' => '1',
+                'subtract' => 'subHour', //Carbon: now()->subHour()
+                'cache_ttl' => 60,
+            ],
+            '1D' => [
+                'resolution' => '5',
+                'subtract' => 'subDay',
+                'cache_ttl' => 300, // 5min
+            ],
+            '1W' => [
+                'resolution' => 'D', //Daily
+                'subtract' => 'subWeek',
+                'cache_ttl' => 3600, 
+            ],
+            '1M' => [
+                'resolution' => 'D',
+                'subtract' => 'subMonth',
+                'cache_ttl' => 3600, 
+            ]
+
+            ];
+
+    public function getCandles(string $symbol, string $range): array
+    {
+        // 1. Ayar paketini çek (Hatalı $ işaretleri temizlendi)
+        $config = $this->range_config[$range] ?? $this->range_config['1M'];
+        $cacheKey = "stock:candles:{$symbol}:{$range}";
+
+        // 2. Cache::remember kullanarak hem kontrolü hem kaydı tek seferde yapıyoruz
+        return Cache::remember($cacheKey, $config['cache_ttl'], function () use ($symbol, $config) {
+            
+            $to = now()->timestamp;
+            $from = now()->{$config['subtract']}()->timestamp;
+
+            // API isteği
+            $response = Http::get("{$this->baseUrl}/stock/candle", [
+                'symbol' => $symbol,
+                'resolution' => $config['resolution'],
+                'from' => $from,
+                'to' => $to,
+                'token' => $this->apiKey
+            ])->json();
+
+
+        if(($response['s'] ?? '') !== 'ok'){
+                return [];
+            }
+
+            // 4. Veri Dönüştürme (Transformation)
+            // Finnhub'ın 'c' (prices) ve 't' (timestamps) dizilerini frontendin beklediği formata sokuyoruz
+            $history = [];
+
+        foreach($response['c'] as $index => $price){
+            $timestamp = $response['t'][$index];
+
+                $history[] = [
+                    'price' => $price,
+                'recorded_at' => now()->setTimestamp($timestamp)->toDateTimeString()
+                ];
+            }
+
+            return $history;
+        });
+    }
+
+    
 }

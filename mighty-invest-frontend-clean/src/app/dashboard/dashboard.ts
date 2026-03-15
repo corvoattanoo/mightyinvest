@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StockService } from '../service/stock.service';
 import { Stock, StockHistory } from '../models/stock.model';
 import { Chart, registerables } from 'chart.js';
+import { Subject, takeUntil, } from 'rxjs';
 
 
 Chart.register(...registerables);
@@ -14,18 +15,21 @@ Chart.register(...registerables);
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   stocks: Stock[] = [];
   selectedStock: Stock | null = null;
   history: StockHistory[] = [];
   chart: any;
+  private destroy$ = new Subject<void>();
+  
 
   @ViewChild('stockChart') stockChart!: ElementRef<HTMLCanvasElement>;
 
   constructor(private stockService: StockService) { }
 
   ngOnInit(): void {
-    this.stockService.getStocks().subscribe({
+    this.stockService.getStocks().pipe(takeUntil(this.destroy$))
+    .subscribe({
       next: (data) => {
         this.stocks = data;
         //console.log('Stocks loaded:', data);
@@ -38,7 +42,8 @@ export class DashboardComponent implements OnInit {
 
   selectStock(stock: Stock): void {
     this.selectedStock = stock;
-    this.stockService.getStockHistory(stock.id).subscribe((data) => {
+    this.stockService.getStockHistory(stock.id).pipe(takeUntil(this.destroy$))
+    .subscribe((data) => {
       this.history = data;
       this.renderChart();
     });
@@ -79,5 +84,9 @@ export class DashboardComponent implements OnInit {
         }
       });
     }, 0);
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
