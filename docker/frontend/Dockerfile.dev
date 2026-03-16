@@ -1,0 +1,11 @@
+FROM node:20-alpine
+WORKDIR /app
+# Paket dosyalarını önce kopyala (cache optimizasyonu)
+COPY ./mighty-invest-frontend-clean/package*.json ./
+# Bağımlılıkları yükle
+RUN npm install
+# Kaynak kodu kopyala
+COPY ./mighty-invest-frontend-clean .
+# Angular dev server'i 0.0.0.0'da baslat (container disindan erisim icin)
+EXPOSE 4200
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]

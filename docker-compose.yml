@@ -1,0 +1,108 @@
+services:
+  # ==========================================
+  # 1. NGINX — Reverse Proxy (Trafik Yoneticisi)
+  # ==========================================
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "8085:80"
+    depends_on:
+      app:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    networks:
+      - mightyinvest
+    restart: unless-stopped
+  # ==========================================
+  # 2. APP — Laravel (PHP-FPM)
+  # ==========================================
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    env_file:
+      - ./mightyinvest/.env.docker
+    volumes:
+      - ./mightyinvest:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/bootstrap/cache
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mightyinvest
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "php", "-v"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # ==========================================
+  # 3. FRONTEND — Angular
+  # ==========================================
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile.dev
+    volumes:
+      - ./mighty-invest-frontend-clean:/app
+      - /app/node_modules
+    networks:
+      - mightyinvest
+    restart: unless-stopped
+  # ==========================================
+  # 4. DB — PostgreSQL
+  # ==========================================
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mightyinvest
+      POSTGRES_USER: mightyinvest
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - mightyinvest
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mightyinvest"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  # ==========================================
+  # 5. REDIS — Cache & Session
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - mightyinvest
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+# ==========================================
+# VOLUMES — Kalici Veri Depolama
+# ==========================================
+volumes:
+  postgres_data:
+  redis_data:
+# ==========================================
+# NETWORKS — Container Iletisim Agi
+# ==========================================
+networks:
+  mightyinvest:
+    driver: bridge

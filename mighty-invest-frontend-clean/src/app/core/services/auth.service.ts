@@ -9,7 +9,7 @@ import { TokenService } from './token.service';
     providedIn: 'root', //auth.service i uygulama genleinde kullanmayi saglar
 })
 export class AuthService {
-    private apiUrl = 'http://127.0.0.1:8000/api';
+    private apiUrl = '/api';
 
     private currentUserSubject = new BehaviorSubject<User | null>(null);//Uygulama içinde "aktif kullanıcı kim?" bilgisini reaktif tutar.
     public currentUser$ = this.currentUserSubject.asObservable();

@@ -7,13 +7,13 @@ import { Stock, StockHistory } from '../models/stock.model';
     providedIn: 'root',
 })
 export class StockService {
-    private apiUrl = 'http://127.0.0.1:8000/api';
+    private apiUrl = '/api';
     private selectedStockSubject = new BehaviorSubject<Stock | null>(null);
     public selectedStock$ = this.selectedStockSubject.asObservable();
 
     constructor(private http: HttpClient) { }
 
-    getCandles(symbol: string, range: string ='1M'):Observable<any[]>{
+    getCandles(symbol: string, range: string = '1M'): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/stocks/candles/${symbol}?range=${range}`);
     }
 

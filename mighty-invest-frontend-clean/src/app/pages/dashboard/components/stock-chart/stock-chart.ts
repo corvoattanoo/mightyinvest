@@ -31,12 +31,6 @@ export class StockChartComponent implements AfterViewInit, OnChanges, OnDestroy 
         this.isBrowser = isPlatformBrowser(platformId);
     }
 
-    ngAfterViewInit() {
-        if (this.isBrowser) {
-            this.initChart();
-        }
-    }
-
     private initChart() {
         if (!this.chartContainer) return;
         //grafigi olusturma
@@ -77,7 +71,7 @@ export class StockChartComponent implements AfterViewInit, OnChanges, OnDestroy 
 
         this.stockService.getCandles(this.symbol, this.currentRange).pipe(takeUntil(this.destroy$))
             .subscribe(data => {
-                console.log(`${this.symbol} için Grafik Verileri (${this.currentRange}):`, data);
+
                 if (data && data.length > 0) {
                     //laravel verisini charta ceviriyor
                     const chartData: CandlestickData[] = data.map(d => ({
@@ -104,7 +98,12 @@ export class StockChartComponent implements AfterViewInit, OnChanges, OnDestroy 
             this.loadData();
         }
     }
-
+    ngAfterViewInit() {
+        if (this.isBrowser) {
+            this.initChart();
+            this.loadData(); // İlk hissenin verisini grafiği kurduktan hemen sonra çekiyoruz
+        }
+    }
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();

@@ -6,12 +6,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class PortfolioService {
-  
-  private apiUrl = 'http://127.0.0.1:8000/api';
 
-  constructor(private http:HttpClient){}
+  private apiUrl = '/api';
 
-  getPortfolio(): Observable<any>{
+  constructor(private http: HttpClient) { }
+
+  getPortfolio(): Observable<any> {
     return this.http.get(`${this.apiUrl}/portfolio`)
   }
 }

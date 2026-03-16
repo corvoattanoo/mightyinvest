@@ -50,6 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (data) => {
                     this.watchlistStocks = data;
+                    this.fetchWatchlistQuotes(); // <-- Bunu eklemeyi unutma, API'den canlı veriyi çeker
                     this.cdRef.detectChanges();
                 },
                 error: (error) => { console.error('Error loading watchlist:', error) }
@@ -141,6 +142,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     console.error(err);
                 }
             });
+    }
+
+    fetchWatchlistQuotes() {
+        this.watchlistStocks.forEach(stock => {
+            this.stockService.getStockQuote(stock.symbol).pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (quoteData) => {
+                        const index = this.watchlistStocks.findIndex(s => s.id === stock.id);
+                        if (index !== -1) {
+                            this.watchlistStocks[index] = { ...this.watchlistStocks[index], ...quoteData };
+                            this.cdRef.detectChanges();
+
+                        }
+                    }
+                });
+        });
+
     }
     ngOnDestroy(): void {
         this.destroy$.next();// "Bileşen yok oluyor!" sinyalini gönder
