@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Watchlist;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -52,6 +54,6 @@ class User extends Authenticatable
     }
 
     public function watchlist(){
-        return $this->belongsToMany(Stock::class, 'watchlists');
+        return $this->hasMany(Watchlist::class);
     }
 }

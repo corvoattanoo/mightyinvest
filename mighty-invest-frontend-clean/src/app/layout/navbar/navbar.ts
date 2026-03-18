@@ -19,6 +19,7 @@ export class NavbarComponent implements OnDestroy {
   currentUser$: Observable<User | null>;
   searchTerm: string = '';
   searchResult: Stock[] = [];
+  marketStatus: {isOpen: boolean, session: string | null} = {isOpen:false, session:null};
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
@@ -30,13 +31,24 @@ export class NavbarComponent implements OnDestroy {
       distinctUntilChanged(),
       switchMap(query => query ? this.stockService.searchStocks(query) : of([]))
     ).pipe(takeUntil(this.destroy$))
-    .subscribe(
-      result => {
-        this.searchResult = result;
-        this.cdRef.detectChanges();
-      }
-    )
+      .subscribe(
+        result => {
+          this.searchResult = result;
+          this.cdRef.detectChanges();
+        }
+      )
+
+    this.fetchMarketStatus();
   }
+
+  fetchMarketStatus(){
+    this.stockService.getMarketStatus().pipe(takeUntil(this.destroy$))
+      .subscribe(status => {
+        this.marketStatus = status;
+        this.cdRef.detectChanges;
+      });
+  }
+  
   onSearch(){
     this.searchSubject.next(this.searchTerm);
   }
@@ -50,7 +62,7 @@ export class NavbarComponent implements OnDestroy {
   logout() {
     this.authService.logout();
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

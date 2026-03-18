@@ -35,7 +35,7 @@ export class WatchlistComponent implements OnDestroy {
                 this.cdRef.detectChanges();
             });
     }
-    onSelectStock(stock: Stock){
+    onSelectStock(stock: Stock) {
         this.stockService.selectStock(stock);
     }
 
@@ -44,13 +44,13 @@ export class WatchlistComponent implements OnDestroy {
     }
 
     selectSearchType(stock: Stock) {
-        this.stockService.addToWatchlist(stock.id).pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-            this.stocks.push(stock);
-            this.searchTerm = '';
-            this.searchResult = [];
-            this.cdRef.detectChanges();
-        });
+        this.stockService.addToWatchlist(stock.symbol).pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                this.stocks.push(stock);
+                this.searchTerm = '';
+                this.searchResult = [];
+                this.cdRef.detectChanges();
+            });
     }
 
     addStock() {
@@ -60,20 +60,20 @@ export class WatchlistComponent implements OnDestroy {
         this.searchTerm = '';
     }
 
-    removeStock(event: Event, stockId: number) {
+    removeStock(event: Event, symbol: string) {
         event.stopPropagation();// tiklamanin yukari sicramasini engelledik
 
         if (confirm('You want to remove this stock from watchlist?')) {
-            this.stockService.removeFromWatchlist(stockId).pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: () => {
-                    console.log('Stock is deleted'),
-                        this.stocks = this.stocks.filter(s => s.id !== stockId);
-                    console.log('Stock is deleted from UI and Backend');
-                    this.cdRef.detectChanges();
-                },
-                error: (e) => { console.log('Deletion is interupted', e) }
-            });
+            this.stockService.removeFromWatchlist(symbol).pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: () => {
+                        console.log('Stock is deleted'),
+                            this.stocks = this.stocks.filter(s => s.symbol !== symbol);
+                        console.log('Stock is deleted from UI and Backend');
+                        this.cdRef.detectChanges();
+                    },
+                    error: (e) => { console.log('Deletion is interupted', e) }
+                });
         }
     }
 

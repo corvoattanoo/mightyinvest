@@ -11,6 +11,7 @@ Route::get('/stocks', [StockController::class, 'index']);
 Route::get('/stocks/{id}/history', [StockController::class, 'history']);
 Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
 Route::get('/stocks/candles/{symbol}',[StockController::class, 'candles']);
+Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
 //user routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);

@@ -71,7 +71,7 @@ class FinnhubService
 
     public function getCandles(string $symbol, string $range): array
     {
-        // 1. Ayar paketini çek (Hatalı $ işaretleri temizlendi)
+        // 1. Ayar paketini çek 
         $config = $this->range_config[$range] ?? $this->range_config['1M'];
         $cacheKey = "stock:candles:{$symbol}:{$range}";
 
@@ -112,5 +112,45 @@ class FinnhubService
         });
     }
 
-    
+    public function symbolSearch($query){
+        $cacheKey = "stock_query_{$query}";
+
+        return Cache::remember($cacheKey, 300, function () use ($query){
+            $response = Http::get("{$this->baseUrl}/search", [
+                'q' => $query,
+                'token' => $this->apiKey,
+            ])->json();
+            
+            $results = $response['result'] ?? [];
+
+            // Mapping: Sadece bize lazım olan symbol ve description (name) alanlarını alalım
+            return array_map(function($item){
+                return [
+                    'symbol' => $item['symbol'], 
+                    'name' => $item['description']
+                ];
+            }, $results);
+        });
+    }
+
+    public function getMarketStatus(){
+        $cacheKey = "market_status_us";
+
+        return Cache::remember($cacheKey, 60, function () {
+            $response = Http::get("{$this->baseUrl}/market/status", [
+                'exchange' => 'US',
+                'token' => $this->apiKey,
+            ])->json();
+            // dd($response);
+
+            return [
+                'isOpen' => $response['isOpen'] ?? false,
+                'session' => $response['session'] ?? false,
+                'timezone' => $response['timezone'] ?? 'UTC' 
+            ];
+        });
+
+    }
+
+
 }

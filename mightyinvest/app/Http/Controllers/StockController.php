@@ -42,12 +42,15 @@ class StockController extends Controller
     public function search(Request $request){
         $q = $request->query('q');
         if(!$q){
-            return [];
+            return response()->json([]);
         }
-        return Stock::where('symbol', 'LIKE', "%{$q}%")//like search operator
-            ->orWhere('name', 'LIKE', "%{$q}%")//if symbol doesnt match look for name
-            ->limit(5)// max return 5 result
-            ->get();//run
+        $results = $this->finnhubService->symbolSearch($q);
+        return response()->json($results);
+    }
+
+    public function marketStatus(){
+        $data = $this->finnhubService->getMarketStatus();
+        return response()->json($data);
     }
 }
 

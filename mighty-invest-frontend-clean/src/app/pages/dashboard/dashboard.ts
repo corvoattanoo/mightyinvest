@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (data) => {
                     this.watchlistStocks = data;
-                    this.fetchWatchlistQuotes(); // <-- Bunu eklemeyi unutma, API'den canlı veriyi çeker
+                    this.fetchWatchlistQuotes();
                     this.cdRef.detectChanges();
                 },
                 error: (error) => { console.error('Error loading watchlist:', error) }
@@ -71,9 +71,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
                         const stock = data[0];
                         console.log("Api response: ", data);
 
-                        if (!this.watchlistStocks.some(s => s.id === stock.id)) {
+                        if (!this.watchlistStocks.some(s => s.symbol === stock.symbol)) {
                             // DB'ye kaydetmek için addToWatchlist çağırıyoruz:
-                            this.stockService.addToWatchlist(stock.id).pipe(takeUntil(this.destroy$))
+                            this.stockService.addToWatchlist(stock.symbol).pipe(takeUntil(this.destroy$))
                                 .subscribe({
                                     next: () => {
                                         this.watchlistStocks.push(stock);
@@ -97,20 +97,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.log('Seçilen Hisse Bilgileri:', stock);
         this.selectedStock = stock;
 
-        this.stockService.getStockHistory(stock.id).pipe(takeUntil(this.destroy$))
-            .subscribe((data) => {
-                console.log('Hisse Geçmişi (Raw):', data);
-                this.history = data;
+        // Note: We'll need to update getStockHistory to potentially handle symbols or IDs
+        if (stock.id) {
+            this.stockService.getStockHistory(stock.id).pipe(takeUntil(this.destroy$))
+                .subscribe((data) => {
+                    console.log('Hisse Geçmişi (Raw):', data);
+                    this.history = data;
 
-                this.cdRef.detectChanges();
-            })
-        // fire the real data from finnhub
-        this.stockService.getStockQuote(stock.symbol).pipe(takeUntil(this.destroy$))
-            .subscribe((quoteData) => {
-                this.selectedStock = { ...this.selectedStock, ...quoteData };
-                this.cdRef.detectChanges();
-            })
+                    this.cdRef.detectChanges();
+                })
+            // fire the real data from finnhub
+            this.stockService.getStockQuote(stock.symbol).pipe(takeUntil(this.destroy$))
+                .subscribe((quoteData) => {
+                    this.selectedStock = { ...this.selectedStock, ...quoteData };
+                    this.cdRef.detectChanges();
+                })
 
+        }
     }
 
     logout(): void {
@@ -149,7 +152,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.stockService.getStockQuote(stock.symbol).pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: (quoteData) => {
-                        const index = this.watchlistStocks.findIndex(s => s.id === stock.id);
+                        const index = this.watchlistStocks.findIndex(s => s.symbol === stock.symbol);
                         if (index !== -1) {
                             this.watchlistStocks[index] = { ...this.watchlistStocks[index], ...quoteData };
                             this.cdRef.detectChanges();

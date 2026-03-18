@@ -17,8 +17,12 @@ export class StockService {
         return this.http.get<any[]>(`${this.apiUrl}/stocks/candles/${symbol}?range=${range}`);
     }
 
-    getStockQuote(symbol: string){
+    getStockQuote(symbol: string) {
         return this.http.get<Stock>(`${this.apiUrl}/stocks/quote/${symbol}`);
+    }
+
+    getMarketStatus(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/stocks/market-status`);
     }
 
     selectStock(stock: Stock) {
@@ -44,11 +48,11 @@ export class StockService {
         return this.http.get<Stock[]>(`${this.apiUrl}/watchlist`);
     }
 
-    addToWatchlist(stockId: number): Observable<any> {
-        return this.http.post(`${this.apiUrl}/watchlist`, { stock_id: stockId });
+    addToWatchlist(symbol: string | number): Observable<any> {
+        return this.http.post(`${this.apiUrl}/watchlist`, { symbol: symbol });
     }
 
-    removeFromWatchlist(stockId: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/watchlist/${stockId}`);
+    removeFromWatchlist(symbol: string | number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/watchlist/${symbol}`);
     }
 }
