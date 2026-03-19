@@ -9,9 +9,10 @@ class PortfolioController extends Controller
 {
     //
     public function index(){
-        return Portfolio::with('stock')
-            ->where('user_id', auth()->id())
-            ->get();
+        return response()->json([
+            'holdings' => Portfolio::with('stock')->where('user_id', auth()->id())->get(),
+            'balance' => auth()->user()->balance
+        ]);
     }
 
 }

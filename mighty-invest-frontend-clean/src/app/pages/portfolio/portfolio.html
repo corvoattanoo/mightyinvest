@@ -1,119 +1,148 @@
-<div class="container mx-auto p-4">
-    <div class="dashboard-header">
-        <h1 class="text-2xl font-bold mb-4">Stock Dashboard</h1>
-        <div class="flex gap-2">
-            <button class="logout-btn" (click)="getPortfolio()">Portfolio</button>
-            <button class="logout-btn" (click)="logout()">Logout</button>
+<div class="p-8 space-y-8 overflow-y-auto">
+    <!-- Header Section -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold tracking-tight">Portfolio Performance</h2>
+            <p class="text-slate-500 mt-1 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">schedule</span>
+                Last synced: Just now
+            </p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button
+                class="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-card-dark text-sm font-semibold transition-colors">
+                <span class="material-symbols-outlined text-lg">download</span>
+                Export CSV
+            </button>
         </div>
     </div>
 
-    <!-- KPI Stats Row -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <app-stat-card title="Total Balance" value="$142,590.24" percentage="12.5" trend="up" icon="account_balance">
-        </app-stat-card>
-
-        <app-stat-card [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
-            [value]="(selectedStock ? (selectedStock.change | currency) : '+$1,840.12') || ''"
-            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '2.1') : '2.1'"
-            [trend]="(selectedStock?.change || 0) >= 0 ? 'up' : 'down'" [icon]="'trending_up'">
-        </app-stat-card>
-
-        <app-stat-card title="Open Positions" value="14" percentage="5.4" trend="down" icon="layers">
-        </app-stat-card>
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+            <p class="text-slate-500 text-sm font-medium">Net Worth</p>
+            <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-3xl font-extrabold">{{ totalNetWorth | currency }}</span>
+                <span class="text-status-green text-sm font-bold flex items-center">+1.2%</span>
+            </div>
+            <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-primary" style="width: 75%"></div>
+            </div>
+        </div>
+        <div class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+            <p class="text-slate-500 text-sm font-medium">Total Stock Value</p>
+            <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-3xl font-extrabold">{{ totalStockValue | currency }}</span>
+                <span class="text-status-green text-sm font-bold flex items-center">+4.5%</span>
+            </div>
+            <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-status-green" style="width: 60%"></div>
+            </div>
+        </div>
+        <div class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+            <p class="text-slate-500 text-sm font-medium">Cash Balance</p>
+            <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-3xl font-extrabold">{{ cashBalance | currency }}</span>
+            </div>
+            <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-accent-purple" style="width: 15%"></div>
+            </div>
+        </div>
     </div>
 
-
-
-
-    <div class="grid grid-cols-12 gap-6">
-        <!-- Watchlist Section (Narrow) -->
-        <div class="col-span-12 lg:col-span-3">
-            <app-watchlist [stocks]="watchlistStocks" (add)="onAddStock($event)"></app-watchlist>
-        </div>
-
-        <!-- Main Chart Section (Wide) -->
-        <div class="col-span-12 lg:col-span-9 flex flex-col gap-6">
-            <div
-                class="bg-surface-dark/40 border border-border-dark rounded-2xl p-6 h-full flex flex-col min-h-[500px]">
-                <div class="flex items-center justify-between mb-6">
-                    <div *ngIf="selectedStock">
-                        <h2 class="text-xl font-bold text-white">{{ selectedStock.name }}</h2>
-                        <p class="text-xs text-slate-500 uppercase tracking-wider">{{ selectedStock.symbol }} / USD</p>
-                    </div>
-
-                    <div class="flex flex-col items-start" *ngIf="selectedStock && selectedStock.current_price">
-                        <span class="text-2xl font-bold text-white">
-                            ${{selectedStock.current_price | number: '1.2-2'}}
-                        </span>
-                        <span [ngClass]="(selectedStock.change || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                            class="text-xs font-bold">
-                            {{ (selectedStock.change || 0) >= 0 ? '▲' : '▼' }}
-                            {{ selectedStock.change | number:'1.2-2' }} ({{ selectedStock.percent_change }}%)
-                        </span>
-                    </div>
-                    <div *ngIf="!selectedStock">
-                        <h2 class="text-xl font-bold text-slate-400">Interactive Price Chart</h2>
-                        <p class="text-xs text-slate-600 italic">Select a stock to view detailed history</p>
+    <!-- Main Data Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Asset Allocation Donut -->
+        <div
+            class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col">
+            <h3 class="text-lg font-bold mb-6">Asset Allocation</h3>
+            <div class="flex-1 flex flex-col items-center justify-center py-4">
+                <div class="relative size-48 rounded-full  flex items-center justify-center" [style.background]="donutStyle">
+                    <div
+                        class="size-36 rounded-full bg-slate-100 dark:bg-card-dark flex flex-col items-center justify-center text-center">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Net Worth</p>
+                        <p class="text-2xl font-black">{{ totalNetWorth | currency:'USD':'symbol':'1.0-0' }}</p>
                     </div>
                 </div>
-
-                <div class="flex-1 w-full relative min-h-[400px]">
-                    <app-stock-chart *ngIf="selectedStock" [symbol]="selectedStock.symbol"></app-stock-chart>
-                    <div *ngIf="!selectedStock"
-                        class="text-slate-600 text-sm italic h-full flex items-center justify-center">
-                        Real-time data visualization will appear here
+                <div class="mt-8 grid grid-cols-2 gap-x-8 gap-y-4 w-full">
+                    <div class="flex items-center gap-2">
+                        <div class="size-3 rounded bg-primary"></div>
+                        <div class="flex-1">
+                            <p class="text-xs text-slate-500 font-medium">Stocks</p>
+                            <p class="text-sm font-bold">{{ (totalStockValue / totalNetWorth) | percent }}</p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="mt-6 flex gap-4 pt-6 border-t border-border-dark" *ngIf="selectedStock">
-                    <div class="flex-1">
-                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Buy Price</p>
-                        <p class="text-lg font-bold text-white">${{ selectedStock.price }}</p>
-                    </div>
-                    <div class="flex-1 border-l border-border-dark pl-4" *ngIf="selectedStock">
-                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Sell Price</p>
-                        <p class="text-lg font-bold text-white">${{ selectedStock.price }}</p>
-                    </div>
-                    <div class="flex-[2] flex gap-3">
-                        <button
-                            class="flex-1 bg-surface-dark border border-border-dark hover:bg-white/5 text-white font-bold rounded-xl transition-all">SELL</button>
-                        <button
-                            class="flex-1 bg-primary hover:shadow-[0_0_20px_rgba(75,192,192,0.3)] text-black font-bold rounded-xl transition-all">BUY
-                            {{ selectedStock.symbol }}</button>
+                    <div class="flex items-center gap-2">
+                        <div class="size-3 rounded bg-[#3b3f54]"></div>
+                        <div class="flex-1">
+                            <p class="text-xs text-slate-500 font-medium">Cash</p>
+                            <p class="text-sm font-bold">{{ (cashBalance / totalNetWorth) | percent }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Portfolio Section (Full Width Bottom for now) -->
-        <div class="col-span-12 bg-white shadow rounded-lg p-4 mt-4">
-            <h2 class="text-xl font-semibold mb-2">My Portfolio</h2>
-
-            <div *ngIf="portfolioLoading" class="text-gray-400">Loading...</div>
-            <div *ngIf="portfolioError" class="text-red-500">{{ portfolioError }}</div>
-
-            <div *ngIf="!portfolioLoading && portfolioData.length === 0 && !portfolioError" class="text-gray-400">
-                No holdings yet. Click "Portfolio" to load, or buy a stock first.
+        <!-- Portfolio Breakdown Table -->
+        <div
+            class="lg:col-span-2 bg-slate-100 dark:bg-card-dark rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <h3 class="text-lg font-bold">Open Positions</h3>
             </div>
+            <div class="overflow-x-auto min-h-[300px]">
+                <div *ngIf="loading" class="p-12 text-center text-slate-500 italic">Yükleniyor...</div>
+                <div *ngIf="!loading && portfolioData.length === 0" class="p-12 text-center text-slate-500 italic">Henüz
+                    pozisyonunuz bulunmuyor.</div>
 
-            <table *ngIf="portfolioData.length > 0" class="w-full text-left">
-                <thead>
-                    <tr class="border-b">
-                        <th class="py-2">Symbol</th>
-                        <th class="py-2">Name</th>
-                        <th class="py-2">Quantity</th>
-                        <th class="py-2">Avg Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of portfolioData" class="border-b hover:bg-gray-50">
-                        <td class="py-2 font-medium">{{ item.symbol }}</td>
-                        <td class="py-2">{{ item.name }}</td>
-                        <td class="py-2">{{ item.quantity }}</td>
-                        <td class="py-2">${{ item.average_price }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <table *ngIf="!loading && portfolioData.length > 0" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-900/50">
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ticker</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Avg Price
+                            </th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Current
+                                Price</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                                Value</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                        <tr *ngFor="let item of portfolioData"
+                            class="hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div>
+                                        <p class="text-sm font-bold">{{ item.symbol }}</p>
+                                        <p class="text-[10px] text-slate-500 font-medium">{{ item.name }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm font-medium">{{ item.average_price | currency }}</td>
+                            <td class="px-6 py-4 text-sm font-medium">{{ item.current_price | currency }}</td>
+                            <td class="px-6 py-4 text-right font-bold text-sm">{{ (item.quantity * item.current_price) |
+                                currency }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Insight -->
+    <div class="bg-primary/5 rounded-xl p-8 border border-primary/20 relative overflow-hidden">
+        <div
+            class="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-primary/10 to-transparent pointer-events-none">
+        </div>
+        <div class="relative z-10 max-w-2xl">
+            <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">lightbulb</span>
+                Portfolio Insight
+            </h3>
+            <p class="text-slate-400 leading-relaxed text-sm">
+                Your portfolio is currently weighted <span class="text-white font-bold">{{ (totalStockValue /
+                    totalNetWorth) | percent }}</span> in stocks and <span class="text-white font-bold">{{ (cashBalance
+                    / totalNetWorth) | percent }}</span> in cash. Maintain a balanced allocation to manage risk.
+            </p>
         </div>
     </div>
 </div>
