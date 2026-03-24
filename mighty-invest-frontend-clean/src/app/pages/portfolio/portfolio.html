@@ -57,7 +57,8 @@
             class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col">
             <h3 class="text-lg font-bold mb-6">Asset Allocation</h3>
             <div class="flex-1 flex flex-col items-center justify-center py-4">
-                <div class="relative size-48 rounded-full  flex items-center justify-center" [style.background]="donutStyle">
+                <div class="relative size-48 rounded-full  flex items-center justify-center"
+                    [style.background]="donutStyle">
                     <div
                         class="size-36 rounded-full bg-slate-100 dark:bg-card-dark flex flex-col items-center justify-center text-center">
                         <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Net Worth</p>
@@ -104,6 +105,8 @@
                                 Price</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
                                 Value</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                                Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -112,15 +115,19 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div>
-                                        <p class="text-sm font-bold">{{ item.symbol }}</p>
-                                        <p class="text-[10px] text-slate-500 font-medium">{{ item.name }}</p>
+                                        <p class="text-sm font-bold">{{ item.stock.symbol }}</p>
+                                        <p class="text-[10px] text-slate-500 font-medium">{{ item.stock.name }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm font-medium">{{ item.average_price | currency }}</td>
-                            <td class="px-6 py-4 text-sm font-medium">{{ item.current_price | currency }}</td>
-                            <td class="px-6 py-4 text-right font-bold text-sm">{{ (item.quantity * item.current_price) |
-                                currency }}</td>
+                            <td class="px-6 py-4 text-sm font-medium">{{ item.stock.price | currency }}</td>
+                            <td class="px-6 py-4 text-right font-bold text-sm">{{ item.current_value | currency }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <button
+                                    class="px-3 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                                    (click)="openSellModal(item)">Sell</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -145,4 +152,11 @@
             </p>
         </div>
     </div>
+
+    <!-- Trade Modal -->
+    <app-trade-modal [visible]="showTradeModal" [mode]="tradeMode" [stockId]="selectedHolding?.stock_id"
+        [stockSymbol]="selectedHolding?.stock?.symbol" [stockName]="selectedHolding?.stock?.name"
+        [currentPrice]="selectedHolding?.stock?.price" (close)="showTradeModal = false"
+        (tradeComplete)="onTradeComplete()">
+    </app-trade-modal>
 </div>

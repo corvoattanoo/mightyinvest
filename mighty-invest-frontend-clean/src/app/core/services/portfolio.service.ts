@@ -41,7 +41,7 @@ export class PortfolioService {
    * Bu accessor'lar otomatik olarak JSON'a ekleniyor!
    */
 
-  getPortfolio(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/portfolio`)
+  getPortfolio(): Observable<PortfolioResponse> {
+    return this.http.get<PortfolioResponse>(`${this.apiUrl}/portfolio`)
   }
 }
