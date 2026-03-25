@@ -32,7 +32,7 @@ class FinnhubService
             'token' => $this->apiKey
         ])->json();
 
-         return [
+         $mappedData = [
             'current_price' => $response['c'] ?? 0,
             'high_price' => $response['h'] ?? 0,
             'low_price' => $response['l'] ?? 0,
@@ -42,6 +42,11 @@ class FinnhubService
             'percent_change' => $response['dp'] ?? 0,
             'timestamp' => $response['t'] ?? 0,
         ];
+
+        // Update Stock price in database if exists
+        \App\Models\Stock::where('symbol', $symbol)->update(['price' => $mappedData['current_price']]);
+
+        return $mappedData;
 
         }); 
     }

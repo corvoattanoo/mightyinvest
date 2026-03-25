@@ -7,7 +7,7 @@ import { TransactionService } from '../../../core/services/transaction.service';
     selector: 'app-trade-modal',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    template:`
+    template: `
     <!-- Backdrop: Modal dışına tıklayınca kapansın -->
     <div class="modal-backdrop" (click)="close.emit()" *ngIf="visible">
       <!-- Modal içeriği: event.stopPropagation() ile iç tıklamalar backdrop'a gitmesin -->
@@ -43,7 +43,7 @@ import { TransactionService } from '../../../core/services/transaction.service';
     </div>`
 })
 
-export class TradeModalComponent{
+export class TradeModalComponent {
     //@Input() ile parent componentten veri alinir
 
     @Input() visible = false;
@@ -62,10 +62,10 @@ export class TradeModalComponent{
     loading = false;
     errorMessage = '';
 
-    constructor(private transactionService: TransactionService) {}
+    constructor(private transactionService: TransactionService) { }
 
     onConfirm() {
-        if (!this.stockId) {
+        if (this.mode === 'sell' && !this.stockId) {
             this.errorMessage = 'İşlem hatası: Hisse ID bulunamadı.';
             return;
         }
@@ -74,9 +74,9 @@ export class TradeModalComponent{
         this.errorMessage = '';
         // calls service up to the mode 
         let action$;
-        if(this.mode === 'buy'){
-           action$ = this.transactionService.buy(this.stockId, this.quantity, this.currentPrice);
-        }else{
+        if (this.mode === 'buy') {
+            action$ = this.transactionService.buy(this.stockId, this.quantity, this.currentPrice, this.stockSymbol, this.stockName);
+        } else {
             action$ = this.transactionService.sell(this.stockId, this.quantity, this.currentPrice);
         }
 

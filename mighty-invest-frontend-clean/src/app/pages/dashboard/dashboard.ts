@@ -12,11 +12,12 @@ import { StatCardComponent } from './components/stat-card/stat-card';
 import { WatchlistComponent } from './components/watchlist/watchlist'
 import { Subject, takeUntil } from 'rxjs';
 import { StockChartComponent } from './components/stock-chart/stock-chart';
+import { TradeModalComponent } from '../../shared/components/trade-modal/trade-modal';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, StatCardComponent, WatchlistComponent, StockChartComponent],
+    imports: [CommonModule, StatCardComponent, WatchlistComponent, StockChartComponent, TradeModalComponent],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css',
 })
@@ -26,6 +27,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     history: StockHistory[] = [];
     watchlistStocks: Stock[] = [];
     private destroy$ = new Subject<void>();
+
+    // Trade modal state
+    showTradeModal = false;
+    tradeMode: 'buy' | 'sell' = 'buy';
 
     constructor(
         private stockService: StockService,
@@ -109,10 +114,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
             // fire the real data from finnhub
             this.stockService.getStockQuote(stock.symbol).pipe(takeUntil(this.destroy$))
                 .subscribe((quoteData) => {
-                    this.selectedStock = { ...this.selectedStock, ...quoteData };
+                    this.selectedStock = {
+                        ...this.selectedStock,
+                        current_price: quoteData.c,
+                        change: quoteData.d,
+                        percent_change: quoteData.dp
+                    } as Stock;
                     this.cdRef.detectChanges();
                 })
 
+        }
+    }
+
+    openTradeModal(mode: 'buy' | 'sell'): void {
+        if (this.selectedStock) {
+            this.tradeMode = mode;
+            this.showTradeModal = true;
+        }
+    }
+
+    onTradeComplete(): void {
+        this.getPortfolio();
+        this.fetchWatchlistQuotes();
+        if (this.selectedStock) {
+            this.selectStock(this.selectedStock);
         }
     }
 
@@ -131,7 +156,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (res) => {
                     // Store results in portfolioData, NOT in stocks (stocks is the global list)
-                    this.portfolioData = res.map((item: any) => ({
+                    this.portfolioData = res.holdings.map((item: any) => ({
                         ...item.stock,
                         quantity: item.quantity,
                         average_price: item.average_price
@@ -154,9 +179,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     next: (quoteData) => {
                         const index = this.watchlistStocks.findIndex(s => s.symbol === stock.symbol);
                         if (index !== -1) {
-                            this.watchlistStocks[index] = { ...this.watchlistStocks[index], ...quoteData };
+                            this.watchlistStocks[index] = {
+                                ...this.watchlistStocks[index],
+                                current_price: quoteData.c,
+                                change: quoteData.d,
+                                percent_change: quoteData.dp
+                            } as Stock;
                             this.cdRef.detectChanges();
-
                         }
                     }
                 });

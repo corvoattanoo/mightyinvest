@@ -75,9 +75,9 @@
                         <p class="text-lg font-bold text-white">${{ selectedStock.price }}</p>
                     </div>
                     <div class="flex-[2] flex gap-3">
-                        <button
+                        <button (click)="openTradeModal('sell')"
                             class="flex-1 bg-surface-dark border border-border-dark hover:bg-white/5 text-white font-bold rounded-xl transition-all">SELL</button>
-                        <button
+                        <button (click)="openTradeModal('buy')"
                             class="flex-1 bg-primary hover:shadow-[0_0_20px_rgba(75,192,192,0.3)] text-black font-bold rounded-xl transition-all">BUY
                             {{ selectedStock.symbol }}</button>
                     </div>

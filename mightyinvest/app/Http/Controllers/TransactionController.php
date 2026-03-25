@@ -11,17 +11,27 @@ class TransactionController extends Controller
     public function buy(Request $request)
     {
         $validated = $request->validate([
-            'stock_id' => 'required|exists:stocks,id',
+            'stock_id' => 'nullable|exists:stocks,id',
+            'symbol' => 'required_without:stock_id|string',
+            'name' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
             'purchase_price' => 'required|numeric|min:0',
         ]);
 
         $userId = auth()->id();
+        $stockId = $validated['stock_id'] ?? null;
 
-        // Transaction kaydı oluştur
+        if (!$stockId) {
+            $stock = Stock::firstOrCreate(
+                ['symbol' => $validated['symbol']],
+                ['name' => $validated['name'] ?? $validated['symbol'], 'price' => $validated['purchase_price']]
+            );
+            $stockId = $stock->id;
+        }
+
         Transaction::create([
             'user_id' => $userId,
-            'stock_id' => $validated['stock_id'],
+            'stock_id' => $stockId,
             'type' => 'buy',
             'quantity' => $validated['quantity'],
             'purchase_price' => $validated['purchase_price'],
@@ -29,7 +39,7 @@ class TransactionController extends Controller
 
         // Portfolio güncelle veya oluştur
         $portfolio = Portfolio::where('user_id', $userId)
-            ->where('stock_id', $validated['stock_id'])
+            ->where('stock_id', $stockId)
             ->first();
 
         if ($portfolio) {
@@ -44,7 +54,7 @@ class TransactionController extends Controller
         } else {
             Portfolio::create([
                 'user_id' => $userId,
-                'stock_id' => $validated['stock_id'],
+                'stock_id' => $stockId,
                 'quantity' => $validated['quantity'],
                 'average_price' => $validated['purchase_price'],
                 'name' => 'Default', // Migration expects a name

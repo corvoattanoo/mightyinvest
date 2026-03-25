@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { Stock, StockHistory } from '../models/stock.model';
+import { Stock, StockHistory, StockQuote } from '../models/stock.model';
 
 @Injectable({
     providedIn: 'root',
@@ -17,8 +17,8 @@ export class StockService {
         return this.http.get<any[]>(`${this.apiUrl}/stocks/candles/${symbol}?range=${range}`);
     }
 
-    getStockQuote(symbol: string) {
-        return this.http.get<Stock>(`${this.apiUrl}/stocks/quote/${symbol}`);
+    getStockQuote(symbol: string): Observable<StockQuote> {
+        return this.http.get<StockQuote>(`${this.apiUrl}/stocks/quote/${symbol}`);
     }
 
     getMarketStatus(): Observable<any> {
