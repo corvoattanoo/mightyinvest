@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Portfolio;
+use App\Models\Stock;
 
 class TransactionController extends Controller
 {

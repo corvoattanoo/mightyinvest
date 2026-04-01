@@ -45,7 +45,11 @@ export class WatchlistComponent implements OnDestroy {
 
     selectSearchType(stock: Stock) {
         this.stockService.addToWatchlist(stock.symbol).pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
+            .subscribe((res: any) => {
+                 console.log('DROPDOWN Backend Yanıtı:', res)
+                stock.price = res.price; // Backend'den gelen fiyatı ekle
+                stock.percent_change = res.percent_change;
+                 console.log('Güncellenen Obje (Dropdown):', stock);
                 this.stocks.push(stock);
                 this.searchTerm = '';
                 this.searchResult = [];

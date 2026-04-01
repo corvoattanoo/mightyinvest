@@ -80,7 +80,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                             // DB'ye kaydetmek için addToWatchlist çağırıyoruz:
                             this.stockService.addToWatchlist(stock.symbol).pipe(takeUntil(this.destroy$))
                                 .subscribe({
-                                    next: () => {
+                                    next: (res: any) => {
+                                        console.log('Backend Gelen Cevap:', res);
+                                        stock.price = res.price;
+                                        stock.percent_change = res.percent_change;
+                                         console.log('Güncellenen Stock Objesi:', stock);
                                         this.watchlistStocks.push(stock);
                                         console.log('stock added to the database and watchlist:', stock.symbol);
                                         this.cdRef.detectChanges();
@@ -116,9 +120,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 .subscribe((quoteData) => {
                     this.selectedStock = {
                         ...this.selectedStock,
-                        current_price: quoteData.c,
-                        change: quoteData.d,
-                        percent_change: quoteData.dp
+                        current_price: quoteData.current_price,
+                        change: quoteData.change,
+                        percent_change: quoteData.percent_change
                     } as Stock;
                     this.cdRef.detectChanges();
                 })
@@ -181,9 +185,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
                         if (index !== -1) {
                             this.watchlistStocks[index] = {
                                 ...this.watchlistStocks[index],
-                                current_price: quoteData.c,
-                                change: quoteData.d,
-                                percent_change: quoteData.dp
+                                current_price: quoteData.current_price,
+                                change: quoteData.change,
+                                percent_change: quoteData.percent_change
                             } as Stock;
                             this.cdRef.detectChanges();
                         }

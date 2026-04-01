@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { Observable, takeUntil } from 'rxjs';
@@ -15,15 +15,15 @@ import { StockService } from '../../services/stock.service';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent implements OnInit, OnDestroy {
   currentUser$: Observable<User | null>;
   searchTerm: string = '';
   searchResult: Stock[] = [];
-  marketStatus: {isOpen: boolean, session: string | null} = {isOpen:false, session:null};
+  marketStatus: { isOpen: boolean, session: string | null } = { isOpen: false, session: null };
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService,private stockService: StockService,private cdRef: ChangeDetectorRef  
+  constructor(private authService: AuthService, private stockService: StockService, private cdRef: ChangeDetectorRef
   ) {
     this.currentUser$ = this.authService.currentUser$;
     this.searchSubject.pipe(
@@ -34,10 +34,12 @@ export class NavbarComponent implements OnDestroy {
       .subscribe(
         result => {
           this.searchResult = result;
-          this.cdRef.detectChanges();
+          this.cdRef.markForCheck();
         }
       )
+  }
 
+  ngOnInit(): void {
     this.fetchMarketStatus();
   }
 
@@ -48,7 +50,7 @@ export class NavbarComponent implements OnDestroy {
         this.cdRef.detectChanges;
       });
   }
-  
+
   onSearch(){
     this.searchSubject.next(this.searchTerm);
   }

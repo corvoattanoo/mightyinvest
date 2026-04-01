@@ -64,8 +64,8 @@ export class MarketsComponent implements OnInit, OnDestroy {
             this.stockService.getStockQuote(stock.symbol)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe((quote) => {
-                    stock.livePrice = quote.c;    // c = current price (Finnhub format)
-                    stock.change = quote.dp;      // dp = percent change
+                    stock.livePrice = quote.current_price;
+                    stock.change = quote.percent_change;
                 });
         });
     }

@@ -44,7 +44,10 @@ class FinnhubService
         ];
 
         // Update Stock price in database if exists
-        \App\Models\Stock::where('symbol', $symbol)->update(['price' => $mappedData['current_price']]);
+        \App\Models\Stock::updateOrCreate(
+            ['symbol' => $symbol],
+            ['price' => $mappedData['current_price']]
+        );
 
         return $mappedData;
 
