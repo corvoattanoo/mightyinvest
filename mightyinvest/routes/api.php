@@ -7,11 +7,7 @@ use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WatchlistController;
 
-Route::get('/stocks', [StockController::class, 'index']);
-Route::get('/stocks/{id}/history', [StockController::class, 'history']);
-Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
-Route::get('/stocks/candles/{symbol}',[StockController::class, 'candles']);
-Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
+
 //user routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -22,11 +18,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/buy', [TransactionController::class, 'buy']);
     Route::post('/sell', [TransactionController::class, 'sell']);
     Route::get('transactions', [TransactionController::class, 'history']);
-
-Route::middleware('auth:sanctum')->group(function() {
     Route::get('/watchlist', [WatchlistController::class, 'index']);
     Route::post('/watchlist', [WatchlistController::class, 'store']);
-    Route::delete('/watchlist/{id}',[WatchlistController::class, 'destroy']);
+    Route::delete('/watchlist/{symbol}',[WatchlistController::class, 'destroy']);
     Route::get('stocks/search', [StockController::class, 'search']);
-});
+    Route::get('/stocks', [StockController::class, 'index']);
+Route::get('/stocks/{id}/history', [StockController::class, 'history']);
+Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
+Route::get('/stocks/candles/{symbol}',[StockController::class, 'candles']);
+Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
+
+
 });

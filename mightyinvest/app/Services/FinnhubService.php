@@ -23,35 +23,38 @@ class FinnhubService
     public function getQuote($symbol){  
 
         $cacheKey = "stock_quote_{$symbol}";
-        //60 saniye bu anahtar altinda veriyi sakla
-        return Cache::remember($cacheKey, 60, function ()
-        use ($symbol){
-            //api istegi atma ve veriyi isimlendirme(mapping) islemini buraya tasiiyrouz
-            $response = Http::get("{$this->baseUrl}/quote", [
-            'symbol' => $symbol,
-            'token' => $this->apiKey
-        ])->json();
 
-         $mappedData = [
-            'current_price' => $response['c'] ?? 0,
-            'high_price' => $response['h'] ?? 0,
-            'low_price' => $response['l'] ?? 0,
-            'open_price' => $response['o'] ?? 0,
-            'previous_close' => $response['pc'] ?? 0,
-            'change' => $response['d'] ?? 0,
-            'percent_change' => $response['dp'] ?? 0,
-            'timestamp' => $response['t'] ?? 0,
-        ];
+if (Cache::has($cacheKey)) {
+    return Cache::get($cacheKey);
+}
 
-        // Update Stock price in database if exists
-        \App\Models\Stock::updateOrCreate(
-            ['symbol' => $symbol],
-            ['price' => $mappedData['current_price']]
-        );
+$response = Http::get("{$this->baseUrl}/quote", [
+    'symbol' => $symbol,
+    'token'  => $this->apiKey
+])->json();
 
-        return $mappedData;
+$mappedData = [
+    'current_price'  => $response['c']  ?? 0,
+    'high_price'     => $response['h']  ?? 0,
+    'low_price'      => $response['l']  ?? 0,
+    'open_price'     => $response['o']  ?? 0,
+    'previous_close' => $response['pc'] ?? 0,
+    'change'         => $response['d']  ?? 0,
+    'percent_change' => $response['dp'] ?? 0,
+    'timestamp'      => $response['t']  ?? 0,
+];
 
-        }); 
+// Sadece geçerli veri gelirse cache'e yaz
+if ($mappedData['current_price'] > 0) {
+    Cache::put($cacheKey, $mappedData, 60);
+}
+
+\App\Models\Stock::updateOrCreate(
+    ['symbol' => $symbol],
+    ['price' => $mappedData['current_price']]
+);
+
+return $mappedData; 
     }
     protected $range_config = [
             '1H' => [

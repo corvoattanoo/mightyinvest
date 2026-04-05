@@ -30,7 +30,7 @@ class RefreshStockPrices extends Command
             ->merge(\App\Models\Stock::pluck('symbol'))
             ->unique();
 
-        $this->info("Updating" . $symbols->count() . "stocks...");
+        $this->info("Updating" . $symbols->count() . " stocks...");
 
         foreach ($symbols as $symbol){
             $finnhub->getQuote($symbol);

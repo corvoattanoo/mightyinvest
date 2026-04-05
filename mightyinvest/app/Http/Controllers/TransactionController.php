@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Portfolio;
 use App\Models\Stock;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
@@ -18,7 +19,16 @@ class TransactionController extends Controller
             'quantity' => 'required|integer|min:1',
             'purchase_price' => 'required|numeric|min:0',
         ]);
+        $user = auth()->user();
 
+        try{
+            DB::transaction(function () use ($validated, $user){
+        $cost = $validated['quantity'] * $validated['purchase_price'];
+
+        //Check if ther is enough balance
+        if($user->balance < $cost){
+            throw new \Exception('Insufficient balance');
+        }
         $userId = auth()->id();
         $stockId = $validated['stock_id'] ?? null;
 
@@ -62,8 +72,16 @@ class TransactionController extends Controller
                 'description' => 'Automatically created', // Migration expects description
             ]);
         }
-
+        
+        $user->decrement('balance', $cost);
+        
+        });
+        }catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
         return response()->json(['message' => 'Stock purchased'], 201);
+        
+        
     }
 
     public function sell(Request $request)
@@ -73,21 +91,26 @@ class TransactionController extends Controller
             'quantity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
         ]);
-
-        $userId = auth()->id();
-
-        // Portfolio kontrol
+        $user = auth()->user();
+        try{
+            DB::transaction(function() use ($validated, $user){
+            $userId = auth()->id();
+            // Portfolio kontrol
         $portfolio = Portfolio::where('user_id', $userId)
             ->where('stock_id', $validated['stock_id'])
             ->first();
 
         if (!$portfolio) {
-            return response()->json(['error' => 'Stock not found in portfolio'], 400);
+            throw new \Exception('Stock not found in portfolio');
         }
 
         if ($portfolio->quantity < $validated['quantity']) {
-            return response()->json(['error' => 'Not enough stock'], 400);
-        }
+            throw new \Exception('Not enough stock');
+        }    
+
+        $revenue = $validated['quantity'] * $validated['price'];
+        
+        $user->increment('balance', $revenue);
 
         // Transaction kaydı oluştur
         Transaction::create([
@@ -108,6 +131,13 @@ class TransactionController extends Controller
         }
 
         return response()->json(['message' => 'Stock sold']);
+        });
+        }catch(\Exception $e){
+            return response()->json(['error'=> $e->getMessage()], 400);
+        }
+
+        return response()->json(['message' => 'Stock sold'], 201);
+               
     }
 
     public function history()
