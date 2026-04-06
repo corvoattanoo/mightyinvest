@@ -131,9 +131,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     openTradeModal(mode: 'buy' | 'sell'): void {
+        console.log('Modal window is triggered:', mode);
         if (this.selectedStock) {
             this.tradeMode = mode;
             this.showTradeModal = true;
+            this.cdRef.detectChanges();
         }
     }
 

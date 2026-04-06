@@ -95,7 +95,9 @@
                 <div *ngIf="!loading && portfolioData.length === 0" class="p-12 text-center text-slate-500 italic">Henüz
                     pozisyonunuz bulunmuyor.</div>
 
-                <table *ngIf="!loading && portfolioData.length > 0" class="w-full text-left border-collapse">
+                <table *ngIf="!showChartView && !loading && portfolioData.length > 0"
+                    class="w-full text-left border-collapse">
+
                     <thead>
                         <tr class="bg-slate-50 dark:bg-slate-900/50">
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ticker</th>
@@ -110,8 +112,8 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
-                        <tr *ngFor="let item of portfolioData"
-                            class="hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+                        <tr *ngFor="let item of portfolioData" (click)="selectHoldingForChart(item)"
+                            class="cursor-pointer hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div>
@@ -131,6 +133,22 @@
                         </tr>
                     </tbody>
                 </table>
+                <div *ngIf="showChartView && selectedHolding" class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <button (click)="backPositions()"
+                            class="flex items-center gap-2 text-sm font-bold text-primary">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Back to Positions
+                        </button>
+                        <h3 class="text-xl font-bold">{{ selectedHolding.stock.symbol }} - {{
+                            selectedHolding.stock.name
+                            }}</h3>
+                    </div>
+                    <div class="h-[400px]">
+                        <app-stock-chart [symbol]="selectedHolding.stock.symbol"></app-stock-chart>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -155,8 +173,8 @@
 
     <!-- Trade Modal -->
     <app-trade-modal [visible]="showTradeModal" [mode]="tradeMode" [stockId]="selectedHolding?.stock_id"
-        [stockSymbol]="selectedHolding?.stock?.symbol" [stockName]="selectedHolding?.stock?.name"
-        [currentPrice]="selectedHolding?.stock?.price" (close)="showTradeModal = false"
+        [stockSymbol]="selectedHolding?.stock?.symbol || ''" [stockName]="selectedHolding?.stock?.name || ''"
+        [currentPrice]="selectedHolding?.stock?.price || 0" (close)="showTradeModal = false"
         (tradeComplete)="onTradeComplete()">
     </app-trade-modal>
 </div>
