@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WatchlistController;
+use App\Http\Controllers\DashboardController;
 
 
 
@@ -26,10 +27,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/watchlist/{symbol}',[WatchlistController::class, 'destroy']);
     Route::get('stocks/search', [StockController::class, 'search']);
     Route::get('/stocks', [StockController::class, 'index']);
-Route::get('/stocks/{id}/history', [StockController::class, 'history']);
-Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
-Route::get('/stocks/candles/{symbol}',[StockController::class, 'candles']);
-Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
+    Route::get('/stocks/{id}/history', [StockController::class, 'history']);
+    Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
+    Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);
+    Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
 
 });

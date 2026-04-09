@@ -9,16 +9,27 @@
 
     <!-- KPI Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <app-stat-card title="Total Balance" value="$142,590.24" percentage="12.5" trend="up" icon="account_balance">
+        <app-stat-card 
+        title="Total Net Worth" 
+        [value]="(stats.total_balance | currency) || '$0.00'" 
+        percentage="Net Worth" 
+        trend="up" 
+        icon="account_balance">
+        </app-stat-card>
+        <!-- Daily profit/ -->
+        <app-stat-card 
+            [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
+            [value]="(selectedStock ? (selectedStock.change | currency) : (stats.daily_profit | currency)) || '$0.00'"
+            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '0') : ''"
+            [trend]="(selectedStock ? (selectedStock.change || 0) : stats.daily_profit) >= 0 ? 'up' : 'down'"
+            [icon]="'trending_up'">
         </app-stat-card>
 
-        <app-stat-card [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
-            [value]="(selectedStock ? (selectedStock.change | currency) : '+$1,840.12') || ''"
-            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '2.1') : '2.1'"
-            [trend]="(selectedStock?.change || 0) >= 0 ? 'up' : 'down'" [icon]="'trending_up'">
-        </app-stat-card>
-
-        <app-stat-card title="Open Positions" value="14" percentage="5.4" trend="down" icon="layers">
+        <app-stat-card title="Open Positions" 
+        [value]="stats.open_positions.toString()" 
+        [percentage]="'Stocks'" 
+        [trend]="stats.open_positions > 0 ? 'up' : 'down'" 
+        icon="layers">
         </app-stat-card>
     </div>
 

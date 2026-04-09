@@ -13,6 +13,7 @@ import { WatchlistComponent } from './components/watchlist/watchlist'
 import { Subject, takeUntil } from 'rxjs';
 import { StockChartComponent } from './components/stock-chart/stock-chart';
 import { TradeModalComponent } from '../../shared/components/trade-modal/trade-modal';
+import { DashboardService, DashboardStats } from '../../core/services/dashboard.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -27,12 +28,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     history: StockHistory[] = [];
     watchlistStocks: Stock[] = [];
     private destroy$ = new Subject<void>();
+    stats: DashboardStats = {
+        total_balance: 0,
+        daily_profit: 0,
+        open_positions: 0,
+        cash_balance: 0,
+        stock_value: 0,
+    }
 
     // Trade modal state
     showTradeModal = false;
     tradeMode: 'buy' | 'sell' = 'buy';
 
     constructor(
+        private dashboardService: DashboardService,
         private stockService: StockService,
         private authService: AuthService,
         private router: Router,
@@ -41,6 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
+        this.loadDashboardStats();
         this.stockService.getStocks().pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (data) => {
@@ -66,6 +76,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.selectStock(stock);
                 }
             })
+    }
+
+    loadDashboardStats(): void {
+        this.dashboardService.getStats().pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (data) => {
+                    this.stats = data;
+                    this.cdRef.detectChanges();
+                },
+                error: (err) => console.log('Stats error', err)
+            });
     }
 
     onAddStock(symbol: string) {
@@ -145,6 +166,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.selectedStock) {
             this.selectStock(this.selectedStock);
         }
+        this.loadDashboardStats();
     }
 
     logout(): void {
