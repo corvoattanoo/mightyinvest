@@ -19,6 +19,7 @@ export class AuthService {
         private router: Router,
         private tokenService: TokenService
     ) {
+        //test comment
         // Uygulama başlarken TokenService'den mevcut kullanıcıyı alıyoruz
         const user = this.tokenService.getUser();
         if (user) {
