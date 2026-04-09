@@ -12,7 +12,7 @@ class WatchlistController extends Controller
         return auth()->user()->watchlist()->with('stock')->get()
             ->map(function($item){
                 return [
-                    'id' => $item->id,
+                    'id' => $item->stock->id,
                 'symbol' => $item->symbol,
                 'name' => $item->stock->name ?? $item->symbol,
                 'price' => $item->stock->price ?? 0,

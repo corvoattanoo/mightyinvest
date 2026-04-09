@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../core/services/transaction.service';
 
 @Component({
-    selector: 'app-trade-modal',
-    standalone: true,
-    imports: [CommonModule, FormsModule],
-    template: `
+  selector: 'app-trade-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  styleUrl: './trade-modal.css',
+  template: `
     <!-- Backdrop: Modal dışına tıklayınca kapansın -->
     <div class="modal-backdrop" (click)="close.emit()" *ngIf="visible">
       <!-- Modal içeriği: event.stopPropagation() ile iç tıklamalar backdrop'a gitmesin -->
@@ -44,55 +45,65 @@ import { TransactionService } from '../../../core/services/transaction.service';
 })
 
 export class TradeModalComponent {
-    //@Input() ile parent componentten veri alinir
+  //@Input() ile parent componentten veri alinir
 
-    @Input() visible = false;
-    @Input() mode: 'buy' | 'sell' = 'buy';
-    @Input() stockId?: number;
-    @Input() stockSymbol = '';
-    @Input() stockName = '';
-    @Input() currentPrice = 0;
+  @Input() visible = false;
+  @Input() mode: 'buy' | 'sell' = 'buy';
+  @Input() stockId?: number;
+  @Input() stockSymbol = '';
+  @Input() stockName = '';
+  @Input() currentPrice = 0;
 
-    //@Output() ile parent a event gonderme
+  //@Output() ile parent a event gonderme
 
-    @Output() close = new EventEmitter<void>();
-    @Output() tradeComplete = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
+  @Output() tradeComplete = new EventEmitter<void>();
 
-    quantity = 1;
-    loading = false;
-    errorMessage = '';
+  quantity = 1;
+  loading = false;
+  errorMessage = '';
 
-    constructor(private transactionService: TransactionService) { }
+  constructor(private transactionService: TransactionService) { }
 
-    onConfirm() {
-        if (this.mode === 'sell' && !this.stockId) {
-            this.errorMessage = 'İşlem hatası: Hisse ID bulunamadı.';
-            return;
-        }
-
-        this.loading = true;
-        this.errorMessage = '';
-        // calls service up to the mode 
-        let action$;
-        if (this.mode === 'buy') {
-            action$ = this.transactionService.buy(this.stockId, this.quantity, this.currentPrice, this.stockSymbol, this.stockName);
-        } else {
-            action$ = this.transactionService.sell(this.stockId, this.quantity, this.currentPrice);
-        }
-
-        action$.subscribe({
-            next: () => {
-                this.loading = false;
-                this.tradeComplete.emit();
-                this.close.emit();
-            },
-            error: (err) => {
-                this.loading = false;
-                this.errorMessage = err.error?.error || err.error?.message || 'Transaction is failed';
-            },
-        });
-
+  onConfirm() {
+    if (this.mode === 'sell' && !this.stockId) {
+      this.errorMessage = 'İşlem hatası: Hisse ID bulunamadı.';
+      return;
     }
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    // DEBUG: See what is being sent to API
+    console.log('[TradeModal] Payload:', {
+      stockId: this.stockId,
+      symbol: this.stockSymbol,
+      name: this.stockName,
+      quantity: this.quantity,
+      currentPrice: this.currentPrice,
+    });
+
+    // calls service up to the mode 
+    let action$;
+    if (this.mode === 'buy') {
+      action$ = this.transactionService.buy(this.stockId, this.quantity, this.currentPrice, this.stockSymbol, this.stockName);
+    } else {
+      action$ = this.transactionService.sell(this.stockId, this.quantity, this.currentPrice);
+    }
+
+    action$.subscribe({
+      next: () => {
+        this.loading = false;
+        this.tradeComplete.emit();
+        this.close.emit();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.error || err.error?.message || 'Transaction is failed';
+      },
+    });
+
+  }
 
 
 

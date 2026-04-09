@@ -37,7 +37,7 @@ WORKDIR /var/www/html
 COPY ./mightyinvest .
 
 # ---- Bağımlılıkları Yükle ----
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --optimize-autoloader --no-interaction
 
 # ---- Dosya İzinleri ----
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache

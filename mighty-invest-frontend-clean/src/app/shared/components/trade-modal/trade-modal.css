@@ -1,0 +1,168 @@
+/* === BACKDROP === */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+/* === MODAL KUTUSU === */
+.modal-content {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 420px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    animation: slideUp 0.3s ease;
+}
+
+/* === BAŞLIK === */
+.modal-content h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.stock-name {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+/* === INPUT === */
+.modal-content label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+}
+
+.modal-content input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.modal-content input:focus {
+    border-color: rgba(75, 192, 192, 0.5);
+}
+
+/* === FİYAT BİLGİSİ === */
+.price-info,
+.total {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.price-info strong,
+.total strong {
+    color: white;
+}
+
+/* === HATA === */
+.error {
+    color: #f87171;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* === BUTONLAR === */
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #94a3b8;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.btn-confirm {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-confirm.buy {
+    background: #4ade80;
+    color: #052e16;
+}
+
+.btn-confirm.buy:hover {
+    background: #22c55e;
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+}
+
+.btn-confirm.sell {
+    background: #f87171;
+    color: #450a0a;
+}
+
+.btn-confirm.sell:hover {
+    background: #ef4444;
+    box-shadow: 0 0 20px rgba(248, 113, 113, 0.4);
+}
+
+.btn-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* === ANİMASYONLAR === */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
