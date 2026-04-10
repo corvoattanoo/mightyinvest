@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PortfolioHolding, PortfolioService } from '../../core/services/portfolio.service';
 import { TradeModalComponent } from '../../shared/components/trade-modal/trade-modal';
@@ -15,8 +15,9 @@ export class PortfolioComponent implements OnInit {
   portfolioData: PortfolioHolding[] = [];
   selectedHolding: PortfolioHolding | null = null;
   showChartView: boolean = false;
-  cashBalance: number = 10000; //users will set it
+  cashBalance: number = 0; //users will set it later maybe
   loading: boolean = true;
+  errorMessage: string = '';
 
   //trade modal state
   showTradeModal = false;
@@ -25,16 +26,17 @@ export class PortfolioComponent implements OnInit {
 
 
   get totalStockValue(): number {
-    return this.portfolioData.reduce((sum, item) => sum + item.current_value, 0);
+    return this.portfolioData.reduce((sum, item) => sum + (item.current_value || 0), 0);
   }
 
   get totalProfit():number {
-    return this.portfolioData.reduce((sum, item) => sum + item.profit, 0);
+    return this.portfolioData.reduce((sum, item) => sum + (item.profit || 0), 0);
   }
 
-  constructor(private portfolioService: PortfolioService){
-
-  }
+  constructor(
+    private portfolioService: PortfolioService,
+    private cdRef: ChangeDetectorRef
+  ) { }
 
   // Total balance = Value of stocks + current cash
 
@@ -58,14 +60,21 @@ export class PortfolioComponent implements OnInit {
 
   loadPortfolio(): void {
     this.loading = true;
+    this.errorMessage = '';
+
     this.portfolioService.getPortfolio().subscribe({
       next: (res) => {
         this.portfolioData = res.holdings;
-        this.cashBalance = res.balance;
+        this.cashBalance = parseFloat(String(res.balance));
         this.loading = false;
+        this.cdRef.detectChanges();
+        console.log('Portfolio loaded', res);
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
+        this.errorMessage = 'Portfolio is not loading.';
+        this.cdRef.detectChanges();
+        console.log('Portfolio load error:', err);
       },
     });
   }

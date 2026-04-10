@@ -9,27 +9,19 @@
 
     <!-- KPI Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <app-stat-card 
-        title="Total Net Worth" 
-        [value]="(stats.total_balance | currency) || '$0.00'" 
-        percentage="Net Worth" 
-        trend="up" 
-        icon="account_balance">
+        <app-stat-card title="Total Net Worth" [value]="(stats.total_balance | currency) || '$0.00'"
+            percentage="Net Worth" trend="up" icon="account_balance">
         </app-stat-card>
         <!-- Daily profit/ -->
-        <app-stat-card 
-            [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
+        <app-stat-card [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
             [value]="(selectedStock ? (selectedStock.change | currency) : (stats.daily_profit | currency)) || '$0.00'"
             [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '0') : ''"
             [trend]="(selectedStock ? (selectedStock.change || 0) : stats.daily_profit) >= 0 ? 'up' : 'down'"
             [icon]="'trending_up'">
         </app-stat-card>
 
-        <app-stat-card title="Open Positions" 
-        [value]="stats.open_positions.toString()" 
-        [percentage]="'Stocks'" 
-        [trend]="stats.open_positions > 0 ? 'up' : 'down'" 
-        icon="layers">
+        <app-stat-card title="Open Positions" [value]="stats.open_positions.toString()" [percentage]="'Stocks'"
+            [trend]="stats.open_positions > 0 ? 'up' : 'down'" icon="layers">
         </app-stat-card>
     </div>
 
@@ -45,7 +37,7 @@
         <!-- Main Chart Section (Wide) -->
         <div class="col-span-12 lg:col-span-9 flex flex-col gap-6">
             <div
-                class="bg-surface-dark/40 border border-border-dark rounded-2xl p-6 h-full flex flex-col min-h-[500px]">
+                class="bg-gradient-to-r from-white/5 to-surface-dark/40 border border-border-dark rounded-2xl p-6 h-full flex flex-col min-h-[500px] transition-all duration-300 hover:shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
                 <div class="flex items-center justify-between mb-6">
                     <div *ngIf="selectedStock">
                         <h2 class="text-xl font-bold text-white">{{ selectedStock.name }}</h2>
