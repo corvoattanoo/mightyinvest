@@ -50,6 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
+        this.getPortfolio();
         this.loadDashboardStats();
         this.stockService.getStocks().pipe(takeUntil(this.destroy$))
             .subscribe({

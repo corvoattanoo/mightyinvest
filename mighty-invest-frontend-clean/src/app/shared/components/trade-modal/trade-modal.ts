@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../core/services/transaction.service';
@@ -63,7 +63,10 @@ export class TradeModalComponent {
   loading = false;
   errorMessage = '';
 
-  constructor(private transactionService: TransactionService) { }
+  constructor(
+    private transactionService: TransactionService,
+    private cdRef: ChangeDetectorRef
+  ) { }
 
   onConfirm() {
     if (this.mode === 'sell' && !this.stockId) {
@@ -96,10 +99,14 @@ export class TradeModalComponent {
         this.loading = false;
         this.tradeComplete.emit();
         this.close.emit();
+        this.cdRef.detectChanges();
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.error || err.error?.message || 'Transaction is failed';
+        console.error('Trade Error details:', err);
+        // Backend'den gelen hata mesajlarını parsela (error veya message alanı olabilir)
+        this.errorMessage = err.error?.error || err.error?.message || 'Transaction failed. Please try again.';
+        this.cdRef.detectChanges();
       },
     });
 

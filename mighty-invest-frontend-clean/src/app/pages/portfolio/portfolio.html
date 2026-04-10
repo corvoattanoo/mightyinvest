@@ -2,8 +2,8 @@
     <!-- Header Section -->
     <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-            <h2 class="text-3xl font-extrabold tracking-tight">Portfolio Performance</h2>
-            <p class="text-slate-500 mt-1 flex items-center gap-1.5">
+            <h2 class="text-3xl font-extrabold text-white tracking-tight">Portfolio Performance</h2>
+            <p class="text-slate-400 mt-1 flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-sm">schedule</span>
                 Last synced: Just now
             </p>
@@ -19,33 +19,40 @@
 
     <!-- Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-            <p class="text-slate-500 text-sm font-medium">Net Worth</p>
+        <div class="group bg-gradient-to-r from-white/10 to-surface-dark/40 p-6 rounded-xl border border-border-dark
+                    transition-all duration-300 ease-out
+                    hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(19,55,236,0.3)]
+                    cursor-default">
+            <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Net Worth</p>
             <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-3xl font-extrabold">{{ totalNetWorth | currency }}</span>
-                <span class="text-status-green text-sm font-bold flex items-center">+1.2%</span>
+                <span class="text-3xl font-extrabold text-white">{{ totalNetWorth | currency }}</span>
             </div>
-            <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-primary" style="width: 75%"></div>
+            <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                <div class="h-full bg-primary transition-all duration-500" style="width: 75%"></div>
             </div>
         </div>
-        <div class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-            <p class="text-slate-500 text-sm font-medium">Total Stock Value</p>
+        <div class="group bg-gradient-to-r from-white/10 to-surface-dark/40 p-6 rounded-xl border border-border-dark
+                    transition-all duration-300 ease-out
+                    hover:-translate-y-1 hover:border-status-green/50 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]
+                    cursor-default">
+            <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Total Stock Value</p>
             <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-3xl font-extrabold">{{ totalStockValue | currency }}</span>
-                <span class="text-status-green text-sm font-bold flex items-center">+4.5%</span>
+                <span class="text-3xl font-extrabold text-white">{{ totalStockValue | currency }}</span>
             </div>
-            <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-status-green" style="width: 60%"></div>
+            <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                <div class="h-full bg-status-green transition-all duration-500" style="width: 60%"></div>
             </div>
         </div>
-        <div class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-            <p class="text-slate-500 text-sm font-medium">Cash Balance</p>
+        <div class="group bg-gradient-to-r from-white/10 to-surface-dark/40 p-6 rounded-xl border border-border-dark
+                    transition-all duration-300 ease-out
+                    hover:-translate-y-1 hover:border-accent-purple/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.2)]
+                    cursor-default">
+            <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Cash Balance</p>
             <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-3xl font-extrabold">{{ cashBalance | currency }}</span>
+                <span class="text-3xl font-extrabold text-white">{{ cashBalance | currency }}</span>
             </div>
-            <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-accent-purple" style="width: 15%"></div>
+            <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                <div class="h-full bg-accent-purple transition-all duration-500" style="width: 15%"></div>
             </div>
         </div>
     </div>
@@ -54,30 +61,33 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Asset Allocation Donut -->
         <div
-            class="bg-slate-100 dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col">
-            <h3 class="text-lg font-bold mb-6">Asset Allocation</h3>
+            class="bg-gradient-to-r from-white/10 to-surface-dark/40 p-6 rounded-xl border border-border-dark flex flex-col
+                    transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_0_25px_rgba(19,55,236,0.15)]">
+            <h3 class="text-lg font-bold text-white mb-6">Asset Allocation</h3>
             <div class="flex-1 flex flex-col items-center justify-center py-4">
                 <div class="relative size-48 rounded-full  flex items-center justify-center"
                     [style.background]="donutStyle">
                     <div
-                        class="size-36 rounded-full bg-slate-100 dark:bg-card-dark flex flex-col items-center justify-center text-center">
-                        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Net Worth</p>
-                        <p class="text-2xl font-black">{{ totalNetWorth | currency:'USD':'symbol':'1.0-0' }}</p>
+                        class="size-36 rounded-full bg-surface-dark flex flex-col items-center justify-center text-center">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Net Worth</p>
+                        <p class="text-2xl font-black text-white">{{ totalNetWorth | currency:'USD':'symbol':'1.0-0' }}
+                        </p>
                     </div>
                 </div>
                 <div class="mt-8 grid grid-cols-2 gap-x-8 gap-y-4 w-full">
                     <div class="flex items-center gap-2">
                         <div class="size-3 rounded bg-primary"></div>
                         <div class="flex-1">
-                            <p class="text-xs text-slate-500 font-medium">Stocks</p>
-                            <p class="text-sm font-bold">{{ (totalStockValue / totalNetWorth) | percent }}</p>
+                            <p class="text-xs text-slate-400 font-medium">Stocks</p>
+                            <p class="text-sm font-bold text-white">{{ (totalStockValue / totalNetWorth) | percent }}
+                            </p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="size-3 rounded bg-[#3b3f54]"></div>
                         <div class="flex-1">
-                            <p class="text-xs text-slate-500 font-medium">Cash</p>
-                            <p class="text-sm font-bold">{{ (cashBalance / totalNetWorth) | percent }}</p>
+                            <p class="text-xs text-slate-400 font-medium">Cash</p>
+                            <p class="text-sm font-bold text-white">{{ (cashBalance / totalNetWorth) | percent }}</p>
                         </div>
                     </div>
                 </div>
@@ -85,45 +95,54 @@
         </div>
 
         <!-- Portfolio Breakdown Table -->
-        <div
-            class="lg:col-span-2 bg-slate-100 dark:bg-card-dark rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
-            <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                <h3 class="text-lg font-bold">Open Positions</h3>
+        <div class="lg:col-span-2 bg-gradient-to-r from-white/5 to-surface-dark/40 rounded-xl border border-border-dark overflow-hidden flex flex-col
+                   transition-all duration-300 hover:border-white/10 hover:shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
+            <div class="p-6 border-b border-border-dark flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">Open Positions</h3>
             </div>
             <div class="overflow-x-auto min-h-[300px]">
-                <div *ngIf="loading" class="p-12 text-center text-slate-500 italic">Yükleniyor...</div>
-                <div *ngIf="!loading && portfolioData.length === 0" class="p-12 text-center text-slate-500 italic">Henüz
+                <div *ngIf="loading" class="p-12 text-center text-slate-400 italic">Yükleniyor...</div>
+                <div *ngIf="!loading && portfolioData.length === 0" class="p-12 text-center text-slate-400 italic">Henüz
                     pozisyonunuz bulunmuyor.</div>
 
                 <table *ngIf="!showChartView && !loading && portfolioData.length > 0"
                     class="w-full text-left border-collapse">
 
                     <thead>
-                        <tr class="bg-slate-50 dark:bg-slate-900/50">
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ticker</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Avg Price
+                        <tr class="bg-surface-dark/60">
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Ticker</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Price
                             </th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Current
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Current
                                 Price</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Profit /
+                                Loss</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">
                                 Value</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">
                                 Action</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                    <tbody class="divide-y divide-border-dark">
                         <tr *ngFor="let item of portfolioData" (click)="selectHoldingForChart(item)"
-                            class="cursor-pointer hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+                            class="cursor-pointer hover:bg-white/5 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div>
-                                        <p class="text-sm font-bold">{{ item.stock.symbol }}</p>
-                                        <p class="text-[10px] text-slate-500 font-medium">{{ item.stock.name }}</p>
+                                        <p class="text-sm font-bold text-white">{{ item.stock.symbol }}</p>
+                                        <p class="text-[10px] text-slate-400 font-medium">{{ item.stock.name }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm font-medium">{{ item.average_price | currency }}</td>
-                            <td class="px-6 py-4 text-sm font-medium">{{ item.stock.price | currency }}</td>
+                            <td class="px-6 py-4 text-sm font-medium text-slate-300">{{ item.average_price | currency }}
+                            </td>
+                            <td class="px-6 py-4 text-sm font-medium text-slate-300">{{ item.stock.price | currency }}
+                            </td>
+                            <td class="px-6 py-4 text-sm font-bold text-white"
+                                [ngClass]="item.profit >= 0 ? 'text-green-500' : 'text-red-500'">
+                                {{ item.profit | currency }}
+                                <span class="text-[10px] ml-1">({{ item.profit_percentage | number:'1.1-2' }}%)</span>
+                            </td>
                             <td class="px-6 py-4 text-right font-bold text-sm">{{ item.current_value | currency }}</td>
                             <td class="px-6 py-4 text-right">
                                 <button
@@ -136,7 +155,7 @@
                 <div *ngIf="showChartView && selectedHolding" class="p-6">
                     <div class="flex items-center justify-between mb-4">
                         <button (click)="backPositions()"
-                            class="flex items-center gap-2 text-sm font-bold text-primary">
+                            class="flex items-center gap-2 text-sm font-bold text-white text-primary">
                             <span class="material-symbols-outlined">arrow_back</span>
                             Back to Positions
                         </button>
