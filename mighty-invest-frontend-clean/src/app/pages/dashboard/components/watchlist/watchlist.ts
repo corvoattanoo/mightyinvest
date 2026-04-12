@@ -46,10 +46,10 @@ export class WatchlistComponent implements OnDestroy {
     selectSearchType(stock: Stock) {
         this.stockService.addToWatchlist(stock.symbol).pipe(takeUntil(this.destroy$))
             .subscribe((res: any) => {
-                 console.log('DROPDOWN Backend Yanıtı:', res)
+                console.log('DROPDOWN Backend Yanıtı:', res)
                 stock.price = res.price; // Backend'den gelen fiyatı ekle
                 stock.percent_change = res.percent_change;
-                 console.log('Güncellenen Obje (Dropdown):', stock);
+                console.log('Güncellenen Obje (Dropdown):', stock);
                 this.stocks.push(stock);
                 this.searchTerm = '';
                 this.searchResult = [];
@@ -72,7 +72,7 @@ export class WatchlistComponent implements OnDestroy {
                 .subscribe({
                     next: () => {
                         console.log('Stock is deleted'),
-                            this.stocks = this.stocks.filter(s => s.symbol !== symbol);
+                        this.stocks = this.stocks.filter(s => s.symbol !== symbol);
                         console.log('Stock is deleted from UI and Backend');
                         this.cdRef.detectChanges();
                     },

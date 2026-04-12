@@ -7,7 +7,7 @@ use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\NewsController;
 
 
 Route::middleware('throttle:5,1')->group(function (){
@@ -32,6 +32,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);
     Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
-
+    Route::get('/news', [NewsController::class, 'index']);
 
 });
