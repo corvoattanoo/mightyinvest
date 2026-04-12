@@ -162,6 +162,16 @@ return $mappedData;
         });
 
     }
+    public function getMarketNews(string $category = 'general'){
+        $cacheKey = "market_news_{$category}";
+
+        return Cache::remember($cacheKey, 300, function () use ($category) {
+            $response = Http::get("{$this->baseUrl}/news", [
+                'category' => $category,
+                'token' => $this->apiKey,
+            ])->json();
+        });
+    }
 
 
 }
