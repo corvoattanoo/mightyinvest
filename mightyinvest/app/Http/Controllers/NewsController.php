@@ -17,7 +17,7 @@ class NewsController extends Controller {
     public function index(Request $request){
         $category = $request->get('category', 'general');
         $news = $this->finnhub->getMarketNews($category);
-
+        
         return response()->json($news);
     }
 }
