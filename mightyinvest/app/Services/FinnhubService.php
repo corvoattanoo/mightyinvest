@@ -148,20 +148,24 @@ return $mappedData;
         $cacheKey = "market_status_us";
 
         return Cache::remember($cacheKey, 60, function () {
-            $response = Http::get("{$this->baseUrl}/market/status", [
+            $response = Http::get("{$this->baseUrl}/stock/market-status", [
                 'exchange' => 'US',
                 'token' => $this->apiKey,
-            ])->json();
-            // dd($response);
+            ]);
 
-            return [
-                'isOpen' => $response['isOpen'] ?? false,
-                'session' => $response['session'] ?? false,
-                'timezone' => $response['timezone'] ?? 'UTC' 
-            ];
+            if ($response->successful()) {
+                $data = $response->json();
+                return [
+                    'isOpen' => $data['isOpen'] ?? false,
+                    'session' => $data['session'] ?? false,
+                    'timezone' => $data['timezone'] ?? 'UTC' 
+                ];
+            }
+            return null; // Başarısız olursa cache'e yazma
         });
 
     }
+
     public function getMarketNews(string $category = 'general'){
         $cacheKey = "market_news_{$category}";
 
@@ -169,9 +173,18 @@ return $mappedData;
             $response = Http::get("{$this->baseUrl}/news", [
                 'category' => $category,
                 'token' => $this->apiKey,
-            ])->json();
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if(is_array($data) && count($data) > 0){
+                    return $data;
+                }
+            }
+            return null;
         });
     }
+
 
 
 }

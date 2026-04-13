@@ -9,6 +9,8 @@ use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NewsController;
 
+ Route::get('/news', [NewsController::class, 'index']);
+
 
 Route::middleware('throttle:5,1')->group(function (){
     Route::post('/register', [AuthController::class, 'register']);
@@ -32,6 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);
     Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
-    Route::get('/news', [NewsController::class, 'index']);
 
 });
+   

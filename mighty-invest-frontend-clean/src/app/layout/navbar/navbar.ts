@@ -48,6 +48,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .subscribe(status => {
         this.marketStatus = status;
         this.cdRef.detectChanges;
+        console.log('basarili')
       });
   }
 
