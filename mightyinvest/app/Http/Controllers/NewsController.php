@@ -20,4 +20,11 @@ class NewsController extends Controller {
         
         return response()->json($news);
     }
+
+    public function calendar()
+    {
+        $calendar = $this->finnhub->getEconomicCalendar();
+
+        return response()->json($calendar);
+    }
 }
