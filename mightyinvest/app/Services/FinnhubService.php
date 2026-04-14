@@ -185,6 +185,25 @@ return $mappedData;
         });
     }
 
+    public function getEconomicCalendar(){
+        $cacheKey = "economic_calendar_global";
+
+        return Cache::remember($cacheKey, 3600, function() {
+            $response = Http::get("{$this->baseUrl}/calendar/economic", [
+                'token' => $this->apiKey
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                return $data['economicCalendar'] ?? [];
+            }
+            return [];
+        });
+    }
+
+
+
 
 
 }
