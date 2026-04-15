@@ -3,6 +3,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NewsArticle, NewsService } from '../../core/services/news.service';
 
+
 @Component({
   selector: 'app-news',
   standalone: true,
@@ -14,10 +15,12 @@ export class NewsComponent implements OnInit {
   newsArticle: NewsArticle[] = [];
   loading: boolean = true;
   selectedCategory: string = 'general';
+  calendarEvents: any[] = [];
   constructor(private newsService: NewsService, private cdRef: ChangeDetectorRef){}
 
   ngOnInit(): void {
     this.fetchNews(this.selectedCategory);
+    this.fetchCalendarEvents();
   }
 
   fetchNews(category:string ): void{
@@ -37,5 +40,23 @@ export class NewsComponent implements OnInit {
       }
     });
   }
+
+  fetchCalendarEvents(){
+    this.newsService.getEconomicCalendar()
+      .subscribe({
+        next: (events) => {
+          const safeEvents = Array.isArray(events) ? events : [];
+          this.calendarEvents = safeEvents
+            .filter(event => event.country === 'US')
+            .slice(0,6);
+          this.cdRef.detectChanges(); 
+        },
+        error: (err) => {
+          console.log('error fetching calendar events', err);
+        }
+      })
+  }
+
+  
 }
 
