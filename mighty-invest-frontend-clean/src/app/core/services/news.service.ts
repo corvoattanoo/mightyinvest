@@ -29,4 +29,10 @@ export class NewsService {
       params: { category }
     });
   }
+
+  getEconomicCalendar(): Observable<any[]>{
+    return this.http.get<any[]>('/api/calendar')
+  }
+
+  
 }
