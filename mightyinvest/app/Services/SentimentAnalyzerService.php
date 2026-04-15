@@ -61,7 +61,7 @@ class SentimentAnalyzerService {
     }
 
     $total = $bullishScore + $bearishScore;
-    $score = $total > 0 ? (int) round(($bullishScore / $total) * 100) : 50; // ← eklendi
+    $score = $total > 0 ? (int) round(($bullishScore / $total) * 100) : 50; 
 
     return [
         'score'     => $score,
