@@ -47,7 +47,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.stockService.getMarketStatus().pipe(takeUntil(this.destroy$))
       .subscribe(status => {
         this.marketStatus = status;
-        this.cdRef.detectChanges;
+        this.cdRef.detectChanges();
       });
   }
 

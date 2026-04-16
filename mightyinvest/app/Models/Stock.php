@@ -10,7 +10,11 @@ class Stock extends Model
     protected $fillable =[
         'symbol',
         'name',
-        'price'
+        'price',
+        'percent_change',
+        'daily_high',
+        'daily_low',
+        'volume'
     ];
     public function histories()
     {
@@ -21,4 +25,8 @@ class Stock extends Model
     {
         return $this->hasMany(Portfolio::class);
     }
+
+    
+    
+
 }
