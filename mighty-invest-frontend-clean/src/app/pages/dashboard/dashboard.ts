@@ -31,6 +31,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     stats: DashboardStats = {
         total_balance: 0,
         daily_profit: 0,
+        daily_change_percentage: 0,
         open_positions: 0,
         cash_balance: 0,
         stock_value: 0,

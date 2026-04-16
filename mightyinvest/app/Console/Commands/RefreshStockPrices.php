@@ -33,10 +33,23 @@ class RefreshStockPrices extends Command
         $this->info("Updating" . $symbols->count() . " stocks...");
 
         foreach ($symbols as $symbol){
-            $finnhub->getQuote($symbol);
-            $this->line("Updated: {$symbol}");
-        }
+            $data = $finnhub->getQuote($symbol);
+            
+        
+        \App\Models\Stock::updateOrCreate(
+            ['symbol' => $symbol],
+            [
+                'price' => $data['current_price'],
+                'percent_change' => $data['percent_change'],
+                'daily_high'     => $data['high_price'],
+                'daily_low'      => $data['low_price'],
+                'volume'         => $data['volume'] ?? 0,    // Finnhub 
+            ]
+            );
 
-        $this->info("All stocks updated successfully.");
+        $this->line("✅ Updated: {$symbol} ({$data['percent_change']}%)");
+        }
+        $this->info("🎯 All stocks updated successfully.");
     }
+    
 }

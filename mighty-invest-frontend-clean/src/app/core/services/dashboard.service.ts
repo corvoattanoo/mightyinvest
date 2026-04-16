@@ -9,6 +9,7 @@ export interface DashboardStats {
     open_positions: number;
     cash_balance: number;
     stock_value: number;
+    daily_change_percentage: number;
 }
 
 @Injectable({

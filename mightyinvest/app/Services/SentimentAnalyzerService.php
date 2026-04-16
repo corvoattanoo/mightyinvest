@@ -25,7 +25,7 @@ class SentimentAnalyzerService {
 
     $bullishScore = 0;
     $bearishScore = 0;
-    $negateMode   = 0; // ← düzeltildi
+    $negateMode   = 0; 
 
     // Multi-word phrase'leri önce kontrol et
     foreach ($this->bullishPhrases as $phrase) {
@@ -40,7 +40,7 @@ class SentimentAnalyzerService {
     foreach ($words as $word) {
         $cleanWord = preg_replace('/[^a-z]/', '', $word);
 
-        if (in_array($cleanWord, $this->negators)) { // ← düzeltildi
+        if (in_array($cleanWord, $this->negators)) { 
             $negateMode = 3;
             continue;
         }

@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('app:refresh-stock-prices')->everyFiveMinutes();
+
+Schedule::command('scrape:reddit')->hourly();

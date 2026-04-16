@@ -8,7 +8,7 @@
         <!-- Daily profit/ -->
         <app-stat-card [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
             [value]="(selectedStock ? (selectedStock.change | currency) : (stats.daily_profit | currency)) || '$0.00'"
-            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '0') : ''"
+            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '0') : (stats.daily_change_percentage?.toString() + '%')"
             [trend]="(selectedStock ? (selectedStock.change || 0) : stats.daily_profit) >= 0 ? 'up' : 'down'"
             [icon]="'trending_up'">
         </app-stat-card>

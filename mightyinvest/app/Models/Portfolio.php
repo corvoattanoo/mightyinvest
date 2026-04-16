@@ -16,12 +16,12 @@ class Portfolio extends Model
         'description',
     ];
 
-    protected $appends = ['current_value', 'profit', 'profit_percentage'];
+    protected $appends = ['current_value', 'profit', 'profit_percentage', 'daily_profit'];
 
     // Current total value of this holding (Quantity * Current Market Price)
     public function getCurrentValueAttribute()
     {
-        return $this->quantity * ($this->stock->price ?? 0);
+        return $this->quantity * ($this->stock?->price ?? 0);
     }
 
     // Total profit/loss in currency
@@ -48,6 +48,20 @@ class Portfolio extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Sadece BUGÜNKÜ kâr/zararı hesaplar
+    public function getDailyProfitAttribute(){
+        $currentPrice = $this->stock?->price ?? 0;
+        $percentChange = $this->stock?->percent_change ?? 0;
+
+        if ($currentPrice == 0) return 0;
+
+        $yesterdayClose = $currentPrice / (1 + ($percentChange / 100));
+
+        $dailyProfit = $this->quantity * ($currentPrice - $yesterdayClose);
+
+        return $dailyProfit;
     }
     
 }

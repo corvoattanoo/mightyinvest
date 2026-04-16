@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\FinnhubService;
+use Illuminate\Support\Facades\DB;
 
 class NewsController extends Controller {
 
@@ -26,5 +27,14 @@ class NewsController extends Controller {
         $calendar = $this->finnhub->getEconomicCalendar();
 
         return response()->json($calendar);
+    }
+
+    public function social_sentiments(){
+        $sentiments = DB::table('social_sentiments')
+            ->orderBy('post_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        return response()->json($sentiments);
     }
 }
