@@ -8,18 +8,25 @@ class SocialScraperService
 
 
     public function fetchLatestPosts(string $subreddit, int $limit = 50): array{
-        $url = "{$this->baseUrl}/{$subreddit}/new.json?limit={$limit}";
+        $url = "{$this->baseUrl}/{$subreddit}/new.json?limit={$limit}&t=hour";
         try {
                 $response = Http::withHeaders([
                 'User-Agent' => 'MightyInvest/1.0 (Laravel Portfolio Tracker)'
                     ])->get($url);
 
+                if ($response->status() === 429) {
+                   Log::warning("Reddit Rate Limit hit for subreddit: {$subreddit}");
+                    return [];
+                }    
                 if($response->failed()){
                 Log::error("Reddit API error". $subreddit);
                 return [];
                 }
 
-                return $response->json('data.children') ?? [];
+                return collect($response->json('data.children') ?? [])
+                    ->filter(fn($post) => ($post['data']['ups'] ?? 0) >= 100)
+                    ->values()
+                    ->toArray();
 
                 
             
@@ -79,5 +86,9 @@ public function fetchComments(string $postId, int $limit = 20): array
         $weight = log10(max($engagement, 1)) / 5; //assume max interavtion 100.000
 
         return min($weight, 1.0); //max 1;
+    }
+    // IM A HUMAN AFTER ALL, DONT PUT YOUR BLAME ON MEEE.
+    public function humanDelay(): void{
+        usleep(random_int(400_000, 1_200_000));
     }
 }

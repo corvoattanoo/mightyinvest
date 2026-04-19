@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Services\SocialScraperService;
 use App\Services\SentimentAnalyzerService;
 use Illuminate\Support\Facades\DB;
+use App\Models\SocialSentiment;
 
 class ScrapeRedditCommand extends Command
 {
@@ -24,6 +25,7 @@ class ScrapeRedditCommand extends Command
         
         foreach($subreddits as $subreddit){
             $this->info("--- {$subreddit} kanalı işleniyor ---");
+            $this->scraper->humanDelay();
             $posts = $this->scraper->fetchLatestPosts($subreddit, 25);
 
             foreach($posts as $post){
@@ -38,15 +40,18 @@ class ScrapeRedditCommand extends Command
                 if($ticker){
                     //analyze post title
                     $titleSentiment = $this->analyzer->analyze($title);
-
-                    //analyze comments
-                    $comments = $this->scraper->fetchComments($postId);
+                    $weight = $this->scraper->calculateEngagementWeight($data);
+                    if($weight > 0.3){
+                        $this->scraper->humanDelay();
+                        $comments = $this->scraper->fetchComments($postId);
+                        
+                    }else{
+                         $comments = [];
+                         $commentScores = 50;
+                    }
                     $commentScores = collect($comments)
                         ->map(fn($comment) => $this->analyzer->analyze($comment)['score'])
                         ->avg() ?? 50;
-
-
-                    $weight = $this->scraper->calculateEngagementWeight($data);
                     // 4. Nihai Puan Hesaplama (Ham Puan * Ağırlık)
                     // Puanı 50'den (nötr) uzaklaştırıyoruz
 
@@ -54,38 +59,17 @@ class ScrapeRedditCommand extends Command
                     $finalScore = round($finalScore * $weight + 50 * (1 - $weight));
                     $finalSentiment = $finalScore > 55 ? 'bullish' : ($finalScore < 45 ? 'bearish' : 'neutral');
 
-                    //update database
-                    // Mevcut kaydı kontrol et
-                    $existing = DB::table('social_sentiments')
-                        ->where('ticker', $ticker)
-                        ->where('source', $subreddit)
-                        ->first();
-                    if ($existing) {
-                        // Varsa GÜNCELLE
-                        DB::table('social_sentiments')
-                            ->where('id', $existing->id)
-                            ->update([
-                                'score'      => round($finalScore),
-                                'sentiment'  => $finalSentiment,
-                                'post_count' => $existing->post_count + 1,
-                                'avg_engagement' => $weight,
-                                'updated_at' => now(),
-                            ]);
-                    } else {
-                        // Yoksa YENİ EKLE
-                        DB::table('social_sentiments')->insert([
-                            'ticker'     => $ticker,
-                            'source'     => $subreddit,
-                            'score'      => round($finalScore),
-                            'sentiment'  => $finalSentiment,
-                            'post_count' => 1,
+                    // 5. Veritabanını Güncelle (Bisturi Yöntemi: updateOrCreate)
+                    SocialSentiment::updateOrCreate(
+                        ['ticker' => $ticker, 'source' => $subreddit],
+                        [
+                            'score' => round($finalScore),
+                            'sentiment' => $finalSentiment,
+                            'post_count' => DB::raw('post_count +1'),
                             'avg_engagement' => $weight,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                    }
+                        ]
+                    );
                     $this->line("✅ {$ticker}: {$finalSentiment} (Puan: " . round($finalScore) . ")");
-                    $this->line("✅ {$ticker}: {$titleSentiment['sentiment']} (Puan: " . round($finalScore) . ")");
                 }
             }
         }
