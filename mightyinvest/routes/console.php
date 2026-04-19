@@ -8,6 +8,8 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('app:refresh-stock-prices')->everyFiveMinutes();
+Schedule::command('app:refresh-stock-prices')->everyFiveMinutes()->runInBackground();
 
-Schedule::command('scrape:reddit')->hourly();
+Schedule::command('scrape:reddit')->hourly()
+    ->withoutOverlapping() // Prevents a new run if the previous one is still running
+    ->runInBackground();// Executes the command in the background 

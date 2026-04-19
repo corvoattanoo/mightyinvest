@@ -8,6 +8,8 @@ services:
       dockerfile: docker/nginx/Dockerfile
     ports:
       - "8085:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       app:
         condition: service_healthy
@@ -16,6 +18,7 @@ services:
     networks:
       - mightyinvest
     restart: unless-stopped
+
   # ==========================================
   # 2. APP — Laravel (PHP-FPM)
   # ==========================================
@@ -27,7 +30,6 @@ services:
       - ./mightyinvest/.env.docker
     volumes:
       - ./mightyinvest:/var/www/html
-      - /var/www/html/vendor
       - /var/www/html/bootstrap/cache
     depends_on:
       db:
@@ -42,6 +44,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
   # ==========================================
   # 3. FRONTEND — Angular
   # ==========================================
@@ -55,6 +58,7 @@ services:
     networks:
       - mightyinvest
     restart: unless-stopped
+
   # ==========================================
   # 4. DB — PostgreSQL
   # ==========================================
@@ -76,6 +80,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
   # ==========================================
   # 5. REDIS — Cache & Session
   # ==========================================
@@ -94,6 +99,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
   # ==========================================
   # 6. SCHEDULER — Laravel Cron
   # ==========================================
@@ -105,7 +111,6 @@ services:
       - ./mightyinvest/.env.docker
     volumes:
       - ./mightyinvest:/var/www/html
-      - /var/www/html/vendor
     command: sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
     depends_on:
       db:
@@ -115,12 +120,36 @@ services:
     networks:
       - mightyinvest
     restart: unless-stopped
+
+  # ==========================================
+  # 7. WORKER — Laravel Queue Worker (İş Kuyruğu)
+  # ==========================================
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    env_file:
+      - ./mightyinvest/.env.docker
+    volumes:
+      - ./mightyinvest:/var/www/html
+    # Senin istediğin o sihirli komut burada:
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mightyinvest
+    restart: unless-stopped
+
 # ==========================================
 # VOLUMES — Kalici Veri Depolama
 # ==========================================
 volumes:
   postgres_data:
   redis_data:
+
 # ==========================================
 # NETWORKS — Container Iletisim Agi
 # ==========================================

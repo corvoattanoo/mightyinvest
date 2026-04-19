@@ -3,6 +3,7 @@
 .env
 .env.backup
 .env.production
+.env.docker
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -24,3 +25,4 @@ Homestead.yaml
 Thumbs.db
 *.swp
 *.swo
+
