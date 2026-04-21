@@ -55,6 +55,27 @@ class AuthController extends Controller
         ]);
     }
 
+    //DEMO PAGE
+    public function demo(){
+        // "guest@mightyinvest.com" kullanicisini bul veya yoksa olustur
+        $user = User::firstOrCreate(
+            ['email'  => 'guest@mightyinvest.com'],
+            [
+                'name' => 'Portfolio guest',
+                'password' => Hash::make('mighty-guest-password-2026'),
+            ]
+            );
+
+            //bu kullanici icin yeni bir sanctum token olustur
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user->only(['id', 'name', 'email']),
+                'token' => $token,
+                'message' => 'Welcome to the Demo Mode!'
+            ]);
+    }
+
     // LOGOUT
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();

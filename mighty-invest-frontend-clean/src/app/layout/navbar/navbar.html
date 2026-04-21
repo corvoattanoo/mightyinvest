@@ -54,12 +54,20 @@
         <div class="flex items-center gap-3">
             <div class="text-right hidden sm:block">
                 <div class="text-sm font-bold text-white leading-tight">{{ user.name }}</div>
-                <div class="text-[10px] text-gray-500 font-bold tracking-widest uppercase cursor-pointer hover:text-red-500 transition-colors"
-                    (click)="logout()">Logout</div>
+
+                <!-- Guest specific action -->
+                <div *ngIf="isGuest(user); else memberLogout"
+                    class="text-[10px] text-blue-400 font-bold tracking-widest uppercase cursor-pointer hover:text-blue-300 transition-colors"
+                    (click)="goToRegister()">Join Now</div>
+
+                <ng-template #memberLogout>
+                    <div class="text-[10px] text-gray-500 font-bold tracking-widest uppercase cursor-pointer hover:text-red-500 transition-colors"
+                        (click)="logout()">Logout</div>
+                </ng-template>
             </div>
             <div
                 class="w-10 h-10 rounded-lg overflow-hidden border border-gray-700 p-[1px] bg-gradient-to-tr from-gray-800 to-gray-700 shadow-xl">
-                <img [src]="'https://ui-avatars.com/api/?name=' + user.name + '&background=4f46e5&color=fff&bold=true'"
+                <img [src]="'https://ui-avatars.com/api/?name=' + user.name + '&background=' + (isGuest(user) ? '3b82f6' : '4f46e5') + '&color=fff&bold=true'"
                     alt="User Profile" class="w-full h-full object-cover rounded-[7px]">
             </div>
         </div>

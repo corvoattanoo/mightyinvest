@@ -1,0 +1,138 @@
+/* landing.css — değişen kısımlar */
+
+:host {
+    display: block;
+    background-color: #0a0b10;
+    min-height: 100vh;
+}
+
+.ticker-wrap {
+    overflow: hidden;
+    width: 100%;
+    background-color: #050608;
+    white-space: nowrap;
+}
+
+.ticker-move {
+    display: flex;
+    width: max-content;
+    animation: ticker 40s linear infinite;
+}
+
+@keyframes ticker {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.ticker-list {
+    display: flex;
+    gap: 3rem;
+    padding: 0 1.5rem;
+    align-items: center;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.hero-card {
+    animation: float 4s ease-in-out infinite;
+    transition: all 0.3s ease;
+    /* ✓ min-h kaldırıldı — doğal yükseklikte büyüsün */
+}
+
+/* ✓ Laptop fix: height-based media query tamamen yeniden yazıldı */
+@media (max-height: 800px) and (min-width: 768px) {
+    .landing-hero {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        min-height: auto !important;
+        /* ✓ vh bağımlılığını kes */
+        align-items: start !important;
+    }
+
+    .hero-card {
+        max-width: 400px !important;
+    }
+
+    .sentiment-svg {
+        width: 7rem !important;
+        /* w-28 eşdeğeri */
+    }
+
+    .hero-title {
+        font-size: 2.25rem !important;
+        line-height: 1.15 !important;
+    }
+
+    .hero-text {
+        font-size: 0.875rem !important;
+    }
+
+    /* Kart içi boşlukları sık */
+    .hero-card .space-y-8>*+* {
+        margin-top: 1rem !important;
+    }
+
+    .hero-card .space-y-6>*+* {
+        margin-top: 0.75rem !important;
+    }
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Mini sparkline animasyonu */
+@keyframes barGrow {
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}
+
+.spark-bar {
+    transform-origin: bottom;
+    animation: barGrow 0.6s ease-out forwards;
+}
+
+.text-tertiary {
+    color: #0bda65;
+}
+
+.bg-tertiary {
+    background-color: #0bda65;
+}
+
+.border-tertiary {
+    border-color: #0bda65;
+}

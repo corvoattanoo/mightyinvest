@@ -14,4 +14,5 @@ export class StatCardComponent {
     @Input() percentage: string = '';
     @Input() trend: 'up' | 'down' = 'up';
     @Input() icon: string = 'payments';
+    @Input() variant: 'default' | 'amber' | 'blue' = 'default';
 }

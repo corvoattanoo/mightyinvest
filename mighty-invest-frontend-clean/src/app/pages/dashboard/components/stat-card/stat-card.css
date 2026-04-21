@@ -1,18 +1,78 @@
-.glass-gradient {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+.stat-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    cursor: default;
 }
 
-:host {
-    display: block;
+.stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* Material Symbols sizing fix */
+.card-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    transition: all 0.5s ease;
+}
+
+.stat-card:hover .card-glow {
+    transform: translate(10%, 10%);
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    color: #3b82f6;
+    /* Default Blue */
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* AMBER VARIANT */
+.stat-card.amber {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.stat-card.amber .card-icon {
+    color: #f59e0b;
+    text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+}
+
+.stat-card.amber:hover {
+    border-color: rgba(245, 158, 11, 0.6);
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
+}
+
+/* BLUE VARIANT */
+.stat-card.blue {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.02) 100%);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Trend Styles */
+.trend-up {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.trend-down {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
 .material-symbols-outlined {
-    font-variation-settings:
-        'FILL' 0,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 24;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }

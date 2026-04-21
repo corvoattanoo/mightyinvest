@@ -1,18 +1,22 @@
-<div
-    class="bg-gradient-to-r from-white/10 to-surface-dark/40 border border-border-dark rounded-2xl p-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(37,99,235,0.2)] cursor-default overflow-hidden">
-    <div class="flex items-center justify-between mb-4">
-        <p class="text-slate-400 text-sm font-semibold">{{ title }}</p>
-        <span class="material-symbols-outlined text-primary">{{ icon }}</span>
+<div class="stat-card" [ngClass]="variant">
+    <!-- Glow effect overlay -->
+    <div class="card-glow"></div>
+
+    <div class="flex items-center justify-between mb-4 relative z-10">
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">{{ title }}</p>
+        <span class="material-symbols-outlined card-icon">{{ icon }}</span>
     </div>
-    <h2 class="text-3xl font-extrabold text-white mb-2">{{ value }}</h2>
-    <div class="flex items-center gap-2">
-        <span class="flex items-center text-sm font-bold px-2 py-0.5 rounded"
-            [ngClass]="trend === 'up' ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'">
-            <span class="material-symbols-outlined !text-sm">
-                {{ trend === 'up' ? 'arrow_upward' : 'arrow_downward' }}
+
+    <h2 class="text-3xl font-black text-white mb-2 tracking-tight relative z-10">{{ value }}</h2>
+
+    <div class="flex items-center gap-2 relative z-10">
+        <span class="flex items-center text-[10px] font-black px-2 py-0.5 rounded tracking-tighter uppercase"
+            [ngClass]="trend === 'up' ? 'trend-up' : 'trend-down'">
+            <span class="material-symbols-outlined !text-[12px] mr-1">
+                {{ trend === 'up' ? 'keyboard_double_arrow_up' : 'keyboard_double_arrow_down' }}
             </span>
-            {{ percentage }}%
+            {{ percentage }}
         </span>
-        <span class="text-slate-500 text-xs">from last month</span>
+        <span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Growth</span>
     </div>
 </div>

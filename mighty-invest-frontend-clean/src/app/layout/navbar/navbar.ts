@@ -43,7 +43,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.fetchMarketStatus();
   }
 
-  fetchMarketStatus(){
+  fetchMarketStatus() {
     this.stockService.getMarketStatus().pipe(takeUntil(this.destroy$))
       .subscribe(status => {
         this.marketStatus = status;
@@ -51,18 +51,26 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSearch(){
+  onSearch() {
     this.searchSubject.next(this.searchTerm);
   }
 
-  onSelectStock(stock: Stock){
+  onSelectStock(stock: Stock) {
     this.stockService.selectStock(stock);
     this.searchTerm = ''; // arama kutusunu temizle
     this.searchResult = []; //arama listesini kapat
   }
 
+  isGuest(user: User | null): boolean {
+    return user?.email === 'guest@mightyinvest.com';
+  }
+
   logout() {
     this.authService.logout();
+  }
+
+  goToRegister() {
+    this.authService.logout(); // Logout guest first then go to register
   }
 
   ngOnDestroy(): void {
