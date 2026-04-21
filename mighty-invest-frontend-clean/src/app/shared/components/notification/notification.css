@@ -1,0 +1,83 @@
+/* notification.css */
+:host {
+    display: block;
+}
+
+/* Bildirimlerin sağ altta sabit duracağı ana kap */
+.notification-container {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: none; /* Arkadaki butonlara tıklamayı engellemesin */
+}
+
+/* Glassmorphism Toast Kartı */
+.toast-glass {
+    min-width: 320px;
+    max-width: 400px;
+    background: rgba(13, 18, 31, 0.85);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.25rem;
+    box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.4);
+    pointer-events: auto; /* Kendi üzerine tıklanabilsin */
+    overflow: hidden;
+    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Sentiment Spike Alert: Cyber Amber Vurgusu */
+.toast-glass.sentiment {
+    border-left: 4px solid #f59e0b;
+    box-shadow: -10px 0 30px rgba(245, 158, 11, 0.15), 20px 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Success Alert: Electric Green Vurgusu */
+.toast-glass.success {
+    border-left: 4px solid #10b981;
+}
+
+/* İkon ve Başlık Stilleri */
+/* notification.css içindeki .icon-box kısmını şununla değiştir */
+.icon-box {
+    width: 2.5rem; /* w-10 */
+    height: 2.5rem; /* h-10 */
+    border-radius: 0.75rem; /* rounded-xl */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.05); /* bg-white/5 */
+}
+
+.sentiment .icon-box { color: #f59e0b; }
+.success .icon-box { color: #10b981; }
+
+/* Giriş Animasyonu */
+@keyframes slideIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Progress Bar Animasyonu (5 saniyede dolan çizgimiz) */
+.progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-fill {
+    height: 100%;
+    background: currentColor;
+    animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
