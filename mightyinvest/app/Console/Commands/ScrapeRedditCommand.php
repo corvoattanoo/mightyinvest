@@ -5,74 +5,106 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Services\SocialScraperService;
 use App\Services\SentimentAnalyzerService;
-use Illuminate\Support\Facades\DB;
 use App\Models\SocialSentiment;
 
 class ScrapeRedditCommand extends Command
 {
-    //in terminal we gonna run it 'php artisan scrape::reddit'
-    protected $signature = 'scrape:reddit';
-    protected $description = 'Reddit üzerinden hisse senedi duyarlilik analizi yapar';
+    protected $signature   = 'scrape:reddit';
+    protected $description = 'Reddit üzerinden hisse senedi duyarlılık analizi yapar';
 
-    public function __construct(private SocialScraperService $scraper, private SentimentAnalyzerService $analyzer){
+    // ✓ Class property — handle() her çalışınca yeniden oluşturulmaz
+    private array $blacklist = [
+        // Finans jargonu
+        'CEO', 'CFO', 'CTO', 'COO', 'IPO', 'ETF', 'SEC', 'FED', 'GDP',
+        'ATH', 'CPI', 'NFP', 'IMO', 'DD', 'YOLO', 'ATM', 'OTM', 'ITM',
+        // Platform / medya
+        'USA', 'AI', 'ML', 'CNBC', 'NYSE', 'WSB', 'PDF', 'API', 'URL',
+        'NYSE', 'NASDAQ',
+        // Genel İngilizce kısaltmalar
+        'THE', 'FOR', 'AND', 'BUT', 'NOT', 'ALL', 'NEW', 'NOW',
+        'THIS', 'WITH', 'FROM', 'WILL', 'BEEN', 'HAVE', 'JUST',
+        'WHAT', 'WHEN', 'THAT', 'THEY', 'THEM',
+    ];
+
+    public function __construct(
+        private SocialScraperService     $scraper,
+        private SentimentAnalyzerService $analyzer
+    ) {
         parent::__construct();
     }
 
-    public function handle(): void{
+    public function handle(): void
+    {
         $subreddits = ['wallstreetbets', 'stocks', 'investing'];
-        $this->info("🚀 Reddit taraması başlatıldı...");
-        
-        
-        foreach($subreddits as $subreddit){
-            $this->info("--- {$subreddit} kanalı işleniyor ---");
+        $this->info("Reddit taraması başlatıldı...");
+
+        foreach ($subreddits as $subreddit) {
+            $this->info("--- {$subreddit} işleniyor ---");
             $this->scraper->humanDelay();
             $posts = $this->scraper->fetchLatestPosts($subreddit, 25);
 
-            foreach($posts as $post){
-                $data = $post['data'];
-                $title = $data['title'];
+            foreach ($posts as $post) {
+                $data   = $post['data'];
+                $title  = $data['title'];
                 $postId = $data['id'];
 
-                // 1. Ticker (Hisse Kodu) Ayıklama: $AAPL veya TSLA gibi 2-5 harfli büyük kelimeleri bulur
-                preg_match('/\$?([A-Z]{2,5})\b/', $title, $matches);
-                $ticker = $matches[1] ?? null;
+                // 1. Ticker Ayıklama
+                // preg_match_all tüm büyük harf kelimeleri çeker
+                // collect + filter blacklist'ten geçirir
+                // first() en temiz adayı alır
+                preg_match_all('/\b([A-Z]{2,5})\b/', $title, $allMatches);
 
-                if($ticker){
-                    //analyze post title
-                    $titleSentiment = $this->analyzer->analyze($title);
-                    $weight = $this->scraper->calculateEngagementWeight($data);
-                    if($weight > 0.3){
-                        $this->scraper->humanDelay();
-                        $comments = $this->scraper->fetchComments($postId);
-                        
-                    }else{
-                         $comments = [];
-                         $commentScores = 50;
-                    }
-                    $commentScores = collect($comments)
-                        ->map(fn($comment) => $this->analyzer->analyze($comment)['score'])
-                        ->avg() ?? 50;
-                    // 4. Nihai Puan Hesaplama (Ham Puan * Ağırlık)
-                    // Puanı 50'den (nötr) uzaklaştırıyoruz
+                $ticker = collect($allMatches[1] ?? [])
+                    ->filter(fn($c) => !in_array($c, $this->blacklist))
+                    ->first();
 
-                    $finalScore = ($titleSentiment['score'] * 0.4) + ($commentScores * 0.6);
-                    $finalScore = round($finalScore * $weight + 50 * (1 - $weight));
-                    $finalSentiment = $finalScore > 55 ? 'bullish' : ($finalScore < 45 ? 'bearish' : 'neutral');
+                // Ticker bulunamadıysa bu postu atla
+                if (!$ticker) continue;
 
-                    // 5. Veritabanını Güncelle (Bisturi Yöntemi: updateOrCreate)
-                    $sentiment = SocialSentiment::updateOrCreate(
-                        ['ticker' => $ticker, 'source' => $subreddit],
-                        [
-                            'score' => round($finalScore),
-                            'sentiment' => $finalSentiment,
-                            'avg_engagement' => $weight,
-                        ]
-                    );
-                    $sentiment->increment('post_count');
-                    $this->line("✅ {$ticker}: {$finalSentiment} (Puan: " . round($finalScore) . ")");
+                // 2. Başlık analizi
+                $titleSentiment = $this->analyzer->analyze($title);
+
+                // 3. Engagement ağırlığı — ÖNCE hesapla, sonra karar ver
+                $weight = $this->scraper->calculateEngagementWeight($data);
+
+                // 4. Yorum analizi — sadece yüksek engagement postlar için
+                if ($weight > 0.3) {
+                    $this->scraper->humanDelay();
+                    $comments = $this->scraper->fetchComments($postId);
+                } else {
+                    $comments = []; // ✓ düşük engagement → yorum çekme
                 }
+
+                // ✓ if/else dışında — $comments her zaman tanımlı
+                $commentScores = collect($comments)
+                    ->map(fn($comment) => $this->analyzer->analyze($comment)['score'])
+                    ->avg() ?? 50; // yorum yoksa nötr başlangıç
+
+                // 5. Final skor hesaplama
+                $finalScore = ($titleSentiment['score'] * 0.4) + ($commentScores * 0.6);
+                $finalScore = round($finalScore * $weight + 50 * (1 - $weight));
+                $finalSentiment = $finalScore > 55
+                    ? 'bullish'
+                    : ($finalScore < 45 ? 'bearish' : 'neutral');
+
+                // 6. Veritabanı güncelle
+                $sentiment = SocialSentiment::updateOrCreate(
+                    ['ticker' => $ticker, 'source' => $subreddit],
+                    [
+                        'score'          => $finalScore,
+                        'sentiment'      => $finalSentiment,
+                        'avg_engagement' => $weight,
+                        'top_signal'     => $title,
+                    ]
+                );
+
+                // ✓ increment ayrı — updateOrCreate'in üzerine yazmasını engeller
+                $sentiment->increment('post_count');
+
+                $this->line("✓ {$ticker}: {$finalSentiment} (Puan: {$finalScore})");
             }
         }
-         $this->info("🎯 Tarama başarıyla tamamlandı.");
+
+        $this->info("Tarama tamamlandı.");
     }
 }

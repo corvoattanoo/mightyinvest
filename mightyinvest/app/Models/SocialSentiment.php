@@ -13,6 +13,7 @@ class SocialSentiment extends Model
         'sentiment',
         'post_count',
         'avg_engagement',
+        'top_signal'
     ];
 
     protected $casts = [ // securing the types

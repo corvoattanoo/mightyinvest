@@ -7,7 +7,7 @@ import { Stock, StockHistory } from '../../models/stock.model';
 import { PortfolioService } from '../../core/services/portfolio.service';
 
 
-
+import { NotificationService } from '../../core/services/notification.service';
 import { StatCardComponent } from './components/stat-card/stat-card';
 import { WatchlistComponent } from './components/watchlist/watchlist'
 import { Subject, takeUntil } from 'rxjs';
@@ -47,7 +47,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private router: Router,
         private portfolioService: PortfolioService, //Önce PortfolioService’i inject
-        private cdRef: ChangeDetectorRef
+        private cdRef: ChangeDetectorRef,
+        private notificationService: NotificationService
     ) { }
 
     ngOnInit(): void {
@@ -78,6 +79,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.selectStock(stock);
                 }
             })
+        // Gerçek zamanlı Reddit sinyallerini başlatır 🚀
+        this.notificationService.startRealPulse();
     }
 
     loadDashboardStats(): void {

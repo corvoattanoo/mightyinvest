@@ -1,0 +1,29 @@
+<!-- notification.html -->
+<div class="notification-container">
+    <div *ngFor="let notif of notifications" 
+         class="toast-glass group" 
+         [ngClass]="notif.type">
+        
+        <div class="flex items-start gap-4 p-5">
+            <div class="icon-box">
+                <span class="material-symbols-outlined">
+                    {{ notif.type === 'sentiment' ? 'analytics' : 'check_circle' }}
+                </span>
+            </div>
+
+            <div class="flex-1">
+                <h4 class="text-xs font-black uppercase tracking-[0.15em] text-white mb-1">{{ notif.title }}</h4>
+                <p class="text-[11px] text-slate-400 font-bold leading-relaxed">{{ notif.message }}</p>
+            </div>
+
+            <button (click)="remove(notif.id)" class="text-slate-600 hover:text-white transition-colors">
+                <span class="material-symbols-outlined !text-lg">close</span>
+            </button>
+        </div>
+
+        <!-- Alttaki hareketli çizgi -->
+        <div class="progress-bar">
+            <div class="progress-fill" [ngClass]="notif.type"></div>
+        </div>
+    </div>
+</div>

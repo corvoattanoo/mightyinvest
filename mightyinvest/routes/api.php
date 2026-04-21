@@ -8,6 +8,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\AlertController;
 
 
 
@@ -23,7 +24,7 @@ Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
 Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
 Route::get('/news', [NewsController::class, 'index']);
 Route::get('/news/social-sentiments', [NewsController::class, 'social_sentiments']);
-
+  Route::get('/alerts/live',[AlertController::class, 'live']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'getUser']);
@@ -39,5 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
     Route::get('/calendar', [NewsController::class, 'calendar']);
+  
 });
    

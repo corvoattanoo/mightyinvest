@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar';
 import { SidebarComponent } from '../sidebar/sidebar';
 import { FooterComponent } from '../footer/footer';
+import { NotificationComponent } from '../../shared/components/notification/notification';
 
 @Component({
   selector: 'app-main-layout',
@@ -11,7 +12,8 @@ import { FooterComponent } from '../footer/footer';
     RouterOutlet,
     NavbarComponent,
     SidebarComponent,
-    FooterComponent
+    FooterComponent,
+    NotificationComponent
   ],
   templateUrl: './main-layout.html'
 })
