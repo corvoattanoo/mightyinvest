@@ -3,18 +3,18 @@
     <!-- KPI Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <app-stat-card title="Total Net Worth" [value]="(stats.total_balance | currency) || '$0.00'"
-            percentage="Net Worth" trend="up" icon="account_balance">
-        </app-stat-card>
-        <!-- Daily profit/ -->
-        <app-stat-card [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
-            [value]="(selectedStock ? (selectedStock.change | currency) : (stats.daily_profit | currency)) || '$0.00'"
-            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() || '0') : (stats.daily_change_percentage?.toString() + '%')"
-            [trend]="(selectedStock ? (selectedStock.change || 0) : stats.daily_profit) >= 0 ? 'up' : 'down'"
-            [icon]="'trending_up'">
+            percentage="Net Worth" trend="up" icon="stars" variant="amber">
         </app-stat-card>
 
-        <app-stat-card title="Open Positions" [value]="stats.open_positions.toString()" [percentage]="'Stocks'"
-            [trend]="stats.open_positions > 0 ? 'up' : 'down'" icon="layers">
+        <app-stat-card [title]="selectedStock ? selectedStock.symbol + ' Daily Change' : 'Daily Profit'"
+            [value]="(selectedStock ? (selectedStock.change | currency) : (stats.daily_profit | currency)) || '$0.00'"
+            [percentage]="selectedStock ? (selectedStock.percent_change?.toString() + '%') : (stats.daily_change_percentage?.toString() + '%')"
+            [trend]="(selectedStock ? (selectedStock.change || 0) : stats.daily_profit) >= 0 ? 'up' : 'down'"
+            [icon]="'trending_up'" variant="blue">
+        </app-stat-card>
+
+        <app-stat-card title="Open Positions" [value]="stats.open_positions.toString()" [percentage]="'Inventory'"
+            [trend]="stats.open_positions > 0 ? 'up' : 'down'" icon="inventory_2" variant="blue">
         </app-stat-card>
     </div>
 
@@ -29,53 +29,63 @@
 
         <!-- Main Chart Section (Wide) -->
         <div class="col-span-12 lg:col-span-9 flex flex-col gap-6">
-            <div
-                class="bg-gradient-to-r from-white/5 to-surface-dark/40 border border-border-dark rounded-2xl p-6 h-full flex flex-col min-h-[500px] transition-all duration-300 hover:shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
-                <div class="flex items-center justify-between mb-6">
-                    <div *ngIf="selectedStock">
-                        <h2 class="text-xl font-bold text-white">{{ selectedStock.name }}</h2>
-                        <p class="text-xs text-slate-500 uppercase tracking-wider">{{ selectedStock.symbol }} / USD</p>
+            <div class="chart-glass-panel p-8 h-full flex flex-col min-h-[550px]">
+                <div class="flex items-center justify-between mb-8">
+                    <div *ngIf="selectedStock" class="relative">
+                        <div class="flex items-center gap-3 mb-1">
+                            <h2 class="text-2xl font-black text-white tracking-tight uppercase">{{ selectedStock.name }}
+                            </h2>
+                            <span
+                                class="text-[10px] font-black text-slate-500 uppercase tracking-widest market-label">{{
+                                selectedStock.symbol }} / USD</span>
+                        </div>
+                        <p class="text-[10px] text-blue-500 font-black uppercase tracking-[0.2em]">Real-time Market Data
+                        </p>
                     </div>
 
-                    <div class="flex flex-col items-start" *ngIf="selectedStock && selectedStock.current_price">
-                        <span class="text-2xl font-bold text-white">
+                    <div class="flex flex-col items-end" *ngIf="selectedStock && selectedStock.current_price">
+                        <span class="text-3xl font-black text-white tracking-tighter price-glow">
                             ${{selectedStock.current_price | number: '1.2-2'}}
                         </span>
-                        <span [ngClass]="(selectedStock.change || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                            class="text-xs font-bold">
+                        <span
+                            [ngClass]="(selectedStock.change || 0) >= 0 ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'"
+                            class="text-[11px] font-black px-2 py-0.5 rounded-lg mt-1">
                             {{ (selectedStock.change || 0) >= 0 ? '▲' : '▼' }}
                             {{ selectedStock.change | number:'1.2-2' }} ({{ selectedStock.percent_change }}%)
                         </span>
                     </div>
+
                     <div *ngIf="!selectedStock">
-                        <h2 class="text-xl font-bold text-slate-400">Interactive Price Chart</h2>
-                        <p class="text-xs text-slate-600 italic">Select a stock to view detailed history</p>
+                        <h2 class="text-xl font-black text-slate-500 uppercase tracking-widest">Interactive Hub</h2>
+                        <p class="text-[10px] text-slate-600 font-bold uppercase italic">Select an asset to begin
+                            analysis</p>
                     </div>
                 </div>
 
-                <div class="flex-1 w-full relative min-h-[400px]">
+                <div class="flex-1 w-full relative min-h-[350px]">
                     <app-stock-chart *ngIf="selectedStock" [symbol]="selectedStock.symbol"></app-stock-chart>
                     <div *ngIf="!selectedStock"
-                        class="text-slate-600 text-sm italic h-full flex items-center justify-center">
-                        Real-time data visualization will appear here
+                        class="text-slate-700 text-[10px] font-black uppercase tracking-widest h-full flex items-center justify-center border-2 border-dashed border-white/5 rounded-3xl">
+                        Waiting for Signal...
                     </div>
                 </div>
 
-                <div class="mt-6 flex gap-4 pt-6 border-t border-border-dark" *ngIf="selectedStock">
+                <div class="mt-8 flex gap-6 pt-8 border-t border-white/5" *ngIf="selectedStock">
                     <div class="flex-1">
-                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Buy Price</p>
-                        <p class="text-lg font-bold text-white">${{ selectedStock.price }}</p>
+                        <p class="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">Buy Spread</p>
+                        <p class="text-xl font-black text-white">${{ selectedStock.price }}</p>
                     </div>
-                    <div class="flex-1 border-l border-border-dark pl-4" *ngIf="selectedStock">
-                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Sell Price</p>
-                        <p class="text-lg font-bold text-white">${{ selectedStock.price }}</p>
+                    <div class="flex-1 border-l border-white/5 pl-6" *ngIf="selectedStock">
+                        <p class="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">Sell Spread</p>
+                        <p class="text-xl font-black text-white">${{ selectedStock.price }}</p>
                     </div>
-                    <div class="flex-[2] flex gap-3">
+                    <div class="flex-[3] flex gap-4">
                         <button (click)="openTradeModal('sell')"
-                            class="flex-1 bg-surface-dark border border-border-dark hover:bg-white/5 text-white font-bold rounded-xl transition-all">SELL</button>
+                            class="flex-1 btn-sell-glass rounded-2xl uppercase tracking-widest text-[11px] h-12">SELL
+                            ASSET</button>
                         <button (click)="openTradeModal('buy')"
-                            class="flex-1 bg-primary hover:shadow-[0_0_20px_rgba(75,192,192,0.3)] text-black font-bold rounded-xl transition-all">BUY
-                            {{ selectedStock.symbol }}</button>
+                            class="flex-1 btn-buy-neon rounded-2xl uppercase tracking-widest text-[11px] h-12">BUY {{
+                            selectedStock.symbol }}</button>
                     </div>
                 </div>
             </div>

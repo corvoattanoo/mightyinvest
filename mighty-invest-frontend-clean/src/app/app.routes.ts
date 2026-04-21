@@ -9,9 +9,11 @@ import { AuthLayoutComponent } from './layout/auth-layout/auth-layout';
 import { MarketsComponent } from './pages/markets/markets';
 import { NewsComponent } from './pages/news/news';
 import { PortfolioComponent } from './pages/portfolio/portfolio';
+import { LandingComponent } from './pages/landing/landing';
+
 export const routes: Routes = [
-    // 1. Boş gelirse login'e yönlendir (En üstte olması iyidir)
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    // 1. Giriş Sayfası (Landing Page)
+    { path: '', component: LandingComponent },
 
     // 2. GUEST (Ziyaretçi) Rotaları - AuthLayout kullanır
     {
@@ -23,17 +25,23 @@ export const routes: Routes = [
         ]
     },
 
-    // 3. MEMBER (Üye) Rotaları - MainLayout kullanır
+    // 3. MEMBER (Üye) Rotaları - MainLayout kullanır (BAĞIMSIZ - Şimdilik Market ve News her yere açık)
+    {
+        path: '',
+        component: MainLayoutComponent,
+        children: [
+            { path: 'news', component: NewsComponent },
+            { path: 'markets', component: MarketsComponent },
+        ]
+    },
+
     {
         path: '',
         component: MainLayoutComponent,
         canActivate: [authGuard],
         children: [
             { path: 'dashboard', component: DashboardComponent },
-            {path : 'news', component: NewsComponent},
-            {path: 'portfolio', component: PortfolioComponent},
-            {path: 'markets', component: MarketsComponent}
-            // Gelecekte portfolio buraya gelecek
+            { path: 'portfolio', component: PortfolioComponent },
         ]
     },
 

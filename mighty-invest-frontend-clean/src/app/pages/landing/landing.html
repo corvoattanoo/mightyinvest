@@ -1,0 +1,280 @@
+<!-- TopNavBar -->
+<header
+    class="fixed top-0 w-full flex justify-between items-center px-6 py-4 z-50 bg-[#0a0b10]/80 backdrop-blur-md border-b border-white/5 shadow-xl">
+    <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-tertiary"
+            style="font-variation-settings: 'FILL' 1;">monitoring</span>
+        <span class="text-xl font-black tracking-tighter text-white uppercase">MightyInvest</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8">
+        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight"
+            (click)="scrollTo('features')">Markets</a>
+        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight"
+            (click)="scrollTo('features')">Analytics</a>
+        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight"
+            (click)="scrollTo('features')">Features</a>
+    </nav>
+    <div class="flex items-center gap-4">
+        <button class="hidden md:block text-slate-400 hover:text-white font-medium text-sm"
+            (click)="goToLogin()">Login</button>
+        <button (click)="tryDemo()"
+            class="px-5 py-2 border border-tertiary text-tertiary text-xs font-black uppercase tracking-widest rounded-lg hover:bg-tertiary hover:text-black transition-all duration-300 neon-glow">Try
+            Demo</button>
+    </div>
+</header>
+
+<main class="pt-20">
+    <!-- Live Ticker Strip -->
+    <section class="ticker-wrap border-y border-white/5 py-4">
+        <div class="ticker-move">
+            <!-- 1. LİSTE -->
+            <div class="ticker-list">
+                <span *ngFor="let stock of tickerStocks" class="flex gap-3 items-center">
+                    <b class="text-white text-sm">{{ stock.symbol }}</b>
+                    <span class="text-slate-400 text-xs">{{ stock.current_price | currency }}</span>
+                    <span [class.text-green-400]="stock.percent_change >= 0"
+                        [class.text-red-500]="stock.percent_change < 0" class="text-[11px] font-bold">
+                        {{ stock.percent_change > 0 ? '+' : '' }}{{ stock.percent_change | number:'1.2-2' }}%
+                    </span>
+                </span>
+            </div>
+            <!-- 2. LİSTE (KOPYA) -->
+            <div class="ticker-list">
+                <span *ngFor="let stock of tickerStocks" class="flex gap-3 items-center">
+                    <b class="text-white text-sm">{{ stock.symbol }}</b>
+                    <span class="text-slate-400 text-xs">{{ stock.current_price | currency }}</span>
+                    <span [class.text-green-400]="stock.percent_change >= 0"
+                        [class.text-red-500]="stock.percent_change < 0" class="text-[11px] font-bold">
+                        {{ stock.percent_change > 0 ? '+' : '' }}{{ stock.percent_change | number:'1.2-2' }}%
+                    </span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero Section -->
+    <section
+        class="max-w-7xl mx-auto px-6 py-20 lg:py-32 grid md:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-140px)] landing-hero">
+        <div class="space-y-8 reveal">
+            <span
+                class="text-[10px] font-black uppercase tracking-widest text-tertiary bg-[#0bda651a] px-3 py-1 rounded-full border border-tertiary/20">Institutional
+                Analytics</span>
+            <h1
+                class="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter leading-tight text-white hero-title">
+                Invest Smarter.<br /><span class="text-tertiary">Guided by Sentiment.</span>
+            </h1>
+            <p class="text-slate-400 text-base lg:text-lg leading-relaxed max-w-lg hero-text">
+                Real-time market intelligence that scans millions of social signals across Reddit. Detect institutional
+                shifts before they hit the tape.
+            </p>
+            <div class="flex flex-col items-start gap-4">
+                <div class="flex items-center gap-4">
+                    <button (click)="tryDemo()"
+                        class="bg-tertiary text-black px-8 py-4 font-bold rounded hover:scale-105 transition-transform shadow-[0_0_20px_rgba(11,218,101,0.3)]">Try
+                        Demo</button>
+                    <button (click)="goToRegister()"
+                        class="px-8 py-4 border border-slate-800 text-white font-bold rounded hover:bg-white/5 transition-colors">Join
+                        Now</button>
+                </div>
+                <p class="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+                    [ ★★★★★ ] 24/7 Automated Monitoring
+                </p>
+            </div>
+        </div>
+
+        <!-- Hero Mockup Card -->
+        <div class="relative group reveal" style="transition-delay: 200ms;">
+            <div
+                class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000">
+            </div>
+            <div
+                class="relative glass rounded-xl p-6 lg:p-10 space-y-8 hero-card max-w-[480px] mx-auto min-h-0 lg:min-h-[580px] flex flex-col justify-between">
+                <!-- Header: Sentiment & Market State -->
+                <div class="flex flex-col items-center gap-4">
+                    <div class="w-full flex justify-between items-center px-1 mb-2">
+                        <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest text-white italic">
+                            Intelligence Engine</p>
+                        <span class="flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                            <span
+                                class="text-[9px] font-bold text-green-500 tracking-tighter uppercase tracking-widest">Live
+                                Hub</span>
+                        </span>
+                    </div>
+
+                    <div class="relative flex flex-col items-center">
+                        <svg class="w-40 lg:w-56 sentiment-svg" viewBox="0 0 200 100">
+                            <path d="M 20 90 A 80 80 0 0 1 180 90" fill="none" stroke="#1e2430" stroke-linecap="round"
+                                stroke-width="12"></path>
+                            <path d="M 20 90 A 80 80 0 0 1 180 90" fill="none" stroke="#0bda65" stroke-dasharray="251"
+                                [attr.stroke-dashoffset]="sentimentOffset" class="transition-all duration-1000 ease-out"
+                                stroke-linecap="round" stroke-width="12"></path>
+                            <text fill="white" font-size="38" font-weight="900" text-anchor="middle" x="100" y="68">{{
+                                sentimentValue }}</text>
+                            <text fill="#0bda65" font-size="11" font-weight="black" text-anchor="middle" x="100" y="86"
+                                class="tracking-widest uppercase">{{ sentimentLabel }}</text>
+                        </svg>
+                        <div class="text-[8px] text-slate-500 font-bold uppercase tracking-widest opacity-50 mt-1">
+                            Market Pulse</div>
+                    </div>
+                </div>
+
+                <!-- Mid: High Conviction Signals -->
+                <div class="space-y-6">
+                    <p class="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-3">High Conviction
+                        Detects</p>
+
+                    <!-- Signal 1 -->
+                    <div
+                        class="flex justify-between items-center p-5 bg-white/[0.03] rounded-lg border border-white/5 hover:bg-white/5 transition-colors group/item">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-tertiary/10 rounded-lg flex items-center justify-center border border-tertiary/20 shadow-inner">
+                                <span class="material-symbols-outlined text-tertiary text-2xl">trending_up</span>
+                            </div>
+                            <div>
+                                <p class="font-black text-white text-base tracking-tight leading-none mb-1">NVDA</p>
+                                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Reddit
+                                    Sentiment</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span
+                                class="bg-tertiary/20 text-tertiary text-[10px] font-black px-3 py-1.5 rounded-full border border-tertiary/20 uppercase">Bullish</span>
+                        </div>
+                    </div>
+
+                    <!-- Signal 2 -->
+                    <div
+                        class="flex justify-between items-center p-5 bg-white/[0.03] rounded-lg border border-white/5 hover:bg-white/5 transition-colors group/item">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center border border-red-500/20 shadow-inner">
+                                <span class="material-symbols-outlined text-red-500 text-2xl">trending_down</span>
+                            </div>
+                            <div>
+                                <p class="font-black text-white text-base tracking-tight leading-none mb-1">TSLA</p>
+                                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Reddit
+                                    Sentiment</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span
+                                class="bg-red-500/20 text-red-500 text-[10px] font-black px-3 py-1.5 rounded-full border border-red-500/20 uppercase">Bearish</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer: System Health -->
+                <!-- Footer: Scan Activity -->
+                <div class="pt-4 border-t border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-[7px] font-black uppercase text-slate-500 tracking-widest">
+                            Scan Activity
+                        </p>
+                        <span class="flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-tertiary rounded-full animate-pulse"></span>
+                            <span class="text-[7px] font-black text-tertiary tracking-widest uppercase">
+                                Hourly
+                            </span>
+                        </span>
+                    </div>
+
+                    <!-- Mini Sparkline Bar Chart -->
+                    <div class="flex items-end gap-[3px] h-8 w-full">
+                        <div class="spark-bar flex-1 bg-tertiary/20 rounded-sm" style="height:35%; animation-delay:0ms">
+                        </div>
+                        <div class="spark-bar flex-1 bg-tertiary/30 rounded-sm"
+                            style="height:55%; animation-delay:60ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/25 rounded-sm"
+                            style="height:40%; animation-delay:120ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/50 rounded-sm"
+                            style="height:70%; animation-delay:180ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/35 rounded-sm"
+                            style="height:50%; animation-delay:240ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/60 rounded-sm"
+                            style="height:80%; animation-delay:300ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/40 rounded-sm"
+                            style="height:60%; animation-delay:360ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary    rounded-sm"
+                            style="height:100%;animation-delay:420ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/70 rounded-sm"
+                            style="height:85%; animation-delay:480ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/45 rounded-sm"
+                            style="height:65%; animation-delay:540ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/30 rounded-sm"
+                            style="height:45%; animation-delay:600ms"></div>
+                        <div class="spark-bar flex-1 bg-tertiary/55 rounded-sm"
+                            style="height:75%; animation-delay:660ms"></div>
+                    </div>
+
+                    <div class="flex justify-between mt-1.5">
+                        <p class="text-[7px] text-slate-600 uppercase tracking-widest">-12h</p>
+                        <p class="text-[7px] text-slate-600 uppercase tracking-widest">Now</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Grid -->
+    <section class="max-w-7xl mx-auto px-6 py-24" id="features">
+        <div class="text-center mb-16 reveal">
+            <p class="text-[10px] font-black uppercase text-purple-400 tracking-widest mb-2">Capabilities</p>
+            <h2 class="text-4xl font-bold text-white">Engineered for Performance</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="glass p-8 rounded-xl reveal" style="transition-delay: 100ms;">
+                <div class="w-12 h-12 bg-purple-500/10 rounded flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-purple-400 font-bold">psychology</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-white">Reddit Intelligence</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    NLP models trained specifically on financial subreddits. We filter out the noise and capture
+                    high-conviction retail signals.
+                </p>
+            </div>
+            <div class="glass p-8 rounded-xl border-tertiary/30 bg-tertiary/5 scale-105 z-10 reveal"
+                style="transition-delay: 200ms;">
+                <div class="w-12 h-12 bg-tertiary/20 rounded flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-tertiary">candlestick_chart</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-white">Real-Time Portfolio</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Watch your net worth evolve with sub-second price updates and automated risk-assessment.
+                </p>
+            </div>
+            <div class="glass p-8 rounded-xl reveal" style="transition-delay: 300ms;">
+                <div class="w-12 h-12 bg-blue-500/10 rounded flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-blue-400">dns</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-white">Production Ready</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Built with a high-concurrency Laravel stack and Docker-native architecture for high availability.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section
+        class="w-full bg-gradient-to-br from-[#0a0b10] to-[#1a0533] py-24 mt-12 reveal text-center border-y border-white/5">
+        <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">See it live. No signup required.</h2>
+        <p class="text-slate-400 text-lg mb-8">Explore the full power of our terminal with historical data.</p>
+        <button (click)="tryDemo()"
+            class="bg-tertiary text-black px-12 py-5 font-black uppercase text-sm tracking-widest rounded neon-glow shadow-[0_0_30px_rgba(11,218,101,0.3)] hover:scale-105 transition-transform">
+            Launch Demo →
+        </button>
+    </section>
+</main>
+
+<footer
+    class="w-full py-12 px-6 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto border-t border-white/5 mt-12 bg-background">
+    <div class="flex flex-col items-center md:items-start gap-2">
+        <span class="text-lg font-black text-white uppercase tracking-tighter">MightyInvest</span>
+        <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Built with Laravel & Angular</p>
+    </div>
+    <p class="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 mt-4 md:mt-0">
+        Built for Portfolio — Computer Science, 2026
+    </p>
+</footer>

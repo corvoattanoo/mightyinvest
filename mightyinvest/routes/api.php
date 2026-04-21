@@ -15,7 +15,14 @@ use App\Http\Controllers\NewsController;
 Route::middleware('throttle:5,1')->group(function (){
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/auth/demo', [AuthController::class, 'demo']);
 });
+
+Route::get('/stocks', [StockController::class, 'index']);
+Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
+Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
+Route::get('/news', [NewsController::class, 'index']);
+Route::get('/news/social-sentiments', [NewsController::class, 'social_sentiments']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -28,16 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/watchlist', [WatchlistController::class, 'store']);
     Route::delete('/watchlist/{symbol}',[WatchlistController::class, 'destroy']);
     Route::get('stocks/search', [StockController::class, 'search']);
-    Route::get('/stocks', [StockController::class, 'index']);
     Route::get('/stocks/{id}/history', [StockController::class, 'history']);
-    Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
     Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);
-    Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
-    Route::get('/news', [NewsController::class, 'index']);
     Route::get('/calendar', [NewsController::class, 'calendar']);
-    Route::get('/news/social-sentiments', [NewsController::class, 'social_sentiments']);
-
-
 });
    

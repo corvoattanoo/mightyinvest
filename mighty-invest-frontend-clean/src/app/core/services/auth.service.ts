@@ -45,6 +45,12 @@ export class AuthService {
         );
     }
 
+    loginAsGuest(): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/demo`,{}).pipe(
+            tap((response) => this.handleAuthSuccess(response))
+        );
+    }
+
     logout(): void {
         this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
             complete: () => this.clearSession(),

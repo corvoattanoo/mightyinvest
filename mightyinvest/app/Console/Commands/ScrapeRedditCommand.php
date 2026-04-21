@@ -60,15 +60,15 @@ class ScrapeRedditCommand extends Command
                     $finalSentiment = $finalScore > 55 ? 'bullish' : ($finalScore < 45 ? 'bearish' : 'neutral');
 
                     // 5. Veritabanını Güncelle (Bisturi Yöntemi: updateOrCreate)
-                    SocialSentiment::updateOrCreate(
+                    $sentiment = SocialSentiment::updateOrCreate(
                         ['ticker' => $ticker, 'source' => $subreddit],
                         [
                             'score' => round($finalScore),
                             'sentiment' => $finalSentiment,
-                            'post_count' => DB::raw('post_count +1'),
                             'avg_engagement' => $weight,
                         ]
                     );
+                    $sentiment->increment('post_count');
                     $this->line("✅ {$ticker}: {$finalSentiment} (Puan: " . round($finalScore) . ")");
                 }
             }
