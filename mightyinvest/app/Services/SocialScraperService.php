@@ -2,39 +2,53 @@
 namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+
 class SocialScraperService
 {
     private string $baseUrl = "https://www.reddit.com/r";
+    
 
 
     public function fetchLatestPosts(string $subreddit, int $limit = 50): array{
-        $url = "{$this->baseUrl}/{$subreddit}/new.json?limit={$limit}&t=hour";
-        try {
+        
+        $cacheKey = "reddit_posts_{$subreddit}_{$limit}";
+
+        return Cache::remember($cacheKey, now()->addMinutes(30), function() use ($subreddit, $limit){
+            $endpoints = ['hot', 'new'];
+            $allposts = [];
+            foreach( $endpoints as $endpoint){
+                $url = "{$this->baseUrl}/{$subreddit}/{$endpoint}.json?limit={$limit}";
+                
+            try {
                 $response = Http::withHeaders([
                 'User-Agent' => 'MightyInvest/1.0 (Laravel Portfolio Tracker)'
                     ])->get($url);
 
                 if ($response->status() === 429) {
-                   Log::warning("Reddit Rate Limit hit for subreddit: {$subreddit}");
+                   Log::warning("Reddit Rate Limit hit for subreddit: {$subreddit}/{$endpoint}");
                     return [];
                 }    
                 if($response->failed()){
-                Log::error("Reddit API error". $subreddit);
-                return [];
+                Log::error("Reddit API error {$subreddit}/{$endpoint}");
+                    continue;
+                }
+                $posts = collect($response->json('data.children') ?? []);
+                if ($endpoint === 'hot') {
+                    $posts = $posts->filter(fn($post) => ($post['data']['ups'] ?? 0) >= 100);
+                    Log::info("Subreddit: {$subreddit}/{$endpoint} - FILTERED (ups>=100) posts: " . $posts->count());
                 }
 
-                return collect($response->json('data.children') ?? [])
-                    ->filter(fn($post) => ($post['data']['ups'] ?? 0) >= 100)
-                    ->values()
-                    ->toArray();
-
-                
-            
+                $allposts = array_merge($allposts, $posts->values()->toArray());
+                Log::info("Current total posts in loop: " . count($allposts));
+          
         } catch (\Exception $e) {
-            Log::error("Reddit connnection error". $e->getMessage());
+            Log::error("Reddit connection error". $e->getMessage());
             return [];
         }
-        
+        }
+        return $allposts;
+        });       
     }
     /**
  * Belirli bir postun yorumlarını çeker

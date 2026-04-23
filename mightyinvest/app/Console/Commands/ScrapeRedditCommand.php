@@ -23,7 +23,7 @@ class ScrapeRedditCommand extends Command
         // Genel İngilizce kısaltmalar
         'THE', 'FOR', 'AND', 'BUT', 'NOT', 'ALL', 'NEW', 'NOW',
         'THIS', 'WITH', 'FROM', 'WILL', 'BEEN', 'HAVE', 'JUST',
-        'WHAT', 'WHEN', 'THAT', 'THEY', 'THEM',
+        'WHAT', 'WHEN', 'THAT', 'THEY', 'THEM', 'NEVER',
     ];
 
     public function __construct(

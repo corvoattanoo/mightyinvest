@@ -79,8 +79,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.selectStock(stock);
                 }
             })
-        // Gerçek zamanlı Reddit sinyallerini başlatır 🚀
-        this.notificationService.startRealPulse();
     }
 
     loadDashboardStats(): void {
