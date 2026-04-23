@@ -13,3 +13,5 @@ Schedule::command('app:refresh-stock-prices')->everyFiveMinutes()->runInBackgrou
 Schedule::command('scrape:reddit')->hourly()
     ->withoutOverlapping() // Prevents a new run if the previous one is still running
     ->runInBackground();// Executes the command in the background 
+
+Schedule::command('portfolio:snapshot')->everyFiveMinutes();

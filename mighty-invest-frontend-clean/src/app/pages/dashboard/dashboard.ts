@@ -14,11 +14,12 @@ import { Subject, takeUntil } from 'rxjs';
 import { StockChartComponent } from './components/stock-chart/stock-chart';
 import { TradeModalComponent } from '../../shared/components/trade-modal/trade-modal';
 import { DashboardService, DashboardStats } from '../../core/services/dashboard.service';
+import { PortfolioChartComponent } from './components/portfolio-chart/portfolio-chart';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, StatCardComponent, WatchlistComponent, StockChartComponent, TradeModalComponent],
+    imports: [CommonModule, StatCardComponent, WatchlistComponent, StockChartComponent, TradeModalComponent, PortfolioChartComponent],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css',
 })

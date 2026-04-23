@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('portfolio_snapshots', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->decimal('total_value', 15, 2); // net worth balance+holdings
+            $table->timestamp('snapshot_at'); // Artık sadece gün değil, tam saat/dakika tutuyoruz
         });
     }
 
