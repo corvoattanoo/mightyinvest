@@ -22,15 +22,19 @@ export class NotificationService {
     private isPulseStarted = false;
     private shownAlerts = new Set<string>(); // Daha önce gösterilen sinyalleri burada tutuyoruz
 
+    // --- Carousel (Döngü) Ayarları ---
+    private alertsPool: any[] = []; 
+    private currentPoolIndex = 0;   
+    private carouselInterval: any; 
     constructor(private http: HttpClient) { }
 
     show(notif: Omit<Notification, 'id'>) {
         const id = Date.now();
-        this.list.push({ ...notif, id });
+        this.list = [{ ...notif, id }]; 
         this.notificationsSource.next([...this.list]);
 
         // Bildirimi 6 saniye sonra listeden kaldır
-        setTimeout(() => this.remove(id), 6000);
+        setTimeout(() => this.remove(id), 15000);
     }
 
     startRealPulse() {
@@ -44,45 +48,36 @@ export class NotificationService {
         setInterval(() => {
             this.fetchAlerts();
         }, 30000);
+        this.startCarouselLoop();
+    }
+
+    private startCarouselLoop(){
+        if(this.carouselInterval) clearInterval(this.carouselInterval);
+
+        this.carouselInterval = setInterval(() => {
+            if(this.alertsPool.length > 0){
+                const alert = this.alertsPool[this.currentPoolIndex];
+
+                this.show({
+                    type: 'sentiment',
+                    title: `SIGNAL: ${alert.ticker}`,
+                    message: alert.top_signal
+                });
+
+                this.currentPoolIndex = (this.currentPoolIndex +1) % this.alertsPool.length;
+            }
+        }, 15000);
     }
 
     private fetchAlerts() {
-        console.log('📡 Backendden canlı sinyaller çekiliyor...');
         this.http.get<any[]>(`${environment.apiUrl}/alerts/live`).subscribe({
             next: (alerts) => {
-                console.log('✅ Gelen Sinyaller:', alerts);
                 if (alerts && alerts.length > 0) {
-                    // Sadece daha önce gösterilmemiş (Set içinde olmayan) sinyalleri filtrele
-                    const newAlerts = alerts.filter(a => !this.shownAlerts.has(a.ticker));
-                    
-                    if (newAlerts.length > 0) {
-                        console.log(`✨ ${newAlerts.length} yeni sinyal bulundu, sırayla gösteriliyor...`);
-                        
-                        // Sinyalleri 3'er saniye arayla ekrana bas
-                        newAlerts.forEach((alert, index) => {
-                            setTimeout(() => {
-                                this.shownAlerts.add(alert.ticker); // Gösterildi olarak işaretle
-                                this.show({
-                                    type: 'sentiment',
-                                    title: `SIGNAL: ${alert.ticker}`,
-                                    message: alert.top_signal
-                                });
-
-                                // Hafızanın şişmemesi için 100 sinyalden sonrasını temizle
-                                if (this.shownAlerts.size > 100) {
-                                    const firstKey = this.shownAlerts.values().next().value;
-                                    if (firstKey) this.shownAlerts.delete(firstKey);
-                                }
-                            }, index * 3000);
-                        });
-                    } else {
-                        console.log('ℹ️ Yeni farklı bir sinyal bulunamadı.');
-                    }
+                    this.alertsPool = alerts; // Havuzu güncelle
+                    console.log('✅ Sinyal Havuzu Güncellendi:', this.alertsPool.length, 'adet sinyal var.');
                 }
             },
-            error: (err) => {
-                console.error('❌ Sinyal çekme hatası:', err);
-            }
+            error: (err) => console.error('❌ Sinyal çekme hatası:', err)
         });
     }
 

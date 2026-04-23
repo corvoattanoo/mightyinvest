@@ -9,7 +9,7 @@ class AlertController extends Controller
     public function live(){
         $alerts = SocialSentiment::whereNotNull('top_signal')
             ->orderBy('updated_at', 'desc')
-            ->take(5)
+            ->take(15)
             ->get();
         
             return response()->json($alerts);
