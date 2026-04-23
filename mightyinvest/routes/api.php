@@ -9,6 +9,7 @@ use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\PortfolioChartController;
 
 
 
@@ -40,6 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
     Route::get('/calendar', [NewsController::class, 'calendar']);
-  
+    Route::get('/portfolio/performance', [PortfolioChartController::class, 'performance']);
 });
    
