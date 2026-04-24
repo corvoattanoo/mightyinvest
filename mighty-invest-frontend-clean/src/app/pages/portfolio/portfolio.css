@@ -1,30 +1,103 @@
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+/* premium-portfolio.css */
+
+:host {
+    display: block;
+    min-height: 100vh;
+    background: #0d111a;
 }
 
-.logout-btn {
-    background: #ef4444;
-    color: #fff;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1.25rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
+/* Glassmorphism Containers */
+.glass-panel {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Stats Cards with Neon Glows */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--card-color);
+    box-shadow: 0 10px 40px -10px var(--card-glow);
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, var(--card-glow) 0%, transparent 70%);
+    opacity: 0.1;
+    transition: opacity 0.3s;
+}
+
+.stat-card:hover::after {
+    opacity: 0.3;
+}
+
+/* Donut Chart Center Glass */
+.donut-center {
+    background: radial-gradient(circle at 30% 30%, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Table Enhancements */
+.premium-table thead tr {
+    background: rgba(15, 23, 42, 0.6);
+}
+
+.premium-table tbody tr {
     transition: background 0.2s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.logout-btn:hover {
-    background: #dc2626;
+.premium-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
 }
-.donut-gradient {
-            background: conic-gradient(
-                #1337ec 0% 45%, 
-                #8b5cf6 45% 70%, 
-                #22d3ee 70% 85%, 
-                #3b3f54 85% 100%
-            );
-        }
+
+/* Profit/Loss Badges */
+.profit-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+}
+
+.profit-badge.positive {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.profit-badge.negative {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
