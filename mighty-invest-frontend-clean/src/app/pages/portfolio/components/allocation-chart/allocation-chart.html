@@ -1,0 +1,85 @@
+<!-- allocation-chart.html -->
+<div class="chart-wrapper">
+    <!-- SVG Donut -->
+    <div class="svg-container">
+        <svg viewBox="0 0 400 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Glow filter for active segments -->
+                <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="6" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+                <filter id="strong-glow" x="-40%" y="-40%" width="180%" height="180%">
+                    <feGaussianBlur stdDeviation="10" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Background ring -->
+            <circle cx="200" cy="200" r="130" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="62" />
+
+            <!-- Outer glow ring for selected segment -->
+            <ng-container *ngFor="let seg of segments; trackBy: trackByLabel">
+                <path *ngIf="isSelected(seg.label)" [attr.d]="seg.outerPath" [attr.fill]="seg.color" opacity="0.2"
+                    filter="url(#strong-glow)" class="outer-glow" />
+            </ng-container>
+
+            <!-- Main arc segments -->
+            <ng-container *ngFor="let seg of segments; trackBy: trackByLabel">
+                <path [attr.d]="isSelected(seg.label) ? seg.hoverPath : seg.path" [attr.fill]="seg.color"
+                    [attr.opacity]="isActive(seg.label) ? 1 : 0.15"
+                    [attr.filter]="isSelected(seg.label) ? 'url(#glow)' : 'none'" class="arc-path"
+                    (click)="toggleActive(seg.label)" (mouseenter)="$event.target" />
+            </ng-container>
+
+            <!-- Center content -->
+            <circle cx="200" cy="200" r="92" fill="rgba(13,17,26,0.95)" />
+            <circle cx="200" cy="200" r="92" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+
+            <ng-container *ngIf="activeLabel === null">
+                <text x="200" y="188" text-anchor="middle" class="center-label">TOTAL</text>
+                <text x="200" y="215" text-anchor="middle" class="center-value">
+                    {{ total | currency:'USD':'symbol':'1.0-0' }}
+                </text>
+            </ng-container>
+
+            <ng-container *ngIf="activeLabel !== null">
+                <ng-container *ngFor="let seg of segments">
+                    <ng-container *ngIf="seg.label === activeLabel">
+                        <text x="200" y="182" text-anchor="middle" class="center-label">{{ seg.label }}</text>
+                        <text x="200" y="207" text-anchor="middle" [attr.fill]="seg.color" class="center-pct">
+                            {{ seg.percentage | number:'1.0-1' }}%
+                        </text>
+                        <text x="200" y="228" text-anchor="middle" class="center-sub">
+                            {{ seg.value | currency:'USD':'symbol':'1.0-0' }}
+                        </text>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+
+            <!-- Hint text -->
+            <text x="200" y="380" text-anchor="middle" class="hint-text">click segments to focus</text>
+        </svg>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div *ngFor="let seg of segments; trackBy: trackByLabel" class="legend-item"
+            [class.active]="isSelected(seg.label)" [class.dimmed]="!isActive(seg.label)"
+            (click)="toggleActive(seg.label)">
+            <div class="legend-dot" [style.background]="seg.color" [style.box-shadow]="'0 0 8px ' + seg.color + '88'">
+            </div>
+            <div class="legend-text">
+                <span class="legend-name">{{ seg.label }}</span>
+                <span class="legend-pct" [style.color]="seg.color">{{ seg.percentage | number:'1.0-1' }}%</span>
+            </div>
+            <span class="legend-value">{{ seg.value | currency:'USD':'symbol':'1.0-0' }}</span>
+        </div>
+    </div>
+</div>

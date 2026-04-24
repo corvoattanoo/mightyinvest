@@ -3,11 +3,34 @@ import { CommonModule } from '@angular/common';
 import { PortfolioHolding, PortfolioService } from '../../core/services/portfolio.service';
 import { TradeModalComponent } from '../../shared/components/trade-modal/trade-modal';
 import { StockChartComponent } from '../dashboard/components/stock-chart/stock-chart';
+import { PortfolioChartComponent } from '../dashboard/components/portfolio-chart/portfolio-chart';
+import {
+  AllocationChartComponent,
+  AllocationSlice,
+} from './components/allocation-chart/allocation-chart';
+
+/** Theme-matching palette for allocation segments */
+const SLICE_COLORS = [
+  '#1337ec', // primary blue
+  '#8b5cf6', // accent purple
+  '#06b6d4', // electric cyan
+  '#22c55e', // green
+  '#f59e0b', // amber
+  '#ec4899', // pink
+  '#14b8a6', // teal
+  '#f97316', // orange
+];
 
 @Component({
   selector: 'app-portfolio',
   standalone: true,
-  imports: [CommonModule, TradeModalComponent, StockChartComponent],
+  imports: [
+    CommonModule,
+    TradeModalComponent,
+    StockChartComponent,
+    PortfolioChartComponent,
+    AllocationChartComponent,
+  ],
   templateUrl: './portfolio.html',
   styleUrl: './portfolio.css',
 })
@@ -15,37 +38,27 @@ export class PortfolioComponent implements OnInit {
   portfolioData: PortfolioHolding[] = [];
   selectedHolding: PortfolioHolding | null = null;
   showChartView: boolean = false;
-  cashBalance: number = 0; //users will set it later maybe
+  cashBalance: number = 0;
   loading: boolean = true;
   errorMessage: string = '';
 
-  //trade modal state
+  // trade modal state
   showTradeModal = false;
   tradeMode: 'buy' | 'sell' = 'buy';
 
-
+  // allocation chart slices (computed)
+  allocationSlices: AllocationSlice[] = [];
 
   get totalStockValue(): number {
     return this.portfolioData.reduce((sum, item) => sum + (item.current_value || 0), 0);
   }
 
-  get totalProfit():number {
+  get totalProfit(): number {
     return this.portfolioData.reduce((sum, item) => sum + (item.profit || 0), 0);
   }
 
-  constructor(
-    private portfolioService: PortfolioService,
-    private cdRef: ChangeDetectorRef
-  ) { }
-
-  // Total balance = Value of stocks + current cash
-
   get totalNetWorth(): number {
     return this.totalStockValue + this.cashBalance;
-  }
-
-  ngOnInit(): void {
-    this.loadPortfolio();
   }
 
   get stockPercentage(): number {
@@ -53,9 +66,13 @@ export class PortfolioComponent implements OnInit {
     return (this.totalStockValue / this.totalNetWorth) * 100;
   }
 
-  get donutStyle(){
-    const stockPerc = this.stockPercentage;
-    return `conic-gradient(#1337ec 0% ${stockPerc}%, #3b3f54 ${stockPerc}% 100%)`;
+  constructor(
+    private portfolioService: PortfolioService,
+    private cdRef: ChangeDetectorRef
+  ) { }
+
+  ngOnInit(): void {
+    this.loadPortfolio();
   }
 
   loadPortfolio(): void {
@@ -67,36 +84,55 @@ export class PortfolioComponent implements OnInit {
         this.portfolioData = res.holdings;
         this.cashBalance = parseFloat(String(res.balance));
         this.loading = false;
+        this.buildAllocationSlices();
         this.cdRef.detectChanges();
-        console.log('Portfolio loaded', res);
       },
       error: (err) => {
         this.loading = false;
         this.errorMessage = 'Portfolio is not loading.';
         this.cdRef.detectChanges();
-        console.log('Portfolio load error:', err);
+        console.error('Portfolio load error:', err);
       },
     });
   }
-  // clicking sell button
-  openSellModal(holding: PortfolioHolding): void{
+
+  private buildAllocationSlices(): void {
+    const slices: AllocationSlice[] = this.portfolioData.map((h, i) => ({
+      label: h.stock.symbol,
+      value: h.current_value || 0,
+      color: SLICE_COLORS[i % SLICE_COLORS.length],
+    }));
+
+    // Add cash slice last
+    if (this.cashBalance > 0) {
+      slices.push({
+        label: 'CASH',
+        value: this.cashBalance,
+        color: '#3b4a6b',
+      });
+    }
+
+    this.allocationSlices = slices;
+  }
+
+  openSellModal(holding: PortfolioHolding): void {
     this.selectedHolding = holding;
     this.tradeMode = 'sell';
     this.showTradeModal = true;
   }
-  //
-  selectHoldingForChart(holding: PortfolioHolding): void{
+
+  selectHoldingForChart(holding: PortfolioHolding): void {
     this.selectedHolding = holding;
     this.showChartView = true;
   }
 
-  backPositions():void {
+  backPositions(): void {
     this.showChartView = false;
     this.selectedHolding = null;
   }
 
-  //renew the portfolio after complete
-  onTradeComplete(): void{
-    this.loadPortfolio()
+  onTradeComplete(): void {
+    this.loadPortfolio();
   }
 }
+
