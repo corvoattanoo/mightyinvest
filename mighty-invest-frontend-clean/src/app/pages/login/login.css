@@ -187,3 +187,32 @@
 .auth-footer a:hover {
     color: #93c5fd;
 }
+
+/* Extra Styles for OTP */
+.btn-text {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-top: 1rem;
+}
+
+.btn-text:hover {
+    color: #fff;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+/* OTP Specific Styling */
+#code {
+    text-align: center !important;
+    letter-spacing: 0.5em !important;
+    font-weight: 900 !important;
+    font-size: 1.5rem !important;
+    font-family: 'Courier New', Courier, monospace !important;
+}

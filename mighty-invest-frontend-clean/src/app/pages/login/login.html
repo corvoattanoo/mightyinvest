@@ -2,15 +2,17 @@
     <div class="auth-card">
         <div class="auth-header">
             <h1 class="auth-logo">MightyInvest</h1>
-            <p class="auth-subtitle">Sign in to your account</p>
+            <p class="auth-subtitle" *ngIf="currentStep() === 'credentials'">Sign in to your account</p>
+            <p class="auth-subtitle" *ngIf="currentStep() === 'otp'">Enter the 6-digit code sent to your email</p>
         </div>
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+        <div *ngIf="errorMessage()" class="alert alert-error mb-4">
+            {{ errorMessage() }}
+        </div>
 
-            <div *ngIf="errorMessage()" class="alert alert-error">
-                {{ errorMessage() }}
-            </div>
-
+        <!-- Step 1: Credentials -->
+        <form *ngIf="currentStep() === 'credentials'" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form"
+            novalidate>
             <div class="form-group">
                 <label for="email">Email</label>
                 <input id="email" type="email" formControlName="email" placeholder="you@example.com"
@@ -35,10 +37,34 @@
                 <span *ngIf="!isLoading()">Sign In</span>
                 <span *ngIf="isLoading()" class="spinner"></span>
             </button>
-
         </form>
 
-        <p class="auth-footer">
+        <!-- Step 2: OTP Verification -->
+        <form *ngIf="currentStep() === 'otp'" [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="auth-form"
+            novalidate>
+            <div class="form-group">
+                <label for="code">Security Code</label>
+                <input id="code" type="text" formControlName="code" placeholder="123456" maxlength="6"
+                    [class.input-error]="otpCode?.invalid && otpCode?.touched"
+                    class="text-center text-2xl tracking-[0.5em] font-black" />
+                <span class="field-error" *ngIf="otpCode?.invalid && otpCode?.touched">
+                    <span *ngIf="otpCode?.errors?.['required']">Code is required.</span>
+                    <span *ngIf="otpCode?.errors?.['minlength'] || otpCode?.errors?.['maxlength']">Must be 6
+                        digits.</span>
+                </span>
+            </div>
+
+            <button type="submit" class="btn-primary" [disabled]="isLoading() || otpForm.invalid">
+                <span *ngIf="!isLoading()">Verify & Login</span>
+                <span *ngIf="isLoading()" class="spinner"></span>
+            </button>
+
+            <button type="button" class="btn-text mt-4 w-full" (click)="backToLogin()">
+                Back to Login
+            </button>
+        </form>
+
+        <p class="auth-footer" *ngIf="currentStep() === 'credentials'">
             Don't have an account? <a routerLink="/register">Create one</a>
         </p>
     </div>

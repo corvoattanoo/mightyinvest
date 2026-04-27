@@ -8,18 +8,20 @@ export interface User { // interface is a blueprint for an object, nasil gozukme
     updated_at?: string;
 }
 
-export interface RegisterRequest{ //register response model 
+export interface RegisterRequest { //register response model 
     name: string;
     email: string;
     password: string;
 }
 
-export interface LoginRequest{ //login response model
+export interface LoginRequest { //login response model
     email: string;
     password: string;
 }
 
-export interface AuthResponse{ //backendden gelen response model
-    token: string;
-    user: User; 
+export interface AuthResponse {
+    token?: string;
+    user?: User;
+    requires_otp?: boolean;
+    email?: string;
 }

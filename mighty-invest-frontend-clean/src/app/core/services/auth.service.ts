@@ -35,6 +35,16 @@ export class AuthService {
 
     login(credentials: LoginRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
+            tap((response) => {
+                if (!response.requires_otp) {
+                    this.handleAuthSuccess(response);
+                }
+            })
+        );
+    }
+
+    verifyOtp(email: string, code: string): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/verify-otp`, { email, code }).pipe(
             tap((response) => this.handleAuthSuccess(response))
         );
     }
@@ -46,7 +56,7 @@ export class AuthService {
     }
 
     loginAsGuest(): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/demo`,{}).pipe(
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/demo`, {}).pipe(
             tap((response) => this.handleAuthSuccess(response))
         );
     }
@@ -80,9 +90,11 @@ export class AuthService {
     }
 
     private handleAuthSuccess(response: AuthResponse): void {
-        this.tokenService.setToken(response.token);
-        this.tokenService.setUser(response.user);
-        this.currentUserSubject.next(response.user);
+        if (response.token && response.user) {
+            this.tokenService.setToken(response.token);
+            this.tokenService.setUser(response.user);
+            this.currentUserSubject.next(response.user);
+        }
     }
 
     private clearSession(): void {
