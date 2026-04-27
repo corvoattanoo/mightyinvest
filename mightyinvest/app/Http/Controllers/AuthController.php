@@ -1,14 +1,17 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Services\OtpService;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
+    public function __construct(private OtpService $otpService) {}
+
     // REGISTER
     public function register(Request $request){ // frontendden gelen verileri al
         $validated = $request->validate([
@@ -22,6 +25,9 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // E-posta doğrulama tetiğini çalıştır Bu user register oldu, bunu dinleyen varsa çalışsın
+        event(new Registered($user));
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -47,13 +53,44 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        //Password is correct but we send OTP
+        $this->otpService->send($user);
 
         return response()->json([
-            'user' => $user,
-            'token' => $token,
+            'message' => 'OTP send to your email',
+            'requires_otp' => true,
+            'email' => $user->email
         ]);
+
+        //$token = $user->createToken('auth_token')->plainTextToken;
+        // return response()->json([
+        //     'user' => $user,
+        //     'token' => $token,
+        //]);
     }
+
+         // OTP verification
+        public function verifyOtp(Request $request) {
+            $request->validate([
+                'email' => 'required|email',
+                'code' => 'required|string|size:6',
+            ]);
+
+            $user = User::Where('email', $request->email)->first();
+
+            if(!$user || !$this->otpService->verify($user, $request->code)){
+                return response()->json(['message' => 'Invalid or expired OTP'], 401);
+            }
+
+            //OTP true
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'user' =>$user,
+                'token' => $token,
+            ]);
+
+        }
 
     //DEMO PAGE
     public function demo(){
@@ -74,6 +111,15 @@ class AuthController extends Controller
                 'token' => $token,
                 'message' => 'Welcome to the Demo Mode!'
             ]);
+    }
+
+    public function resendVerification(Request $request){
+        //if the user already approved  return information 
+        if($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 200);
+        }
+
+        request()->user()->sendEmailVerificationNotification();
     }
 
     // LOGOUT

@@ -16,7 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const handleUnauthorized = (err: any) => {
         console.warn('Interceptor hatayı yakaladı, fırlatıyor:', err.status);
 
-        if (err.status === 401 && !req.url.includes('/login') && !req.url.includes('/register')) {
+        if (err.status === 401 && !req.url.includes('/login') && !req.url.includes('/register') && !req.url.includes('/logout')) {
             // AuthService'i sadece ihtiyaç duyduğumuzda (401 durumunda) inject ediyoruz.
             const authService = injector.get(AuthService);
             authService.logout();
