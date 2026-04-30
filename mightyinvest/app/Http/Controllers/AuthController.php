@@ -91,6 +91,19 @@ class AuthController extends Controller
             ]);
 
         }
+    public function verifyEmail(Request $request, $id, $hash){
+        $user = User::findOrFail($id);
+
+    if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
+        abort(403);
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    return redirect('http://localhost:8085/dashboard?verified=1');
+    }
 
     //DEMO PAGE
     public function demo(){

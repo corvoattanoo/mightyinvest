@@ -33,6 +33,32 @@
             <span>Markets</span>
         </a>
 
+        <!-- Markets Sub-menu (Conditional) -->
+        <div *ngIf="isMarketsPage" class="pl-12 py-2 space-y-1 animate-fadeIn">
+            <div class="mb-4">
+                <p class="text-[10px] font-black text-primary uppercase tracking-widest mb-2 opacity-60">Users' Choice</p>
+                <div class="space-y-1">
+                    <a [routerLink]="['/markets']" [queryParams]="{category: 'most-traded'}" routerLinkActive="sub-active"
+                        class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Most Traded</a>
+                    <a [routerLink]="['/markets']" [queryParams]="{category: 'most-bought'}" routerLinkActive="sub-active"
+                        class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Most Bought</a>
+                    <a [routerLink]="['/markets']" [queryParams]="{category: 'most-shorted'}" routerLinkActive="sub-active"
+                        class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Most Shorted</a>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-[10px] font-black text-primary uppercase tracking-widest mb-2 opacity-60">Thematic</p>
+                <div class="space-y-1">
+                    <a *ngFor="let cat of ['commodities', 'indices', 'forex', 'stocks', 'crypto', 'etfs', 'treasuries']"
+                       [routerLink]="['/markets']" [queryParams]="{category: cat}" routerLinkActive="sub-active"
+                       class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">
+                       {{ cat }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <a routerLink="/portfolio" routerLinkActive="active"
             class="flex items-center gap-3 px-4 py-3 rounded-xl nav-link group transition-all">
             <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24"
