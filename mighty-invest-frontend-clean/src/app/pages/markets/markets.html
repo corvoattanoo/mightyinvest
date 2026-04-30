@@ -1,106 +1,178 @@
-<div class="container mx-auto p-4 max-w-7xl">
-    <div class="flex justify-between items-center mb-8">
+<div class="p-8 animate-fadeIn">
+    <!-- Header Section -->
+    <header class="mb-10 flex flex-col md:flex-row justify-between items-start gap-6">
         <div>
-            <h1 class="text-3xl font-bold text-white mb-2">Market Explorer</h1>
-            <p class="text-slate-400">Discover and trade stocks with real-time data</p>
+            <div class="flex items-center gap-3 mb-2">
+                <span class="px-3 py-1 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-500/20">
+                    Market Intel
+                </span>
+                <h1 class="text-4xl font-black text-white tracking-tight uppercase">
+                    {{ activeCategory().replace('-', ' ') }}
+                </h1>
+            </div>
+            <p class="text-slate-400 text-sm font-medium opacity-80">Real-time institutional liquidity flow and volume density.</p>
         </div>
 
-        <div class="flex items-center gap-4">
-            <div *ngIf="marketStatus" class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold"
-                [ngClass]="marketStatus.isOpen ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'">
-                <span class="w-2 h-2 rounded-full animate-pulse"
-                    [ngClass]="marketStatus.isOpen ? 'bg-green-500' : 'bg-red-500'"></span>
-                {{ marketStatus.isOpen ? 'MARKET OPEN' : 'MARKET CLOSED' }}
-            </div>
-
-            <div class="search-container relative">
-                <input type="text" [(ngModel)]="searchQuery" (input)="onSearch(searchQuery)"
-                    placeholder="Search symbols..."
-                    class="bg-surface-dark/50 border border-border-dark text-white rounded-xl px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-primary/50 w-64">
-                <i class="material-icons absolute left-3 top-2.5 text-slate-500 text-sm">search</i>
+        <!-- Search Bar -->
+        <div class="relative w-full md:w-96 group">
+            <span class="material-symbols-outlined absolute left-4 top-3 text-slate-500 group-focus-within:text-blue-400 transition-colors">search</span>
+            <input type="text" [(ngModel)]="searchQuery" (input)="onSearch(searchQuery)"
+                placeholder="Search markets, assets, or symbols..."
+                class="w-full bg-slate-900/40 border border-white/5 text-sm text-white rounded-2xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all backdrop-blur-xl">
+            
+            <!-- Search Results Dropdown -->
+            <div *ngIf="searchQuery.length >= 2 && searchResults.length > 0" 
+                class="absolute top-14 left-0 w-full bg-[#0d121f] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-2xl">
+                <div *ngFor="let result of searchResults" (click)="openTradeModal(result)"
+                    class="px-5 py-4 hover:bg-white/5 cursor-pointer flex justify-between items-center border-b border-white/5 last:border-0 group">
+                    <div>
+                        <p class="font-black text-white text-sm group-hover:text-blue-400 transition-colors">{{ result.symbol }}</p>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-tighter">{{ result.name }}</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400 opacity-0 group-hover:opacity-100 transition-all">
+                        <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Main Content -->
-    <div class="grid grid-cols-1 gap-6">
-        <!-- Seeded Stocks Row -->
-        <div class="glass-card p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="material-icons text-primary">trending_up</i>
-                    Featured Markets
-                </h2>
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <!-- Main Table Area -->
+        <div class="xl:col-span-8 space-y-8">
+            <!-- Table Section -->
+            <div class="chart-glass-panel overflow-hidden">
+                <div *ngIf="loading" class="flex flex-col items-center justify-center py-32 space-y-4">
+                    <div class="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+                    <p class="text-xs font-black text-blue-400 uppercase tracking-widest animate-pulse">Syncing Terminal...</p>
+                </div>
+
+                <div *ngIf="!loading" class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white/5">
+                                <th class="px-8 py-5 font-black text-[10px] uppercase tracking-widest text-slate-500 border-b border-white/5">Asset</th>
+                                <th class="px-6 py-5 font-black text-[10px] uppercase tracking-widest text-slate-500 border-b border-white/5">Symbol</th>
+                                <th class="px-6 py-5 font-black text-[10px] uppercase tracking-widest text-slate-500 border-b border-white/5 text-right">Price</th>
+                                <th class="px-6 py-5 font-black text-[10px] uppercase tracking-widest text-slate-500 border-b border-white/5 text-right">Change</th>
+                                <th class="px-8 py-5 font-black text-[10px] uppercase tracking-widest text-slate-500 border-b border-white/5">Exchange</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            <tr *ngFor="let stock of stocks" (click)="openTradeModal(stock)" class="hover:bg-white/5 transition-all group cursor-pointer">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10 flex items-center justify-center text-blue-400 font-black text-sm border border-blue-500/20 group-hover:scale-110 transition-transform">
+                                            {{ stock.symbol.substring(0, 1) }}
+                                        </div>
+                                        <span class="text-sm font-black text-white uppercase group-hover:text-blue-400 transition-colors">{{ stock.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="text-[10px] font-black bg-white/5 px-3 py-1.5 rounded-lg text-slate-400 border border-white/5">{{ stock.symbol }}</span>
+                                </td>
+                                <td class="px-6 py-5 text-right">
+                                    <span class="text-sm font-black text-white tabular-nums">{{ stock.livePrice | currency }}</span>
+                                </td>
+                                <td class="px-6 py-5 text-right">
+                                    <div class="inline-flex items-center justify-end gap-1 px-3 py-1 rounded-lg tabular-nums" 
+                                         [ngClass]="stock.change >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'">
+                                        <span class="material-symbols-outlined text-xs">{{ stock.change >= 0 ? 'arrow_upward' : 'arrow_downward' }}</span>
+                                        <span class="text-xs font-black">{{ stock.change >= 0 ? '+' : '' }}{{ stock.change | number:'1.2-2' }}%</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <span class="text-[10px] font-black uppercase text-slate-500 tracking-tighter">{{ stock.exchange }}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div *ngFor="let stock of stocks" class="stock-card group">
-                    <div class="flex flex-col gap-3">
+            <!-- Dashboard Bottom Widgets -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="chart-glass-panel p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h3 class="font-black text-white uppercase tracking-tight text-sm mb-1">Market Sentiment</h3>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold">Global aggregate index</p>
+                        </div>
+                        <span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-full border border-emerald-500/20">Bullish</span>
+                    </div>
+                    <div class="relative h-2 bg-white/5 rounded-full overflow-hidden mb-4">
+                        <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-teal-400 w-3/4 shadow-[0_0_15px_rgba(16,185,129,0.4)]"></div>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Greed: 74</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fear: 26</span>
+                    </div>
+                </div>
+
+                <div class="chart-glass-panel p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h3 class="font-black text-white uppercase tracking-tight text-sm mb-1">Institutional Flow</h3>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold">Large block volume</p>
+                        </div>
+                        <span class="text-[10px] font-black bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-full border border-blue-500/20">High Vol</span>
+                    </div>
+                    <div class="flex gap-3 items-end h-16">
+                        <div *ngFor="let h of [40, 60, 100, 80, 50, 90]" 
+                             class="flex-1 bg-gradient-to-t from-blue-600/40 to-blue-400 rounded-t-lg transition-all duration-500 hover:scale-y-110"
+                             [style.height.%]="h"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar (Global Markets) -->
+        <aside class="xl:col-span-4 space-y-8">
+            <div class="chart-glass-panel p-8">
+                <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-8 border-b border-white/5 pb-4">Global Indices</p>
+                <div class="space-y-6">
+                    <div *ngFor="let m of globalMarkets()" class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer group">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="text-lg font-bold text-white group-hover:text-primary transition-colors">{{
-                                    stock.symbol }}</h3>
-                                <p class="text-xs text-slate-500 uppercase truncate max-w-[120px]">{{ stock.name }}</p>
+                                <p class="text-[10px] font-black text-blue-400 uppercase tracking-tighter mb-1 opacity-60">{{ m.type }}</p>
+                                <p class="text-sm font-black text-white group-hover:text-blue-400 transition-colors">{{ m.name }}</p>
                             </div>
                             <div class="text-right">
-                                <div class="text-lg font-bold text-white" *ngIf="stock.livePrice">
-                                    {{ stock.livePrice | currency }}
-                                </div>
-                                <div class="text-xs font-bold" *ngIf="stock.change"
-                                    [ngClass]="stock.change >= 0 ? 'text-green-500' : 'text-red-500'">
-                                    {{ stock.change >= 0 ? '+' : '' }}{{ stock.change | number:'1.2-2' }}%
-                                </div>
+                                <p class="text-sm font-black text-white tabular-nums">{{ m.price | number:'1.2-2' }}</p>
+                                <p class="text-[10px] font-black tabular-nums" [ngClass]="m.positive ? 'text-emerald-400' : 'text-red-400'">{{ m.change }}</p>
                             </div>
                         </div>
-
-                        <div class="flex gap-2 mt-2">
-                            <button (click)="openBuyModal(stock)"
-                                class="flex-1 bg-primary hover:bg-primary/80 text-black font-bold py-2 rounded-lg transition-all text-sm">
-                                BUY
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <div *ngIf="loading && stocks.length === 0" class="flex justify-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <!-- Quick Insight -->
+            <div class="chart-glass-panel p-8 relative overflow-hidden group">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-600/10 rounded-full blur-[60px] group-hover:bg-blue-600/20 transition-all"></div>
+                
+                <h4 class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm animate-pulse">auto_awesome</span>
+                    AI Intel Core
+                </h4>
+                <p class="text-sm text-slate-300 leading-relaxed font-medium">
+                    Unusual institutional buying detected in <span class="text-blue-400 font-black">NVDA</span> and <span class="text-blue-400 font-black">MSFT</span> tech clusters. Market breadth expanding into utilities.
+                </p>
+                <button class="mt-8 w-full bg-white text-black text-[10px] font-black uppercase py-4 rounded-xl tracking-widest hover:bg-blue-400 hover:text-white transition-all shadow-xl active:scale-95">
+                    View Full Analysis
+                </button>
             </div>
-        </div>
-
-        <!-- Search Results Section (only if query exists) -->
-        <div class="glass-card p-6" *ngIf="searchQuery.length >= 2">
-            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <i class="material-icons text-slate-400">search</i>
-                Search Results for "{{ searchQuery }}"
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" *ngIf="searchResults.length > 0">
-                <div *ngFor="let result of searchResults" class="stock-card">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-white">{{ result.displaySymbol || result.symbol }}</p>
-                            <p class="text-xs text-slate-500">{{ result.description }}</p>
-                        </div>
-                        <button (click)="openBuyModal(result)"
-                            class="bg-surface-dark border border-border-dark hover:bg-white/5 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-all">
-                            SELECT
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div *ngIf="searchResults.length === 0 && !loading"
-                class="text-slate-500 text-center py-8 bg-surface-dark/20 rounded-xl italic">
-                No matching symbols found.
-            </div>
-        </div>
+        </aside>
     </div>
 </div>
 
 <!-- Trade Modal -->
-<app-trade-modal [visible]="showTradeModal" [mode]="'buy'" [stockId]="selectedStock?.id"
-    [stockSymbol]="selectedStock?.symbol" [stockName]="selectedStock?.name || selectedStock?.description"
-    [currentPrice]="selectedStock?.livePrice || selectedStock?.price || 0" (close)="showTradeModal = false"
+<app-trade-modal 
+    [visible]="showTradeModal" 
+    [mode]="'buy'" 
+    [stockId]="selectedStock?.id"
+    [stockSymbol]="selectedStock?.symbol" 
+    [stockName]="selectedStock?.name || selectedStock?.description"
+    [currentPrice]="selectedStock?.livePrice || selectedStock?.price || 0" 
+    (close)="showTradeModal = false"
     (tradeComplete)="showTradeModal = false">
 </app-trade-modal>

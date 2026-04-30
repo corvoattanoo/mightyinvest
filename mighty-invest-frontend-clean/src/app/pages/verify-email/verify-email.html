@@ -1,0 +1,21 @@
+<div class="verify-wrapper">
+  <div class="verify-card">
+    <div class="mail-icon">📬</div>
+    <h1>Check your email</h1>
+    <p class="subtitle">
+      We sent a verification link to<br>
+      <strong>{{ userEmail() }}</strong>
+    </p>
+    <p class="hint">Click the link in the email to activate your account.</p>
+
+    <button class="btn-resend" (click)="resendEmail()" [disabled]="isResending() || reSendCooldown() > 0">
+      <span *ngIf="isResending()">Sending...</span>
+      <span *ngIf="!isResending() && reSendCooldown() === 0">Resend email</span>
+      <span *ngIf="!isResending() && reSendCooldown() > 0">Resend in {{ reSendCooldown() }}s</span>
+    </button>
+
+    <p *ngIf="resendMessage()" class="resend-msg">{{ resendMessage() }}</p>
+
+    <button class="btn-logout" (click)="logout()">Wrong email? Sign out</button>
+  </div>
+</div>

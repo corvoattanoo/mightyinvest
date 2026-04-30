@@ -26,6 +26,8 @@ Route::get('/news', [NewsController::class, 'index']);
 Route::get('/news/social-sentiments', [NewsController::class, 'social_sentiments']);
 Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+// Email verification — API route üzerinden (nginx api/* → Laravel)
+Route::get('/email/verify/{id}/{hash}',[AuthController::class, 'verifyEmail'])->name('verification.verify');
 
 /*
 |--------------------------------------------------------------------------

@@ -10,7 +10,7 @@ import { MarketsComponent } from './pages/markets/markets';
 import { NewsComponent } from './pages/news/news';
 import { PortfolioComponent } from './pages/portfolio/portfolio';
 import { LandingComponent } from './pages/landing/landing';
-
+import { VerifyEmailComponent } from './pages/verify-email/verify-email';
 export const routes: Routes = [
     // 1. Giriş Sayfası (Landing Page)
     { path: '', component: LandingComponent },
@@ -21,7 +21,8 @@ export const routes: Routes = [
         component: AuthLayoutComponent,
         children: [
             { path: 'login', component: LoginComponent },
-            { path: 'register', component: RegisterComponent }
+            { path: 'register', component: RegisterComponent },
+            { path: 'verify-email', component: VerifyEmailComponent}
         ]
     },
 

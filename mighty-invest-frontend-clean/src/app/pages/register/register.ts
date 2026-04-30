@@ -43,7 +43,7 @@ export class RegisterComponent {
 
         this.authService.register(this.registerForm.value).subscribe({
             next: () => {
-                this.router.navigate(['/dashboard']);
+                this.router.navigate(['/verify-email']);
             },
             error: (err) => {
                 this.isLoading = false;
