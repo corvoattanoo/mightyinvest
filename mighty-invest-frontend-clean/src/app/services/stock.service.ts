@@ -55,4 +55,8 @@ export class StockService {
     removeFromWatchlist(symbol: string | number): Observable<any> {
         return this.http.delete(`${this.apiUrl}/watchlist/${symbol}`);
     }
+
+    getTopMovers():Observable<any[]>{
+        return this.http.get<any[]>(`${this.apiUrl}/stocks/movers`);
+    }
 }

@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StockService } from '../../services/stock.service';
-import { Subject, takeUntil, debounceTime, switchMap, of, map, forkJoin } from 'rxjs';
+import { Subject, takeUntil, debounceTime, switchMap, of, map, forkJoin, catchError, timeout, distinctUntilChanged, finalize } from 'rxjs';
 import { TradeModalComponent } from '../../shared/components/trade-modal/trade-modal';
 import { StockQuote } from '../../models/stock.model';
 import { ActivatedRoute } from '@angular/router';
@@ -34,86 +34,91 @@ export class MarketsComponent implements OnInit, OnDestroy {
     // Hangi kategoride hangi gerçek semboller çekilecek, buraya yazıyoruz
     private categorySymbols: { [key: string]: string[] } = {
         'most-traded': ['AAPL', 'TSLA', 'NVDA', 'AMZN', 'MSFT', 'META'],
-        'most-bought': ['IREN', 'HIMS', 'IONQ', 'HOOD'],
-        'most-shorted': ['CVX', 'BRK.B', 'XOM', 'JNJ'],
-        'commodities': ['GLD', 'SLV', 'USO', 'UNG'],
-        'indices': ['SPY', 'QQQ', 'DIA', 'IWM'],
-        'forex': ['FXE', 'FXY', 'FXB'],
-        'stocks': ['GOOGL', 'NFLX', 'DIS', 'PYPL', 'ADBE'],
-        'crypto': ['BINANCE:BTCUSDT', 'BINANCE:ETHUSDT', 'BINANCE:SOLUSDT'],
-        'etfs': ['VOO', 'VTI', 'VGT', 'ARKK'],
-        'treasuries': ['TLT', 'IEF', 'SHY']
-    };
+    'crypto': ['BINANCE:BTCUSDT', 'BINANCE:ETHUSDT', 'BINANCE:SOLUSDT', 'BINANCE:BNBUSDT'],
+    'forex': ['OANDA:EUR_USD', 'OANDA:GBP_USD', 'OANDA:USD_JPY'],
+    'etfs': ['SPY', 'QQQ', 'VOO', 'VTI', 'ARKK'],
+    'indices': ['SPY', 'QQQ', 'DIA'], // Bunlar endekslerin ETF karşılıkları, en güvenlisi!
+    'commodities': ['GLD', 'SLV', 'USO'] // Altın, Gümüş, Petrol ETF'leri
+};
+
 
    constructor(
     private stockService: StockService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
    ) { }
 
    ngOnInit(): void {
-        // 1. URL dinleme (Bu bağımsız bir blok)
-        this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
-            const category = params['category'] || 'most-traded';
-            this.loadCategory(category);
-        });
-        // 2. Global market verilerini çekme (Bu da bağımsız)
-        this.loadGlobalMarkets(); 
-        // 3. Market durumunu çekme (Bu da bağımsız)
-        this.stockService.getMarketStatus()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(data => {
-                this.marketStatus = data;
-            });
-        // 4. Arama mantığı (Debounce: Kullanıcı yazmayı bitirince ara)
-        this.searchSubject.pipe(
+       this.route.queryParams.pipe(
+        takeUntil(this.destroy$),
+        map(params => params['category'] || 'most-traded'), // Sadece category'yi al
+        distinctUntilChanged(), // Aynı kategoriye tekrar tıklanmışsa yeniden yükleme yapma
+        switchMap(category => {
+            this.loading = true;
+            this.cdr.detectChanges(); // Yükleme ekranını hemen göster
+            this.activeCategory.set(category);
+
+            const symbols = this.categorySymbols[category] || [];
+            if(symbols.length === 0){
+                this.stocks = [];
+                this.loading = false;
+                return of([]); //empty and return
+            }
+            //for every symbol create an request
+            const requests = symbols.map(symbol =>
+                this.stockService.getStockQuote(symbol).pipe(
+                    timeout(5000),
+                    map(quote => ({
+                        symbol,
+                        name: this.getDisplayName(symbol),
+                        livePrice: quote.current_price,
+                        change: quote.percent_change,
+                        exchange: this.getExchange(symbol)
+                    })),
+                    catchError(() => of(null))
+                )
+            );
+
+            return forkJoin(requests).pipe(
+                finalize(() => {
+                    this.loading = false;
+                    this.cdr.detectChanges(); // Her durumda ekranı tazele
+                })
+            );
+        })
+       ).subscribe({
+        next: (data) => {
+            //null olanlari temizle 
+            this.stocks = data.filter(s => s !== null);
+            this.loading = false;
+        },
+        error: () => {
+            this.loading = false;
+        }
+       });
+
+       this.loadGlobalMarkets();
+
+       this.searchSubject.pipe(
             takeUntil(this.destroy$),
-            debounceTime(400), // 400ms bekle
+            debounceTime(400),
             switchMap((query) => {
-                if (query.length < 2) return of([]); // 2 harften azsa arama yapma
+                if (query.length < 2) return of([]);
                 return this.stockService.searchStocks(query);
             })
         ).subscribe((results) => {
             this.searchResults = results;
-        });    
+        });
    }
 
 
-   // 1. loadCategory metodunu düzgünce kapatalım
-   loadCategory(category: string): void {
-    this.loading = true;
-    this.activeCategory.set(category);
-    const symbols = this.categorySymbols[category] || [];
-    if(symbols.length === 0){
-        this.stocks = [];
-        this.loading = false;
-        return;
-    }
-    
-    const requests = symbols.map(symbol =>
-        this.stockService.getStockQuote(symbol).pipe(
-            map(quote => ({
-                symbol,
-                name: this.getDisplayName(symbol),
-                livePrice: quote.current_price,
-                change: quote.percent_change, // Bunu da ekleyelim, tabloda lazım
-                exchange: this.getExchange(symbol)
-            }))
-        )
-    );
-    forkJoin(requests).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (data) => {
-            this.stocks = data;
-            this.loading = false;
-        },
-        error: () => { this.loading = false; }
-    });
-   } // <--- loadCategory burada bitti!
-   // 2. Diğer yardımcı metodlar ayrı birer fonksiyon olarak devam eder
+   
    getDisplayName(symbol: string): string {
     const names: { [key: string]: string } = {
-            'AAPL': 'Apple Inc.', 'TSLA': 'Tesla Motors', 'NVDA': 'NVIDIA Corp.',
-            'AMZN': 'Amazon.com', 'MSFT': 'Microsoft Corp.', 'META': 'Meta Platforms',
-            'BINANCE:BTCUSDT': 'Bitcoin', 'BINANCE:ETHUSDT': 'Ethereum'
+            'AAPL': 'Apple Inc.', 'TSLA': 'Tesla Inc.', 'NVDA': 'NVIDIA Corp.',
+            'BINANCE:BTCUSDT': 'Bitcoin', 'BINANCE:ETHUSDT': 'Ethereum',
+            'BINANCE:SOLUSDT': 'Solana', 'OANDA:EUR_USD': 'EUR / USD',
+            'OANDA:GBP_USD': 'GBP / USD', 'SPY': 'S&P 500 ETF', 'GLD': 'Gold Trust'
         };
         return names[symbol] || symbol;
    }
@@ -121,11 +126,12 @@ export class MarketsComponent implements OnInit, OnDestroy {
         return symbol.includes(':') ? 'CRYPTO' : 'NASDAQ';
    }
 
-       loadGlobalMarkets(): void {
-        const globalSymbols = ['GLD', 'QQQ', 'FXE']; // Altın, Nasdaq, Euro ETF'leri
+    loadGlobalMarkets(): void {
+        const globalSymbols = ['GLD', 'QQQ', 'SPY']; // Altın, Nasdaq, Euro ETF'leri
         
         const requests = globalSymbols.map(symbol => 
             this.stockService.getStockQuote(symbol).pipe(
+                timeout(4000),
                 map(quote => ({
                     symbol,
                     name: symbol === 'GLD' ? 'Gold' : symbol === 'QQQ' ? 'USA Tech 100' : 'EUR/USD',
@@ -133,7 +139,8 @@ export class MarketsComponent implements OnInit, OnDestroy {
                     price: quote.current_price,
                     change: (quote.percent_change >= 0 ? '+' : '') + quote.percent_change.toFixed(2) + '%',
                     positive: quote.percent_change >= 0
-                }))
+                })),
+                catchError(() => of(null))
             )
         );
 
