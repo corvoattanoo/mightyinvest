@@ -6,11 +6,12 @@ import { Subject, takeUntil, debounceTime, switchMap, of, map, forkJoin, catchEr
 import { TradeModalComponent } from '../../shared/components/trade-modal/trade-modal';
 import { StockQuote } from '../../models/stock.model';
 import { ActivatedRoute } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
+import { StockChartComponent } from '../dashboard/components/stock-chart/stock-chart';
+
 @Component({
     selector: 'app-markets',
     standalone: true,
-    imports: [CommonModule, FormsModule, TradeModalComponent],
+    imports: [CommonModule, FormsModule, TradeModalComponent, StockChartComponent],
     templateUrl: './markets.html',
     styleUrl: './markets.css',
 })
@@ -20,6 +21,7 @@ export class MarketsComponent implements OnInit, OnDestroy {
    searchQuery = '';
    marketStatus: any = null;
    loading = true;
+   viewMode: 'list' | 'detail' = 'list';
 
    //signals veri degisirse aninda degisir sayfa
    activeCategory = signal('most-traded');
@@ -27,6 +29,7 @@ export class MarketsComponent implements OnInit, OnDestroy {
 
    // trade modal durumu
    showTradeModal = false;
+   tradeMode: 'buy' | 'sell' = 'buy';
    selectedStock: any= null;
 
    private destroy$ = new Subject<void>();
@@ -110,6 +113,21 @@ export class MarketsComponent implements OnInit, OnDestroy {
             this.searchResults = results;
         });
    }
+   onSelectedStock(stock: any){
+    this.selectedStock = stock;
+    this.viewMode = 'detail';
+   }
+
+   backToList(){
+    this.viewMode = 'list';
+    this.selectedStock = null;
+   }
+
+   onTradeComplete(): void {
+    this.showTradeModal = false;
+    // İşlemden sonra gerekirse verileri tekrar çekebilirsin
+    this.loadGlobalMarkets();
+   }
 
 
    
@@ -154,8 +172,8 @@ export class MarketsComponent implements OnInit, OnDestroy {
         this.searchSubject.next(query); // Arama motorunu tetikle
     }
 
-    openTradeModal(stock: any): void {
-        this.selectedStock = stock;
+    openTradeModal(mode: 'buy' | 'sell'): void {
+        this.tradeMode = mode;
         this.showTradeModal = true;
     }
 

@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
 import { Stock } from '../../models/stock.model';
 import { StockService } from '../../services/stock.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +24,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService, private stockService: StockService, private cdRef: ChangeDetectorRef
+  constructor(private authService: AuthService, private stockService: StockService, private cdRef: ChangeDetectorRef, private router: Router
   ) {
     this.currentUser$ = this.authService.currentUser$;
     this.searchSubject.pipe(
@@ -59,6 +60,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.stockService.selectStock(stock);
     this.searchTerm = ''; // arama kutusunu temizle
     this.searchResult = []; //arama listesini kapat
+    this.router.navigate(['/dashboard']);
   }
 
   isGuest(user: User | null): boolean {
