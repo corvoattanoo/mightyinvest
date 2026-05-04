@@ -51,7 +51,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/stocks/search', [StockController::class, 'search']);
     Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
     Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);
-    Route::get('/stocks/{id}/history', [StockController::class, 'history']);
+    Route::get('/stocks/{id}/history', [StockController::class, 'history']);   
     Route::get('/alerts/live', [AlertController::class, 'live']);
     
     // Portfolio & Trading

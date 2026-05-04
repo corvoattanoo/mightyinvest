@@ -7,6 +7,8 @@ use App\Models\Stock; // bunu ekle, yoksa Stock bulunamaz
 use App\Models\StockHistory;
 use App\Services\FinnhubService;
 use App\Services\PolygonService;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class StockController extends Controller
 {
@@ -25,7 +27,10 @@ class StockController extends Controller
     }
 
     public function quote($symbol){
-        $data = $this->finnhubService->getQuote($symbol);
+        // 2 dakika önbellekte tut — Finnhub'a her seferinde bağlanmayı engeller
+        $data = Cache::remember("quote_{$symbol}", 120, function() use ($symbol) {
+            return $this->finnhubService->getQuote($symbol);
+        });
         return response()->json($data);
     }
 
@@ -49,26 +54,14 @@ class StockController extends Controller
     }
 
     public function marketStatus(){
-        $data = $this->finnhubService->getMarketStatus();
+        // 5 dakika önbellekte tut — borsa durumu sık değişmez
+        $data = Cache::remember('market_status', 300, function() {
+            return $this->finnhubService->getMarketStatus();
+        });
         return response()->json($data);
     }
+
 }
-
-
-// class StockController extends Controller
-// {
-//     public function index()
-//     {
-//         // Dummy data döndürüyoruz
-//         $stocks = [
-//             ['id' => 1, 'name' => 'Apple', 'price' => 150],
-//             ['id' => 2, 'name' => 'Microsoft', 'price' => 300],
-//             ['id' => 3, 'name' => 'Tesla', 'price' => 700],
-//         ];
-
-//         return response()->json($stocks);
-//     }
-// }
 
 
 
