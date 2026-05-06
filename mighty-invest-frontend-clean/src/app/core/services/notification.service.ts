@@ -5,9 +5,10 @@ import { environment } from '../../../environments/environment';
 
 export interface Notification {
     id: number;
-    type: 'success' | 'info' | 'sentiment' | 'warning';
+    type: 'success' | 'info' | 'sentiment' | 'warning' | 'buy' | 'sell';
     title: string;
     message: string;
+    timeStamp: Date;
 }
 
 @Injectable({
@@ -22,49 +23,70 @@ export class NotificationService {
     private isPulseStarted = false;
     private shownAlerts = new Set<string>(); // Daha önce gösterilen sinyalleri burada tutuyoruz
 
+    private history: Notification[] = [];
+    private historySource = new BehaviorSubject<Notification[]>([]);
+    history$ = this.historySource.asObservable();
+
     // --- Carousel (Döngü) Ayarları ---
-    private alertsPool: any[] = []; 
-    private currentPoolIndex = 0;   
-    private carouselInterval: any; 
+    private alertsPool: any[] = [];
+    private currentPoolIndex = 0;
+    private carouselInterval: any;
     constructor(private http: HttpClient) { }
 
-    show(notif: Omit<Notification, 'id'>) {
+    show(notif: Omit<Notification, 'id' | 'timeStamp'>) {
         const id = Date.now();
-        this.list = [{ ...notif, id }]; 
+        const newNotif: Notification = {
+            ...notif,
+            id,
+            timeStamp: new Date()
+        };
+        this.list = [newNotif];
         this.notificationsSource.next([...this.list]);
+        //history 
+        this.history = [newNotif, ...this.history].slice(0, 15); //son 15 bildirim
+        this.historySource.next([...this.history]);
 
-        // Bildirimi 6 saniye sonra listeden kaldır
         setTimeout(() => this.remove(id), 15000);
     }
+
+    private fetchInterval: any;
 
     startRealPulse() {
         if (this.isPulseStarted) return; // Çift çalışmayı engelle
         this.isPulseStarted = true;
 
-        console.log('🚀 RealPulse bildirim akışı başlatıldı');
+        console.log(' RealPulse bildirim akışı başlatıldı');
         this.fetchAlerts();
 
-        // Her 30 saniyede bir yeni sinyal kontrolü
-        setInterval(() => {
+        this.fetchInterval = setInterval(() => {
             this.fetchAlerts();
         }, 30000);
         this.startCarouselLoop();
     }
 
-    private startCarouselLoop(){
-        if(this.carouselInterval) clearInterval(this.carouselInterval);
+    stopPulse() {
+        if (this.fetchInterval) clearInterval(this.fetchInterval);
+        if (this.carouselInterval) clearInterval(this.carouselInterval);
+        this.isPulseStarted = false;
+        this.alertsPool = [];
+        console.log(' RealPulse bildirim akışı durduruldu');
+    }
+
+    private startCarouselLoop() {
+        if (this.carouselInterval) clearInterval(this.carouselInterval);
 
         this.carouselInterval = setInterval(() => {
-            if(this.alertsPool.length > 0){
+            if (this.alertsPool.length > 0) {
                 const alert = this.alertsPool[this.currentPoolIndex];
 
                 this.show({
                     type: 'sentiment',
                     title: `SIGNAL: ${alert.ticker}`,
-                    message: alert.top_signal
+                    message: alert.top_signal,
+
                 });
 
-                this.currentPoolIndex = (this.currentPoolIndex +1) % this.alertsPool.length;
+                this.currentPoolIndex = (this.currentPoolIndex + 1) % this.alertsPool.length;
             }
         }, 15000);
     }
@@ -77,7 +99,7 @@ export class NotificationService {
                     console.log('✅ Sinyal Havuzu Güncellendi:', this.alertsPool.length, 'adet sinyal var.');
                 }
             },
-            error: (err) => console.error('❌ Sinyal çekme hatası:', err)
+            error: (err) => console.error(' Sinyal çekme hatası:', err)
         });
     }
 

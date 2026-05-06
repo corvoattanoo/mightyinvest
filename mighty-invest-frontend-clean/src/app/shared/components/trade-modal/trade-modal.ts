@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, ChangeDetectorRef } from '@angu
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../core/services/transaction.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-trade-modal',
@@ -65,7 +66,8 @@ export class TradeModalComponent {
 
   constructor(
     private transactionService: TransactionService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private notificationService: NotificationService,
   ) { }
 
   onConfirm() {
@@ -97,6 +99,11 @@ export class TradeModalComponent {
     action$.subscribe({
       next: () => {
         this.loading = false;
+        this.notificationService.show({
+          type: this.mode === 'buy' ? 'buy': 'sell',
+          title: this.mode === 'buy' ? 'order Excecuted' : 'sell Order Filled',
+          message: `${this.mode === 'buy' ? 'bought' : 'Sold'} ${this.quantity} Inits of  ${this.stockSymbol} at $${this.currentPrice}`
+        });
         this.tradeComplete.emit();
         this.close.emit();
         this.cdRef.detectChanges();

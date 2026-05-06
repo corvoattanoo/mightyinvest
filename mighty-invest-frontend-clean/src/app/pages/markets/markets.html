@@ -166,11 +166,19 @@
                         </div>
                         <div class="flex items-center justify-between py-3 border-b border-white/5">
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Day High</span>
-                            <span class="text-xs font-black text-white">{{ selectedStock?.livePrice * 1.02 | currency }}</span>
+                            <span class="text-xs font-black text-white">{{ selectedStock?.high | currency }}</span>
+                        </div>
+                        <div class="flex items-center justify-between py-3 border-b border-white/5">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Day Low</span>
+                            <span class="text-xs font-black text-white">{{ selectedStock?.low | currency }}</span>
+                        </div>
+                        <div class="flex items-center justify-between py-3 border-b border-white/5">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Open Price</span>
+                            <span class="text-xs font-black text-white">{{ selectedStock?.open | currency }}</span>
                         </div>
                         <div class="flex items-center justify-between py-3">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Day Low</span>
-                            <span class="text-xs font-black text-white">{{ selectedStock?.livePrice * 0.98 | currency }}</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prev Close</span>
+                            <span class="text-xs font-black text-white">{{ selectedStock?.prevClose | currency }}</span>
                         </div>
                     </div>
                 </div>

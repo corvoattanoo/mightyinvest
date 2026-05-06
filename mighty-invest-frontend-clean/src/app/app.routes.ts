@@ -11,6 +11,7 @@ import { NewsComponent } from './pages/news/news';
 import { PortfolioComponent } from './pages/portfolio/portfolio';
 import { LandingComponent } from './pages/landing/landing';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email';
+import { SettingsComponent } from './pages/settings/settings';
 export const routes: Routes = [
     // 1. Giriş Sayfası (Landing Page)
     { path: '', component: LandingComponent },
@@ -33,6 +34,7 @@ export const routes: Routes = [
         children: [
             { path: 'news', component: NewsComponent },
             { path: 'markets', component: MarketsComponent },
+            { path: 'settings', component: SettingsComponent},
         ]
     },
 
