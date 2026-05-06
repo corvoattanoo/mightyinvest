@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthResponse, LoginRequest, RegisterRequest, User } from '../../models/auth.model';
 import { TokenService } from './token.service';
+import { NotificationService } from './notification.service';
 
 @Injectable({
     providedIn: 'root', //auth.service i uygulama genleinde kullanmayi saglar
@@ -17,7 +18,8 @@ export class AuthService {
     constructor(
         private http: HttpClient,
         private router: Router,
-        private tokenService: TokenService
+        private tokenService: TokenService,
+        private notificationService: NotificationService
     ) {
         //test comment
         // Uygulama başlarken TokenService'den mevcut kullanıcıyı alıyoruz
@@ -56,7 +58,7 @@ export class AuthService {
     }
 
     loginAsGuest(): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/demo`, {}).pipe(
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/demo`,{}).pipe(
             tap((response) => this.handleAuthSuccess(response))
         );
     }
@@ -98,6 +100,7 @@ export class AuthService {
     }
 
     private clearSession(): void {
+        this.notificationService.stopPulse();
         this.tokenService.clear();
         this.currentUserSubject.next(null);
         this.router.navigate(['/login']);

@@ -76,7 +76,11 @@ export class MarketsComponent implements OnInit, OnDestroy {
                         name: this.getDisplayName(symbol),
                         livePrice: quote.current_price,
                         change: quote.percent_change,
-                        exchange: this.getExchange(symbol)
+                        exchange: this.getExchange(symbol),
+                        high: quote.high_price,
+                        low: quote.low_price,
+                        open: quote.open_price,
+                        prevClose: quote.previous_close
                     })),
                     catchError(() => of(null))
                 )

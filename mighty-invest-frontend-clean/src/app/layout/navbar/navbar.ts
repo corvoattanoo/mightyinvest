@@ -8,11 +8,14 @@ import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs
 import { Stock } from '../../models/stock.model';
 import { StockService } from '../../services/stock.service';
 import { Router } from '@angular/router';
+import { NotificationService, Notification } from '../../core/services/notification.service';
+import { RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -24,7 +27,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService, private stockService: StockService, private cdRef: ChangeDetectorRef, private router: Router
+  constructor(private authService: AuthService,
+    private stockService: StockService,
+    private cdRef: ChangeDetectorRef,
+    private router: Router,
+    private notificationService: NotificationService
   ) {
     this.currentUser$ = this.authService.currentUser$;
     this.searchSubject.pipe(
@@ -40,8 +47,29 @@ export class NavbarComponent implements OnInit, OnDestroy {
       )
   }
 
+  notifications: Notification[] = [];
+  showNotifications = false;
+  unreadCount = 0;
+
   ngOnInit(): void {
     this.fetchMarketStatus();
+
+    //notification history
+    this.notificationService.history$.subscribe(notifs => {
+      this.notifications = notifs;
+      this.unreadCount = notifs.length;
+    })
+  }
+
+  toggleNotification() {
+    this.showNotifications = !this.showNotifications;
+    if (this.showNotifications) {
+      this.unreadCount = 0;
+    }
+  }
+
+  markAllAsRead(){
+    this.unreadCount = 0;
   }
 
   fetchMarketStatus() {
