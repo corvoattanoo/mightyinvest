@@ -1,6 +1,6 @@
 export const environment = {
-    production: false,
+    production: true,
 
     //laravel api address on ngnix
-    apiUrl: 'http://localhost:8085/api'
+    apiUrl: '/api'
 };
