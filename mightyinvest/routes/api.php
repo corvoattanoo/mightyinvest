@@ -21,7 +21,8 @@ Route::middleware('throttle:5,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/auth/demo', [AuthController::class, 'demo']);
 });
-
+Route::get('/stocks', [StockController::class, 'index']);
+Route::get('/stocks/ticker', [StockController::class, 'ticker']);
 Route::get('/news', [NewsController::class, 'index']);
 Route::get('/news/social-sentiments', [NewsController::class, 'social_sentiments']);
 Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
@@ -45,9 +46,10 @@ Route::middleware('auth:sanctum')->group(function () {
 | Verified Routes (Must be Authenticated and Verified)
 |--------------------------------------------------------------------------
 */
+
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Market Data
-    Route::get('/stocks', [StockController::class, 'index']);
+    
     Route::get('/stocks/search', [StockController::class, 'search']);
     Route::get('/stocks/quote/{symbol}', [StockController::class, 'quote']);
     Route::get('/stocks/candles/{symbol}', [StockController::class, 'candles']);

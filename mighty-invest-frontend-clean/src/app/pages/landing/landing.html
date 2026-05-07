@@ -26,7 +26,7 @@
 <main class="pt-20">
     <!-- Live Ticker Strip -->
     <section class="ticker-wrap border-y border-white/5 py-4">
-        <div class="ticker-move">
+        <div class="ticker-move" *ngIf="tickerStocks.length > 0">
             <!-- 1. LİSTE -->
             <div class="ticker-list">
                 <span *ngFor="let stock of tickerStocks" class="flex gap-3 items-center">
