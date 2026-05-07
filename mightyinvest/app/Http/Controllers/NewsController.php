@@ -30,11 +30,28 @@ class NewsController extends Controller {
     }
 
     public function social_sentiments(){
-        $sentiments = DB::table('social_sentiments')
+        // Bullish'leri al (Tam eşleşme için küçük harf zorlamasıyla)
+        $bullish = DB::table('social_sentiments')
+            ->whereRaw('LOWER(sentiment) = ?', ['bullish'])
             ->orderBy('post_count', 'desc')
-            ->limit(5)
+            ->limit(4)
             ->get();
 
-        return response()->json($sentiments);
+        // Bearish'leri al (Daha cesur bir liste için)
+        $bearish = DB::table('social_sentiments')
+            ->whereRaw('LOWER(sentiment) = ?', ['bearish'])
+            ->orderBy('post_count', 'desc')
+            ->limit(1)
+            ->get();
+
+        // Eğer hiç bearish yoksa (nadir durum), listeyi 5 bullish ile tamamla
+        if ($bearish->isEmpty()) {
+            $sentiments = $bullish;
+        } else {
+            $sentiments = $bullish->merge($bearish);
+        }
+
+        // Karıştırıp döndür
+        return response()->json($sentiments->shuffle());
     }
 }
