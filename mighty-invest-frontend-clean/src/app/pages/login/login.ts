@@ -67,6 +67,21 @@ export class LoginComponent {
             });
     }
 
+    onGuestLogin(): void {
+        this.isLoading.set(true);
+        this.errorMessage.set('');
+
+        this.authService.loginAsGuest().subscribe({
+            next: () => {
+                this.router.navigate(['/dashboard']);
+            },
+            error: (err) => {
+                this.isLoading.set(false);
+                this.errorMessage.set(err.error?.message || 'Guest login failed.');
+            }
+        });
+    }
+
     onVerifyOtp(): void {
         if (this.otpForm.invalid) return;
 
