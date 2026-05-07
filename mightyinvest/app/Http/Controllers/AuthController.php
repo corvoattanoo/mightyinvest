@@ -107,23 +107,64 @@ class AuthController extends Controller
 
     //DEMO PAGE
     public function demo(){
-        // "guest@mightyinvest.com" kullanicisini bul veya yoksa olustur
-        $user = User::firstOrCreate(
-            ['email'  => 'guest@mightyinvest.com'],
-            [
-                'name' => 'Portfolio guest',
+        // "guest@mightyinvest.com" kullanıcısını bul veya oluştur
+        $user = User::where('email', 'guest@mightyinvest.com')->first();
+
+        if (!$user) {
+            $user = User::create([
+                'name' => 'Portfolio Guest',
+                'email' => 'guest@mightyinvest.com',
                 'password' => Hash::make('mighty-guest-password-2026'),
-            ]
-            );
-
-            //bu kullanici icin yeni bir sanctum token olustur
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return response()->json([
-                'user' => $user->only(['id', 'name', 'email']),
-                'token' => $token,
-                'message' => 'Welcome to the Demo Mode!'
+                'email_verified_at' => now(),
+                'balance' => 100000.00
             ]);
+        } else {
+            $user->email_verified_at = now();
+            if ($user->balance < 1000) {
+                $user->balance = 100000.00;
+                $user->save();
+            }
+        }
+
+        // Eğer portföy boşsa örnek hisseleri ekle
+        if ($user->portfolios()->count() === 0) {
+            $sampleStocks = [
+                ['symbol' => 'AAPL', 'quantity' => 50, 'average_price' => 175.50],
+                ['symbol' => 'TSLA', 'quantity' => 20, 'average_price' => 240.20],
+                ['symbol' => 'NVDA', 'quantity' => 15, 'average_price' => 450.80],
+                ['symbol' => 'MSFT', 'quantity' => 30, 'average_price' => 380.00],
+            ];
+
+            foreach ($sampleStocks as $stockData) {
+                $stock = \App\Models\Stock::where('symbol', $stockData['symbol'])->first();
+                if ($stock) {
+                    $user->portfolios()->create([
+                        'stock_id' => $stock->id,
+                        'symbol' => $stockData['symbol'],
+                        'quantity' => $stockData['quantity'],
+                        'average_price' => $stockData['average_price'],
+                        'currency' => 'USD'
+                    ]);
+                }
+            }
+        }
+
+        // Eğer watchlist boşsa örnekleri ekle
+        if ($user->watchlist()->count() === 0) {
+            $watchlistSymbols = ['BTCUSDT', 'ETHUSDT', 'GOOGL', 'AMZN', 'META'];
+            foreach ($watchlistSymbols as $symbol) {
+                $user->watchlist()->create(['symbol' => $symbol]);
+            }
+        }
+
+        // Bu kullanıcı için yeni bir sanctum token oluştur
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user->only(['id', 'name', 'email', 'balance']),
+            'token' => $token,
+            'message' => 'Welcome to the Demo Mode!'
+        ]);
     }
 
     public function resendVerification(Request $request){
