@@ -81,11 +81,21 @@ class ScrapeRedditCommand extends Command
                     ->avg() ?? 50; // yorum yoksa nötr başlangıç
 
                 // 5. Final skor hesaplama
-                $finalScore = ($titleSentiment['score'] * 0.4) + ($commentScores * 0.6);
-                $finalScore = round($finalScore * $weight + 50 * (1 - $weight));
-                $finalSentiment = $finalScore > 55
+                // Ağırlığı (weight) biraz daha lineer kullanıyoruz
+                $finalScore = ($titleSentiment['score'] * 0.5) + ($commentScores * 0.5);
+                $finalScore = round(($finalScore * $weight) + (50 * (1 - $weight)));
+                
+                // Nötr aralığını %48-52'ye daraltıyoruz ki daha fazla aksiyon görelim
+                $finalSentiment = $finalScore > 52
                     ? 'bullish'
-                    : ($finalScore < 45 ? 'bearish' : 'neutral');
+                    : ($finalScore < 48 ? 'bearish' : 'neutral');
+
+                // Sadece başlıkta veya toplamda bir sinyal yakaladıysak kaydet
+                // 50 puan (tam nötr) olan hiçbir şeyi kaydetmiyoruz
+                if ($titleSentiment['signals']['bull'] === 0 && $titleSentiment['signals']['bear'] === 0 && $finalScore == 50) {
+                    $this->line("   [Skipped]: No clear signal found for {$ticker}.");
+                    continue;
+                }
 
                 // 6. Veritabanı güncelle
                 $sentiment = SocialSentiment::updateOrCreate(
@@ -101,7 +111,13 @@ class ScrapeRedditCommand extends Command
                 // ✓ increment ayrı — updateOrCreate'in üzerine yazmasını engeller
                 $sentiment->increment('post_count');
 
+                // DEBUG BİLGİSİ: Ne okuduk, ne bulduk?
+                $bulls = $titleSentiment['signals']['bull'];
+                $bears = $titleSentiment['signals']['bear'];
+                $this->line("   [Title]: " . substr($title, 0, 60) . "...");
+                $this->line("   [Signals]: Bull: {$bulls}, Bear: {$bears} | Weight: " . round($weight, 2));
                 $this->line("✓ {$ticker}: {$finalSentiment} (Puan: {$finalScore})");
+                $this->line("--------------------------------------------------");
             }
         }
 

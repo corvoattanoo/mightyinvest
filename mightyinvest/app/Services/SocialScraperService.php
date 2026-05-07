@@ -94,12 +94,14 @@ public function fetchComments(string $postId, int $limit = 20): array
         $ups = $postData['ups'] ?? 0;
         $numComments = $postData['num_comments'] ?? 0;
 
-        //calculate total interaction
-        $engagement = $ups + ($numComments*2);
+        // Yorumlara daha fazla ağırlık veriyoruz (x3) çünkü etkileşimi daha iyi temsil eder
+        $engagement = $ups + ($numComments * 3);
 
-        $weight = log10(max($engagement, 1)) / 5; //assume max interavtion 100.000
+        // Bölücü rakamı 5'ten 4'e düşürerek ağırlığın daha hızlı yükselmesini sağlıyoruz
+        // Ayrıca 0.35 taban puan ekliyoruz ki her postun bir etkisi olsun
+        $weight = (log10(max($engagement, 1)) / 4) + 0.35;
 
-        return min($weight, 1.0); //max 1;
+        return min($weight, 1.0); // max 1.0;
     }
     // IM A HUMAN AFTER ALL, DONT PUT YOUR BLAME ON MEEE.
     public function humanDelay(): void{

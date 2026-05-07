@@ -1,54 +1,66 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+
 <!-- TopNavBar -->
 <header
     class="fixed top-0 w-full flex justify-between items-center px-6 py-4 z-50 bg-[#0a0b10]/80 backdrop-blur-md border-b border-white/5 shadow-xl">
-    <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-tertiary"
-            style="font-variation-settings: 'FILL' 1;">monitoring</span>
-        <span class="text-xl font-black tracking-tighter text-white uppercase">MightyInvest</span>
+    <!-- Logo (Login sayfasıyla aynı) -->
+    <div class="flex items-center gap-2 cursor-pointer" (click)="scrollTo('hero')">
+        <div class="w-8 h-8 rounded-lg bg-tertiary/20 border border-tertiary/30 flex items-center justify-center">
+            <span class="material-icons-round text-tertiary" style="font-size:18px">insights</span>
+        </div>
+        <span class="text-base font-black tracking-tighter text-white uppercase">MIGHTY<span class="text-tertiary">INVEST</span></span>
     </div>
     <nav class="hidden md:flex items-center gap-8">
-        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight"
-            (click)="scrollTo('features')">Markets</a>
-        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight"
-            (click)="scrollTo('features')">Analytics</a>
-        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight"
+        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight cursor-pointer"
+            (click)="scrollTo('markets')">Markets</a>
+        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight cursor-pointer"
+            (click)="scrollTo('analytics')">Analytics</a>
+        <a class="text-slate-400 hover:text-white transition-colors font-medium text-sm tracking-tight cursor-pointer"
             (click)="scrollTo('features')">Features</a>
     </nav>
     <div class="flex items-center gap-4">
         <button class="hidden md:block text-slate-400 hover:text-white font-medium text-sm"
-            (click)="goToLogin()">Login</button>
+            (click)="goToLogin()">Log In</button>
+        <button (click)="goToRegister()"
+            class="hidden md:block px-4 py-2 border border-white/10 text-white text-xs font-semibold rounded-lg hover:bg-white/5 transition-colors">Sign Up</button>
         <button (click)="tryDemo()"
-            class="px-5 py-2 border border-tertiary text-tertiary text-xs font-black uppercase tracking-widest rounded-lg hover:bg-tertiary hover:text-black transition-all duration-300 neon-glow">Try
+            class="px-5 py-2 bg-tertiary text-black text-xs font-black uppercase tracking-widest rounded-lg hover:opacity-90 transition-all duration-200">Try
             Demo</button>
     </div>
 </header>
 
-<main class="pt-20">
+<main class="pt-20" id="hero">
     <!-- Live Ticker Strip -->
-    <section class="ticker-wrap border-y border-white/5 py-4">
+    <section class="ticker-wrap border-y border-white/5 py-3" id="markets">
         <div class="ticker-move" *ngIf="tickerStocks.length > 0">
             <!-- 1. LİSTE -->
             <div class="ticker-list">
                 <span *ngFor="let stock of tickerStocks" class="flex gap-3 items-center">
                     <b class="text-white text-sm">{{ stock.symbol }}</b>
-                    <span class="text-slate-400 text-xs">{{ stock.current_price | currency }}</span>
+                    <span class="text-slate-300 text-xs font-medium">{{ stock.current_price | currency }}</span>
                     <span [class.text-green-400]="stock.percent_change >= 0"
                         [class.text-red-500]="stock.percent_change < 0" class="text-[11px] font-bold">
                         {{ stock.percent_change > 0 ? '+' : '' }}{{ stock.percent_change | number:'1.2-2' }}%
                     </span>
+                    <span class="text-white/10 text-xs">·</span>
                 </span>
             </div>
-            <!-- 2. LİSTE (KOPYA) -->
+            <!-- 2. LİSTE (KOPYA - sonsuz döngü için) -->
             <div class="ticker-list">
                 <span *ngFor="let stock of tickerStocks" class="flex gap-3 items-center">
                     <b class="text-white text-sm">{{ stock.symbol }}</b>
-                    <span class="text-slate-400 text-xs">{{ stock.current_price | currency }}</span>
+                    <span class="text-slate-300 text-xs font-medium">{{ stock.current_price | currency }}</span>
                     <span [class.text-green-400]="stock.percent_change >= 0"
                         [class.text-red-500]="stock.percent_change < 0" class="text-[11px] font-bold">
                         {{ stock.percent_change > 0 ? '+' : '' }}{{ stock.percent_change | number:'1.2-2' }}%
                     </span>
+                    <span class="text-white/10 text-xs">·</span>
                 </span>
             </div>
+        </div>
+        <!-- Yükleniyor göstergesi -->
+        <div *ngIf="tickerStocks.length === 0" class="flex items-center justify-center gap-8 px-6 text-slate-600 text-xs animate-pulse">
+            <span>Loading market data...</span>
         </div>
     </section>
 
@@ -57,27 +69,27 @@
         class="max-w-7xl mx-auto px-6 py-20 lg:py-32 grid md:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-140px)] landing-hero">
         <div class="space-y-8 reveal">
             <span
-                class="text-[10px] font-black uppercase tracking-widest text-tertiary bg-[#0bda651a] px-3 py-1 rounded-full border border-tertiary/20">Institutional
-                Analytics</span>
+                class="text-[10px] font-black uppercase tracking-widest text-tertiary bg-[#0bda651a] px-3 py-1 rounded-full border border-tertiary/20">Social
+                Sentiment Engine</span>
             <h1
                 class="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter leading-tight text-white hero-title">
                 Invest Smarter.<br /><span class="text-tertiary">Guided by Sentiment.</span>
             </h1>
             <p class="text-slate-400 text-base lg:text-lg leading-relaxed max-w-lg hero-text">
-                Real-time market intelligence that scans millions of social signals across Reddit. Detect institutional
-                shifts before they hit the tape.
+                Real-time market intelligence that scans millions of social signals across Reddit. Track your portfolio,
+                monitor your watchlist, and discover insights before they hit the tape.
             </p>
             <div class="flex flex-col items-start gap-4">
                 <div class="flex items-center gap-4">
                     <button (click)="tryDemo()"
                         class="bg-tertiary text-black px-8 py-4 font-bold rounded hover:scale-105 transition-transform shadow-[0_0_20px_rgba(11,218,101,0.3)]">Try
-                        Demo</button>
+                        Demo — Free</button>
                     <button (click)="goToRegister()"
-                        class="px-8 py-4 border border-slate-800 text-white font-bold rounded hover:bg-white/5 transition-colors">Join
-                        Now</button>
+                        class="px-8 py-4 border border-slate-700 text-white font-bold rounded hover:bg-white/5 transition-colors">Create
+                        Account</button>
                 </div>
                 <p class="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
-                    [ ★★★★★ ] 24/7 Automated Monitoring
+                    No credit card required · Free to start
                 </p>
             </div>
         </div>
@@ -120,7 +132,7 @@
                 </div>
 
                 <!-- Mid: High Conviction Signals -->
-                <div class="space-y-6">
+                <div class="space-y-6" id="analytics">
                     <p class="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-3">High Conviction
                         Detects</p>
 
@@ -130,7 +142,7 @@
                         <div class="flex items-center gap-4">
                             <div
                                 class="w-12 h-12 bg-tertiary/10 rounded-lg flex items-center justify-center border border-tertiary/20 shadow-inner">
-                                <span class="material-symbols-outlined text-tertiary text-2xl">trending_up</span>
+                                <span class="material-icons-round text-tertiary text-2xl">trending_up</span>
                             </div>
                             <div>
                                 <p class="font-black text-white text-base tracking-tight leading-none mb-1">NVDA</p>
@@ -150,7 +162,7 @@
                         <div class="flex items-center gap-4">
                             <div
                                 class="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center border border-red-500/20 shadow-inner">
-                                <span class="material-symbols-outlined text-red-500 text-2xl">trending_down</span>
+                                <span class="material-icons-round text-red-500 text-2xl">trending_down</span>
                             </div>
                             <div>
                                 <p class="font-black text-white text-base tracking-tight leading-none mb-1">TSLA</p>
@@ -165,7 +177,6 @@
                     </div>
                 </div>
 
-                <!-- Footer: System Health -->
                 <!-- Footer: Scan Activity -->
                 <div class="pt-4 border-t border-white/5">
                     <div class="flex justify-between items-center mb-2">
@@ -220,37 +231,37 @@
     <!-- Feature Grid -->
     <section class="max-w-7xl mx-auto px-6 py-24" id="features">
         <div class="text-center mb-16 reveal">
-            <p class="text-[10px] font-black uppercase text-purple-400 tracking-widest mb-2">Capabilities</p>
-            <h2 class="text-4xl font-bold text-white">Engineered for Performance</h2>
+            <p class="text-[10px] font-black uppercase text-purple-400 tracking-widest mb-2">Platform Capabilities</p>
+            <h2 class="text-4xl font-bold text-white">Everything You Need to Trade Smarter</h2>
+            <p class="text-slate-500 text-sm mt-3 max-w-xl mx-auto">From live market data to AI-powered sentiment analysis — built for serious investors.</p>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
             <div class="glass p-8 rounded-xl reveal" style="transition-delay: 100ms;">
                 <div class="w-12 h-12 bg-purple-500/10 rounded flex items-center justify-center mb-6">
-                    <span class="material-symbols-outlined text-purple-400 font-bold">psychology</span>
+                    <span class="material-icons-round text-purple-400">psychology</span>
                 </div>
                 <h3 class="text-xl font-bold mb-4 text-white">Reddit Intelligence</h3>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    NLP models trained specifically on financial subreddits. We filter out the noise and capture
-                    high-conviction retail signals.
+                    NLP models trained on financial subreddits to filter noise and surface high-conviction retail signals before they move the market.
                 </p>
             </div>
             <div class="glass p-8 rounded-xl border-tertiary/30 bg-tertiary/5 scale-105 z-10 reveal"
                 style="transition-delay: 200ms;">
                 <div class="w-12 h-12 bg-tertiary/20 rounded flex items-center justify-center mb-6">
-                    <span class="material-symbols-outlined text-tertiary">candlestick_chart</span>
+                    <span class="material-icons-round text-tertiary">candlestick_chart</span>
                 </div>
-                <h3 class="text-xl font-bold mb-4 text-white">Real-Time Portfolio</h3>
+                <h3 class="text-xl font-bold mb-4 text-white">Live Portfolio Tracking</h3>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    Watch your net worth evolve with sub-second price updates and automated risk-assessment.
+                    Monitor your net worth in real-time. Add positions, track P&L, manage your watchlist — all in one dashboard.
                 </p>
             </div>
             <div class="glass p-8 rounded-xl reveal" style="transition-delay: 300ms;">
                 <div class="w-12 h-12 bg-blue-500/10 rounded flex items-center justify-center mb-6">
-                    <span class="material-symbols-outlined text-blue-400">dns</span>
+                    <span class="material-icons-round text-blue-400">shield</span>
                 </div>
-                <h3 class="text-xl font-bold mb-4 text-white">Production Ready</h3>
+                <h3 class="text-xl font-bold mb-4 text-white">Secure & Reliable</h3>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    Built with a high-concurrency Laravel stack and Docker-native architecture for high availability.
+                    Bank-grade security with two-factor authentication, end-to-end encryption, and 99.9% uptime on a Docker-native infrastructure.
                 </p>
             </div>
         </div>
@@ -260,7 +271,7 @@
     <section
         class="w-full bg-gradient-to-br from-[#0a0b10] to-[#1a0533] py-24 mt-12 reveal text-center border-y border-white/5">
         <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">See it live. No signup required.</h2>
-        <p class="text-slate-400 text-lg mb-8">Explore the full power of our terminal with historical data.</p>
+        <p class="text-slate-400 text-lg mb-8">Explore the full platform with real market data — zero commitment.</p>
         <button (click)="tryDemo()"
             class="bg-tertiary text-black px-12 py-5 font-black uppercase text-sm tracking-widest rounded neon-glow shadow-[0_0_30px_rgba(11,218,101,0.3)] hover:scale-105 transition-transform">
             Launch Demo →
@@ -268,13 +279,51 @@
     </section>
 </main>
 
-<footer
-    class="w-full py-12 px-6 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto border-t border-white/5 mt-12 bg-background">
-    <div class="flex flex-col items-center md:items-start gap-2">
-        <span class="text-lg font-black text-white uppercase tracking-tighter">MightyInvest</span>
-        <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Built with Laravel & Angular</p>
+<!-- Footer -->
+<footer class="w-full bg-[#0a0b10] border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid md:grid-cols-3 gap-8 mb-10">
+            <!-- Brand -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-tertiary/20 border border-tertiary/30 flex items-center justify-center">
+                        <span class="material-icons-round text-tertiary" style="font-size:16px">insights</span>
+                    </div>
+                    <span class="text-sm font-black tracking-tighter text-white uppercase">MIGHTY<span class="text-tertiary">INVEST</span></span>
+                </div>
+                <p class="text-slate-500 text-xs leading-relaxed max-w-xs">
+                    A next-generation trading platform powered by social sentiment analysis and real-time market data.
+                </p>
+            </div>
+            <!-- Product Links -->
+            <div class="space-y-3">
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Platform</p>
+                <ul class="space-y-2">
+                    <li><a class="text-slate-500 hover:text-white text-xs transition-colors cursor-pointer" (click)="tryDemo()">Live Dashboard</a></li>
+                    <li><a class="text-slate-500 hover:text-white text-xs transition-colors cursor-pointer" (click)="scrollTo('analytics')">Market Analytics</a></li>
+                    <li><a class="text-slate-500 hover:text-white text-xs transition-colors cursor-pointer" (click)="scrollTo('features')">Features</a></li>
+                    <li><a class="text-slate-500 hover:text-white text-xs transition-colors cursor-pointer" (click)="goToRegister()">Get Started Free</a></li>
+                </ul>
+            </div>
+            <!-- Tech Stack -->
+            <div class="space-y-3">
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Built With</p>
+                <ul class="space-y-2">
+                    <li class="text-slate-500 text-xs">Angular 17 · TypeScript</li>
+                    <li class="text-slate-500 text-xs">Laravel 11 · PHP 8.3</li>
+                    <li class="text-slate-500 text-xs">PostgreSQL · Redis</li>
+                    <li class="text-slate-500 text-xs">Docker · Nginx · AWS EC2</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Bottom Bar -->
+        <div class="border-t border-white/5 pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
+            <p class="text-slate-600 text-[10px] uppercase tracking-widest">
+                © 2026 MightyInvest. All rights reserved.
+            </p>
+            <p class="text-slate-700 text-[10px] uppercase tracking-widest">
+                Market data powered by Finnhub · Polygon.io
+            </p>
+        </div>
     </div>
-    <p class="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 mt-4 md:mt-0">
-        Built for Portfolio — Computer Science, 2026
-    </p>
 </footer>

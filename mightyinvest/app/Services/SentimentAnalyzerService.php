@@ -4,20 +4,39 @@ namespace App\Services;
 
 class SentimentAnalyzerService {
     private array $bullishKeywords = [
-        'moon', 'rocket', 'buy', 'calls', 'bull', 'pump', 'long', 'yolo', 'all in',
-        '🚀', '🔥', '💎', '📈', '✅'
+        // WSB tarzı
+        'moon', 'rocket', 'buy', 'calls', 'bull', 'pump', 'long', 'yolo',
+        '🚀', '🔥', '💎', '📈', '✅',
+        // Finansal haber dili
+        'soar', 'soars', 'soaring', 'surges', 'surge', 'rallies', 'rally',
+        'profit', 'profits', 'jumped', 'breakout', 'outperforms', 'beats',
+        'gains', 'upside', 'strong', 'bullish', 'upgrade', 'upgraded',
+        'growth', 'record', 'winning', 'recovery', 'rebound', 'beat',
     ];
 
     private array $bearishKeywords = [
-        'crash', 'puts', 'bear', 'sell', 'short', 'dump', 'dead', 'fear', 'panic',
-        '📉', '🤡', '❌', '🩸'
+        // WSB tarzı
+        'crash', 'puts', 'bear', 'sell', 'short', 'dump', 'panic', 'fear',
+        '📉', '🤡', '❌', '🩸',
+        // Finansal haber dili
+        'plunges', 'plunge', 'tumbles', 'tumble', 'fell', 'drops', 'slumps',
+        'slump', 'losses', 'bankruptcy', 'bankrupt', 'bearish', 'downgrade',
+        'downgraded', 'missed', 'recession', 'selloff', 'collapse',
     ];
 
     private array $negators = [
-        'not', 'never', 'no', "don't", 'sold', 'selling'
+        'not', 'never', 'no', "don't", 'sold', 'selling', 'avoid'
     ];
-    private array $bullishPhrases = ['all in', 'to the moon','short squeeze', 'break out', 'load up', 'backed up the truck' , 'strong buy'];
-    private array $bearishPhrases  = ['get out', 'cut losses', 'stop loss hit', 'bull trap', 'price drop', 'going down', 'stay away', 'relief rally'];
+    private array $bullishPhrases = [
+        'all in', 'to the moon','short squeeze', 'break out', 'load up', 
+        'backed up the truck' , 'strong buy', 'all time high', 'ath',
+        'price target up', 'beat earnings', 'revenue growth'
+    ];
+    private array $bearishPhrases  = [
+        'get out', 'cut losses', 'stop loss hit', 'bull trap', 'price drop', 
+        'going down', 'stay away', 'relief rally', 'all time low', 'atl',
+        'price target down', 'missed earnings', 'debt crisis'
+    ];
 
     public function analyze(string $text): array
 {
@@ -38,7 +57,10 @@ class SentimentAnalyzerService {
     $words = preg_split('/\s+/', $text);
 
     foreach ($words as $word) {
-        $cleanWord = preg_replace('/[^a-z]/', '', $word);
+        $word = trim($word);
+        if (empty($word)) continue;
+        
+        $cleanWord = preg_replace('/[[:punct:]]/', '', strtolower($word)); // Sadece noktalama işaretlerini sil
 
         if (in_array($cleanWord, $this->negators)) { 
             $negateMode = 3;
