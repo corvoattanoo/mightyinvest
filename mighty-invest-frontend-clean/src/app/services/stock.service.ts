@@ -37,6 +37,10 @@ export class StockService {
         return this.http.get<Stock[]>(`${this.apiUrl}/stocks`, { params });
     }
 
+    getTickerStocks(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/stocks/ticker`);
+    }
+
     getStockHistory(stockId: number): Observable<StockHistory[]> {
         return this.http.get<StockHistory[]>(`${this.apiUrl}/stocks/${stockId}/history`);
     }

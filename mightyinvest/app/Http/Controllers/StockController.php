@@ -38,6 +38,26 @@ class StockController extends Controller
         return Stock::all();
     }
 
+    public function ticker(){
+        $symbols = [
+            'AAPL', 'TSLA', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'AMD', 'NFLX',
+            'BTCUSDT', 'ETHUSDT', 'SPY', 'QQQ'
+        ];
+
+        $stocks = collect($symbols)->map(function($symbol) {
+            return Cache::remember("landing_quote_{$symbol}", 60, function() use ($symbol) {
+                $quote = $this->finnhubService->getQuote($symbol);
+                return [
+                    'symbol' => $symbol,
+                    'current_price' => $quote['current_price'] ?? 0,
+                    'percent_change' => $quote['percent_change'] ?? 0,
+                ];
+            });
+        });
+
+        return response()->json($stocks);
+    }
+
     public function history($id){
         return StockHistory::where('stock_id', $id)
             ->orderBy('recorded_at')
