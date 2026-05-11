@@ -1,59 +1,85 @@
-# MightyInvestFrontend
+# 🚀 Mighty Invest - Real-Time Market Intelligence & Portfolio Tracker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.3.
+Mighty Invest is a high-performance, full-stack fintech application designed to provide investors with real-time market data and social-driven insights. Built with a modern **Angular** frontend and a robust **Laravel** backend, the platform features a custom-built **Reddit Sentiment Engine** that analyzes social signals to detect market trends before they hit the mainstream.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🌟 Key Features
 
-```bash
-ng serve
-```
+- **⚡ Real-Time Ticker:** Live market prices fetched via high-concurrency background jobs and served through an optimized API.
+- **🧠 Intelligence Engine:** A custom Reddit Scraper and NLP-based Sentiment Analyzer that monitors `r/wallstreetbets`, `r/stocks`, and `r/investing` for high-conviction trade signals.
+- **📊 Advanced Portfolio Management:** Track holdings, visualize performance charts, and manage virtual balances (Demo mode includes $100k starter capital).
+- **🌗 Modern UI/UX:** Responsive, dark-themed dashboard built with professional aesthetics, featuring dynamic loading states and smooth transitions.
+- **🐳 Dockerized Architecture:** Fully containerized environment ensuring seamless deployment across any infrastructure.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 🛠️ Tech Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### **Frontend**
+- **Framework:** Angular 17+
+- **Styling:** Vanilla CSS3 (Custom Design System) & TailwindCSS
+- **State Management:** Reactive programming with RxJS
+- **Icons:** Material Icons Round
 
-```bash
-ng generate component component-name
-```
+### **Backend**
+- **Framework:** Laravel 11 (PHP 8.2+)
+- **Database:** PostgreSQL
+- **Caching:** Redis
+- **Task Scheduling:** Laravel Cron Jobs (Reddit Scraping & Price Refreshing)
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### **Infrastructure & DevOps**
+- **Cloud:** AWS EC2
+- **Web Server:** Nginx (Reverse Proxy)
+- **Containerization:** Docker & Docker Compose
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+## 🚀 Quick Start
 
-To build the project run:
+### Prerequisites
+- Docker & Docker Compose
 
-```bash
-ng build
-```
+### Installation
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/corvoattanoo/mightyinvest.git
+   cd mightyinvest
+   ```
 
-## Running unit tests
+2. **Environment Setup:**
+   ```bash
+   cp .env.example .env
+   # Update your FINNHUB_API_KEY and DB credentials in .env
+   ```
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+3. **Launch with Docker:**
+   ```bash
+   docker-compose up -d --build
+   ```
 
-```bash
-ng test
-```
+4. **Initialize Database:**
+   ```bash
+   docker-compose exec app php artisan migrate --seed
+   ```
 
-## Running end-to-end tests
+5. **Start Intelligence Engine:**
+   ```bash
+   docker-compose exec app php artisan scrape:reddit
+   ```
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## 👨‍💻 Developer Notes
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+This project was built to demonstrate proficiency in **architecting scalable systems**, **integrating third-party APIs**, and **implementing automated data pipelines**. The sentiment analysis algorithm uses a weighted engagement model to filter noise and prioritize high-impact social signals.
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+**Developed by Yigit**  
+*Available for Full-Stack / Backend opportunities.*

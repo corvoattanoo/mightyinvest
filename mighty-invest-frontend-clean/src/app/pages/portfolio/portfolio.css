@@ -1,21 +1,96 @@
-/* premium-portfolio.css */
+/* portfolio.css — Premium Redesign */
 
 :host {
     display: block;
     min-height: 100vh;
-    background: #0d111a;
 }
 
-/* Glassmorphism Containers */
+/* ─── Glass Panel Cards ─── */
 .glass-panel {
-    background: rgba(30, 41, 59, 0.4);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    background: rgba(17, 28, 50, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(99, 155, 255, 0.08);
+    border-radius: 1.25rem;
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Stats Cards with Neon Glows */
+.glass-panel:hover {
+    border-color: rgba(99, 155, 255, 0.14);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Glass panel used inside dark sections */
+.glass-panel.bg-black\/20 {
+    background: rgba(5, 8, 18, 0.6) !important;
+}
+
+/* ─── Stat Chips (Header Bar) ─── */
+.glass-panel-stat {
+    background: rgba(20, 32, 58, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(99, 155, 255, 0.1);
+    border-radius: 0.875rem;
+    padding: 0.625rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.glass-panel-stat:hover {
+    border-color: rgba(99, 155, 255, 0.25);
+    background: rgba(20, 32, 58, 0.9);
+}
+
+/* ─── Table ─── */
+.premium-table thead tr {
+    background: rgba(8, 15, 35, 0.8);
+    border-bottom: 1px solid rgba(99, 155, 255, 0.07);
+}
+
+.premium-table tbody tr {
+    transition: background 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+}
+
+.premium-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.04);
+    cursor: pointer;
+}
+
+/* ─── Profit / Loss Badges ─── */
+.profit-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.profit-badge.positive {
+    background: rgba(34, 197, 94, 0.08);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.profit-badge.negative {
+    background: rgba(239, 68, 68, 0.08);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+/* ─── Donut Chart Center ─── */
+.donut-center {
+    background: radial-gradient(circle at 35% 35%, rgba(17, 28, 50, 0.95), rgba(8, 13, 28, 0.98));
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.6);
+}
+
+/* ─── Stat Cards (hover glow) ─── */
 .stat-card {
     position: relative;
     overflow: hidden;
@@ -23,9 +98,9 @@
 }
 
 .stat-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--card-color);
-    box-shadow: 0 10px 40px -10px var(--card-glow);
+    transform: translateY(-4px);
+    border-color: var(--card-color, rgba(99,155,255,0.2));
+    box-shadow: 0 12px 40px -10px var(--card-glow, rgba(59,130,246,0.2));
 }
 
 .stat-card::after {
@@ -33,65 +108,23 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, var(--card-glow) 0%, transparent 70%);
-    opacity: 0.1;
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle, var(--card-glow, rgba(59,130,246,0.1)) 0%, transparent 70%);
+    opacity: 0.08;
     transition: opacity 0.3s;
 }
 
 .stat-card:hover::after {
-    opacity: 0.3;
+    opacity: 0.25;
 }
 
-/* Donut Chart Center Glass */
-.donut-center {
-    background: radial-gradient(circle at 30% 30%, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-/* Table Enhancements */
-.premium-table thead tr {
-    background: rgba(15, 23, 42, 0.6);
-}
-
-.premium-table tbody tr {
-    transition: background 0.2s;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.premium-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
-}
-
-/* Profit/Loss Badges */
-.profit-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 2rem;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-}
-
-.profit-badge.positive {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.profit-badge.negative {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-/* Animations */
+/* ─── Animations ─── */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(18px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -99,5 +132,5 @@
 }
 
 .animate-fade-up {
-    animation: fadeInUp 0.6s ease-out forwards;
+    animation: fadeInUp 0.5s ease-out forwards;
 }

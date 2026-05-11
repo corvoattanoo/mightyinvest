@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('stock_id')->constrained()->onDelete('cascade');
             $table->integer('quantity');
             $table->decimal('average_price', 12, 2)->default(0);
-            $table->string('name'); // Portfolio name
+            $table->string('name')->nullable(); // Portfolio name
             $table->string('currency', 3)->default('USD'); // Currency of the portfolio
             $table->string('description', 255)->nullable(); // Description of the portfolio
             $table->timestamps();
