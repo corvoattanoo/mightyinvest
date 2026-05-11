@@ -122,8 +122,8 @@ class AuthController extends Controller
             $user->email_verified_at = now();
             if ($user->balance < 1000) {
                 $user->balance = 100000.00;
-                $user->save();
             }
+            $user->save();
         }
 
         // Eğer portföy boşsa örnek hisseleri ekle
