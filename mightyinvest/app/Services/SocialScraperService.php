@@ -22,15 +22,15 @@ class SocialScraperService
                 
             try {
                 $response = Http::withHeaders([
-                'User-Agent' => 'MightyInvest/1.0 (Laravel Portfolio Tracker)'
-                    ])->get($url);
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                ])->get($url);
 
                 if ($response->status() === 429) {
                    Log::warning("Reddit Rate Limit hit for subreddit: {$subreddit}/{$endpoint}");
                     return [];
                 }    
                 if($response->failed()){
-                Log::error("Reddit API error {$subreddit}/{$endpoint}");
+                Log::error("Reddit API error {$subreddit}/{$endpoint} - Status: " . $response->status());
                     continue;
                 }
                 $posts = collect($response->json('data.children') ?? []);
@@ -60,7 +60,7 @@ public function fetchComments(string $postId, int $limit = 20): array
 
     try {
         $response = Http::withHeaders([
-            'User-Agent' => 'MightyInvest/1.0 (Laravel Portfolio Tracker)'
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         ])->get($url);
 
         if ($response->failed()) {
