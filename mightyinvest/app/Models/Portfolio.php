@@ -14,6 +14,7 @@ class Portfolio extends Model
         'average_price',
         'name',
         'description',
+        'currency',
     ];
 
     protected $appends = ['current_value', 'profit', 'profit_percentage', 'daily_profit'];

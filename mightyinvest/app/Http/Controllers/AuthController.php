@@ -140,6 +140,7 @@ class AuthController extends Controller
                 if ($stock) {
                     $user->portfolios()->create([
                         'stock_id' => $stock->id,
+                        'name' => 'Main Portfolio',
                         'symbol' => $stockData['symbol'],
                         'quantity' => $stockData['quantity'],
                         'average_price' => $stockData['average_price'],

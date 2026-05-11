@@ -4,10 +4,10 @@
 }
 
 .glass-sidebar {
-    background: rgba(13, 18, 31, 0.8) !important;
+    background: rgba(7, 10, 20, 0.95) !important;
     backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
 }
 
 .nav-link {
