@@ -44,7 +44,7 @@ export class PortfolioService {
   getPortfolio(): Observable<PortfolioResponse> {
     return this.http.get<PortfolioResponse>(`${this.apiUrl}/portfolio`)
   }
-  getPerformanceHistory():Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/portfolio/performance`);
+  getPerformanceHistory(range: string = '1D'):Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/portfolio/performance?range=${range}`);
   }
 }
