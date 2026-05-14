@@ -7,9 +7,16 @@ use App\Models\Transaction;
 use App\Models\Portfolio;
 use App\Models\Stock;
 use Illuminate\Support\Facades\DB;
+use App\Services\FinnhubService;
 
 class TransactionController extends Controller
 {
+    protected $finnhubService;
+public function __construct(FinnhubService $finnhubService)
+{
+    $this->finnhubService = $finnhubService;
+}
+    
     public function buy(Request $request)
     {
         $validated = $request->validate([
@@ -19,6 +26,11 @@ class TransactionController extends Controller
             'quantity' => 'required|integer|min:1',
             'purchase_price' => 'required|numeric|min:0',
         ]);
+
+        if(!$this->isMarketOpen()){
+            return response()->json(['error' => 'Market is currently closed. Trades are only available during market hours.'], 403);
+        }
+
         $user = auth()->user();
 
         try{
@@ -91,6 +103,10 @@ class TransactionController extends Controller
             'quantity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
         ]);
+
+        if (!$this->isMarketOpen()) {
+            return response()->json(['error' => 'Market is currently closed. Trades are only available during market hours.'], 403);
+        }
         $user = auth()->user();
         try{
             DB::transaction(function() use ($validated, $user){
@@ -148,5 +164,10 @@ class TransactionController extends Controller
             ->where('user_id', $userId)
             ->latest()// bak
             ->get();
+    }
+
+    private function isMarketOpen() {
+        $status = $this->finnhubService->getMarketStatus();
+        return $status && isset($status['isOpen']) ? $status['isOpen'] : false;
     }
 }
