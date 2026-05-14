@@ -57,10 +57,11 @@ services:
     volumes:
       - ./mighty-invest-frontend-clean:/app
       - /app/node_modules
+    # Angular'ın Docker içinde çalışması için gereken en güvenli komut:
+    command: npm run start -- --host 0.0.0.0
     networks:
       - mightyinvest
     restart: unless-stopped
-
   # ==========================================
   # 4. DB — PostgreSQL
   # ==========================================
