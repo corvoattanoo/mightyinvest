@@ -145,7 +145,7 @@ Use the following JSON schema:
         } catch (\Exception $e) {
             Log::error("Graph analysis error: " . $e->getMessage());
             return response()->json([
-             'message' => 'Sistemde beklenmedik bir hata oluştu.'
+             'message' => 'An unexpected error occurred in the system.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
