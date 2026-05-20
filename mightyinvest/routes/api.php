@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\PortfolioChartController;
+use App\Http\Controllers\ChartAnalysisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,5 +72,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Dashboard & News
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
     Route::get('/calendar', [NewsController::class, 'calendar']);
+
+    //AI graph analyses
+    Route::post('/chart/analyze', [ChartAnalysisController::class, 'analyze'])
+        ->middleware('premium');
+    Route::get('/chart/history', [ChartAnalysisController::class, 'history']);
+        
 });
    
