@@ -71,7 +71,7 @@ export class AiAnalystComponent implements OnInit {
     if (file && file.type.startsWith('image/')) {
       this.handleFile(file);
     } else {
-      this.errorMessage = 'Lütfen geçerli bir görsel yükleyin.';
+      this.errorMessage = 'Please upload a valid image file.';
     }
   }
 
@@ -111,7 +111,7 @@ export class AiAnalystComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Analiz sırasında bir hata oluştu.';
+        this.errorMessage = err.error?.message || 'An error occurred during analysis.';
         console.error('Analiz hatası:', err);
         this.cdr.markForCheck();
       }
