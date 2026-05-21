@@ -43,17 +43,17 @@ export class ChartAnalysisService {
   private apiUrl = '/api';
   constructor(private http: HttpClient) { }
 
-  analyze(file: File): Observable<{ success: boolean; data: ChartAnalysis }> {
+  analyze(file: File): Observable<{ success: boolean; data: ChartAnalysis, remaining?: number }> {
     const formData = new FormData();
     formData.append('chart', file);
-    return this.http.post<{ success: boolean; data: ChartAnalysis }>(
+    return this.http.post<{ success: boolean; data: ChartAnalysis,remaining?: number }>(
       `${this.apiUrl}/chart/analyze`,
       formData
     );
   }
 
-  getHistory(): Observable<{ success: boolean; data: ChartAnalysis[] }> {
-    return this.http.get<{ success: boolean; data: ChartAnalysis[] }>(
+  getHistory(): Observable<{ success: boolean; data: ChartAnalysis[], remaining?: number }> {
+    return this.http.get<{ success: boolean; data: ChartAnalysis[], remaining?: number }>(
       `${this.apiUrl}/chart/history`
     );
   }

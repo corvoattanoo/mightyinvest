@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit }
 import { CommonModule } from '@angular/common';
 import { ChartAnalysisService, ChartAnalysis } from '../../core/services/chart-analysis.service';
 
+
 @Component({
   selector: 'app-ai-analyst',
   standalone: true,
@@ -17,7 +18,8 @@ export class AiAnalystComponent implements OnInit {
   errorMessage: string = '';
   analysisResult: ChartAnalysis | null = null;
   history: ChartAnalysis[] = [];
-  dragOver: boolean = false;
+  dragOver: boolean = false; 
+  remainingCredits: number= 100;
 
   constructor(private analysisService: ChartAnalysisService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {}
 
@@ -29,10 +31,14 @@ export class AiAnalystComponent implements OnInit {
   loadHistory(): void {
     this.analysisService.getHistory().subscribe({
       next: (res) => {
+        console.log('History API response: ', res);
         if (res.success) {
           this.ngZone.run(() => {
             this.history = res.data;
-            this.cdr.detectChanges();
+            if(res.remaining !== undefined){
+              this.remainingCredits = res.remaining;
+            }
+            this.cdr.markForCheck();
           });
         }
       },
@@ -105,6 +111,9 @@ export class AiAnalystComponent implements OnInit {
         this.loading = false;
         if (res.success) {
           this.analysisResult = res.data;
+          if(res.remaining !== undefined){
+            this.remainingCredits = res.remaining;
+          }
           this.loadHistory(); // Listeyi yenile
         }
         this.cdr.markForCheck();
