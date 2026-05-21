@@ -14,6 +14,17 @@ class ChartAnalysisController extends Controller
     // AI graph analys
 
     public function analyze(Request $request) {
+
+        $monthlyCount = ChartAnalysis::where('user_id', $request->user()->id)
+            ->where('created_at', '>=', now()->startOfMonth())
+            ->count();
+
+        if($monthlyCount >= 100){
+            return response()->json([
+                'message' => 'You have reached your monthly limit of 100 analyses.'
+            ], 429);
+        }
+
         // validate image upload
         $request->validate([
             'chart' => 'required|image|max:5120|mimes:jpeg,png,jpg,webp',
@@ -141,6 +152,7 @@ Use the following JSON schema:
             return  response()->json([
                 'success' => true,
                 'data' => $analysis,
+                'remaining' => max(0, 100 - ($monthlyCount + 1))
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error("Graph analysis error: " . $e->getMessage());
@@ -158,9 +170,14 @@ Use the following JSON schema:
                 ->orderBy('created_at', 'desc')
                 ->get();
 
+            $monthlyCount = ChartAnalysis::where('user_id', $request->user()->id)
+                ->where('created_at', '>=', now()->startOfMonth())
+                ->count();
+
             return response()->json([
                 'success' => true,
-                'data' => $analyses
+                'data' => $analyses,
+                'remaining' => max(0, 100 - $monthlyCount)
             ]);
         }
     
