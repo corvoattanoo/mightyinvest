@@ -46,9 +46,12 @@ class ChartAnalysisController extends Controller
             //convert the image to base64 to send claude
             $base64 = base64_encode(file_get_contents($file->getRealPath()));
 
-            // save the image to local disk public
-            $path = $file->store('charts', 'public');
-            $imageUrl= asset('storage/' . $path);
+            // save the image to designated disk(local: public prod: s3)
+            $disk = env('FILESYSTEM_DISK', 'public');
+            $path = $file->store('charts', $disk);
+            //generate appropriate url
+            $imageUrl = \Illuminate\Support\Facades\Storage::disk($disk)->url($path);
+
             $prompt = "You are a Senior Wall Street Technical Analyst and Chart Pattern Specialist.
 Analyze the uploaded stock or crypto chart image in detail.
 Identify support & resistance levels, visual candlestick or chart patterns, current trend direction, risk levels, and output a suggested trading strategy (entry, take-profit, stop-loss with rationale).
