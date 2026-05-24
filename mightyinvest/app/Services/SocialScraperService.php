@@ -13,18 +13,23 @@ class SocialScraperService
     public function fetchLatestPosts(string $subreddit, int $limit = 50): array{
         
         $cacheKey = "reddit_posts_{$subreddit}_{$limit}";
+        $proxyUrl = config('services.reddit.proxy_url');
 
-        return Cache::remember($cacheKey, now()->addMinutes(30), function() use ($subreddit, $limit){
+        return Cache::remember($cacheKey, now()->addMinutes(30), function() use ($subreddit, $limit, $proxyUrl){
             $endpoints = ['hot', 'new'];
             $allposts = [];
             foreach( $endpoints as $endpoint){
-                $url = "{$this->baseUrl}/{$subreddit}/{$endpoint}.json?limit={$limit}";
+                $targetUrl = "{$this->baseUrl}/{$subreddit}/{$endpoint}.json?limit={$limit}";
                 
             try {
-                $response = Http::withHeaders([
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                ])->get($url);
-
+                if ($proxyUrl) {
+                    $url = rtrim($proxyUrl, '/') . '?' . http_build_query(['url' => $targetUrl]);
+                    $response = Http::get($url);
+                } else {
+                    $response = Http::withHeaders([
+                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    ])->get($targetUrl);
+                }
                 if ($response->status() === 429) {
                    Log::warning("Reddit Rate Limit hit for subreddit: {$subreddit}/{$endpoint}");
                     return [];
@@ -56,12 +61,18 @@ class SocialScraperService
  */
 public function fetchComments(string $postId, int $limit = 20): array
 {
-    $url = "https://www.reddit.com/comments/{$postId}.json?limit={$limit}&sort=top";
+    $targetUrl = "https://www.reddit.com/comments/{$postId}.json?limit={$limit}&sort=top";
+    $proxyUrl = config('services.reddit.proxy_url');
 
     try {
-        $response = Http::withHeaders([
-            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        ])->get($url);
+        if ($proxyUrl) {
+            $url = rtrim($proxyUrl, '/') . '?' . http_build_query(['url' => $targetUrl]);
+            $response = Http::get($url);
+        } else {
+            $response = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            ])->get($targetUrl);
+        }
 
         if ($response->failed()) {
             Log::error("Yorum çekme hatası: post {$postId}");
