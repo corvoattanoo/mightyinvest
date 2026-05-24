@@ -43,6 +43,10 @@ return [
 
     'anthropic' => [
         'key' => env('ANTHROPIC_API_KEY'),
+    ],
+
+    'reddit' => [
+        'proxy_url' => env('REDDIT_PROXY_URL'),
     ]
 
 
