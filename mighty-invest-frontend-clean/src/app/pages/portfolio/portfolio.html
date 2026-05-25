@@ -6,43 +6,41 @@
             <h2 class="text-4xl font-black text-white tracking-tight uppercase italic">Portfolio Analytics</h2>
             <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Real-time terminal
-                    synchronization active</p>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Real-time terminal synchronization active</p>
             </div>
         </div>
 
-        <!-- Compact stat chips -->
+        <!-- Stat chips -->
         <div *ngIf="!loading" class="flex flex-wrap items-center gap-3">
-            <div class="flex items-center gap-2 px-4 py-2.5 glass-panel rounded-xl">
-                <span class="material-symbols-outlined text-base text-primary">account_balance_wallet</span>
+            <div class="stat-chip">
+                <span class="material-symbols-outlined text-lg text-blue-400">account_balance_wallet</span>
                 <div>
-                    <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Net Worth</p>
-                    <p class="text-sm font-black text-white">{{ totalNetWorth | currency:'USD':'symbol':'1.0-0' }}</p>
+                    <p class="stat-chip-label">Net Worth</p>
+                    <p class="stat-chip-value">{{ totalNetWorth | currency:'USD':'symbol':'1.0-0' }}</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2 px-4 py-2.5 glass-panel rounded-xl">
-                <span class="material-symbols-outlined text-base"
-                    [ngClass]="totalProfit >= 0 ? 'text-status-green' : 'text-red-500'">
+            <div class="stat-chip">
+                <span class="material-symbols-outlined text-lg"
+                    [ngClass]="totalProfit >= 0 ? 'text-emerald-400' : 'text-red-400'">
                     {{ totalProfit >= 0 ? 'trending_up' : 'trending_down' }}
                 </span>
                 <div>
-                    <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Total P/L</p>
-                    <p class="text-sm font-black" [ngClass]="totalProfit >= 0 ? 'text-status-green' : 'text-red-500'">
+                    <p class="stat-chip-label">Total P/L</p>
+                    <p class="stat-chip-value" [ngClass]="totalProfit >= 0 ? 'text-emerald-400' : 'text-red-400'">
                         {{ totalProfit >= 0 ? '+' : '' }}{{ totalProfit | currency:'USD':'symbol':'1.0-0' }}
                     </p>
                 </div>
             </div>
-            <div class="flex items-center gap-2 px-4 py-2.5 glass-panel rounded-xl">
-                <span class="material-symbols-outlined text-base text-accent-purple">payments</span>
+            <div class="stat-chip">
+                <span class="material-symbols-outlined text-lg text-violet-400">payments</span>
                 <div>
-                    <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Cash</p>
-                    <p class="text-sm font-black text-white">{{ cashBalance | currency:'USD':'symbol':'1.0-0' }}</p>
+                    <p class="stat-chip-label">Cash</p>
+                    <p class="stat-chip-value">{{ cashBalance | currency:'USD':'symbol':'1.0-0' }}</p>
                 </div>
             </div>
-            <button
-                class="glass-panel px-5 py-2.5 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/5 transition-all rounded-xl">
-                <span class="material-symbols-outlined text-base text-primary">download</span>
-                Export
+            <button class="stat-chip hover:bg-white/8 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-lg text-blue-400">download</span>
+                <span class="stat-chip-value">Export</span>
             </button>
         </div>
     </div>
@@ -50,25 +48,20 @@
     <!-- Main Content: Allocation Chart + Performance Chart -->
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-        <!-- Allocation Chart (new animated SVG component) -->
         <div class="lg:col-span-2 glass-panel p-8 flex flex-col relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
             <div class="relative">
                 <h3 class="text-lg font-black text-white uppercase tracking-widest italic mb-1">Asset Allocation</h3>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-6">Click a segment to focus
-                </p>
-                <app-allocation-chart [slices]="allocationSlices" [total]="totalNetWorth">
-                </app-allocation-chart>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6">Click a segment to focus</p>
+                <app-allocation-chart [slices]="allocationSlices" [total]="totalNetWorth"></app-allocation-chart>
             </div>
         </div>
 
-        <!-- Performance History Chart -->
         <div class="lg:col-span-3 glass-panel p-8">
             <div class="flex items-center justify-between mb-8">
                 <div>
                     <h3 class="text-lg font-black text-white uppercase tracking-widest italic">Performance History</h3>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Historical net worth
-                        progression</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Historical net worth progression</p>
                 </div>
                 <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black">ALL TIME</span>
             </div>
@@ -83,14 +76,13 @@
         <div class="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
             <div>
                 <h3 class="text-xl font-black text-white uppercase tracking-widest italic">Open Positions</h3>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Detailed breakdown of
-                    active market holdings</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Detailed breakdown of active market holdings</p>
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/5">
-                    <span class="material-symbols-outlined text-sm text-slate-500">search</span>
-                    <input type="text" placeholder="FILTER ASSETS..."
-                        class="bg-transparent border-none text-[10px] font-bold uppercase tracking-widest text-white focus:outline-none placeholder:text-slate-700">
+                    <span class="material-symbols-outlined text-sm text-slate-400">search</span>
+                    <input type="text" placeholder="Filter assets..."
+                        class="bg-transparent border-none text-sm text-white focus:outline-none placeholder:text-slate-600">
                 </div>
             </div>
         </div>
@@ -99,79 +91,72 @@
             <!-- Loading State -->
             <div *ngIf="loading" class="p-20 flex flex-col items-center justify-center">
                 <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p class="mt-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Syncing Data...</p>
+                <p class="mt-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Syncing Data...</p>
             </div>
 
             <!-- Empty State -->
             <div *ngIf="!loading && portfolioData.length === 0" class="p-20 text-center">
-                <span class="material-symbols-outlined text-5xl text-slate-800 mb-4">inventory_2</span>
-                <p class="text-slate-500 font-bold italic uppercase tracking-widest">No active positions detected in
-                    terminal</p>
+                <span class="material-symbols-outlined text-5xl text-slate-700 mb-4">inventory_2</span>
+                <p class="text-slate-500 font-bold italic uppercase tracking-widest">No active positions</p>
             </div>
 
-            <!-- Positions View -->
+            <!-- Positions Table -->
             <div *ngIf="!showChartView && !loading && portfolioData.length > 0">
                 <table class="w-full text-left premium-table">
                     <thead>
                         <tr>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Asset
-                            </th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                                Holdings</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                                Performance</th>
-                            <th
-                                class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-right">
-                                Market Value</th>
-                            <th
-                                class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-right">
-                                Actions</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Asset</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Holdings</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Performance</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em] text-right">Market Value</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em] text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-white/[0.02]">
+                    <tbody class="divide-y divide-white/[0.03]">
                         <tr *ngFor="let item of portfolioData" (click)="selectHoldingForChart(item)"
                             class="group cursor-pointer">
-                            <td class="px-8 py-6">
+
+                            <!-- Asset -->
+                            <td class="px-8 py-5">
                                 <div class="flex items-center gap-4">
-                                    <div
-                                        class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xs group-hover:bg-primary group-hover:text-white transition-all">
+                                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xs group-hover:bg-primary group-hover:text-white transition-all">
                                         {{ item.stock.symbol.substring(0, 2) }}
                                     </div>
                                     <div>
-                                        <p class="text-sm font-black text-white tracking-widest uppercase">{{
-                                            item.stock.symbol }}</p>
-                                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{{
-                                            item.stock.name }}</p>
+                                        <p class="text-sm font-black text-white">{{ item.stock.symbol }}</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">{{ item.stock.name }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-8 py-6">
-                                <div class="space-y-1">
-                                    <p class="text-xs font-bold text-white">{{ item.quantity }} Shares</p>
-                                    <p class="text-[10px] text-slate-500 font-medium">Avg: {{ item.average_price |
-                                        currency }}</p>
-                                </div>
+
+                            <!-- Holdings -->
+                            <td class="px-8 py-5">
+                                <p class="text-sm font-semibold text-white">{{ item.quantity }} Shares</p>
+                                <p class="text-xs text-slate-400 mt-0.5">Avg: {{ item.average_price | currency }}</p>
                             </td>
-                            <td class="px-8 py-6">
-                                <div class="inline-flex items-center gap-2">
+
+                            <!-- Performance -->
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-2.5">
                                     <span class="profit-badge" [ngClass]="item.profit >= 0 ? 'positive' : 'negative'">
-                                        {{ item.profit >= 0 ? '+' : '' }}{{ item.profit | currency }}
+                                        {{ item.profit >= 0 ? '+' : '' }}{{ item.profit | currency:'USD':'symbol':'1.0-0' }}
                                     </span>
-                                    <span class="text-[10px] font-black"
-                                        [ngClass]="item.profit >= 0 ? 'text-status-green' : 'text-red-500'">
+                                    <span class="pct-badge" [ngClass]="item.profit >= 0 ? 'pct-pos' : 'pct-neg'">
                                         {{ item.profit_percentage | number:'1.1-2' }}%
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-8 py-6 text-right">
-                                <p class="text-sm font-black text-white tracking-wider">{{ item.current_value | currency
-                                    }}</p>
-                                <p class="text-[9px] text-slate-500 font-bold uppercase">Price: {{ item.stock.price |
-                                    currency }}</p>
+
+                            <!-- Market Value -->
+                            <td class="px-8 py-5 text-right">
+                                <p class="text-sm font-bold text-white">{{ item.current_value | currency }}</p>
+                                <p class="text-xs text-slate-400 mt-0.5">{{ item.stock.price | currency }}</p>
                             </td>
-                            <td class="px-8 py-6 text-right">
+
+                            <!-- Actions -->
+                            <td class="px-8 py-5 text-right">
                                 <button (click)="$event.stopPropagation(); openSellModal(item)"
-                                    class="px-5 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 hover:text-white hover:border-white/20 transition-all">
+                                    class="px-5 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold hover:bg-white/10 hover:text-white hover:border-white/20 transition-all">
                                     Sell
                                 </button>
                             </td>
@@ -184,15 +169,13 @@
             <div *ngIf="showChartView && selectedHolding" class="p-8 space-y-8 animate-fade-up">
                 <div class="flex items-center justify-between">
                     <button (click)="backPositions()"
-                        class="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-[0.3em] hover:tracking-[0.4em] transition-all">
+                        class="flex items-center gap-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-all">
                         <span class="material-symbols-outlined !text-lg">arrow_back</span>
                         Back to Positions
                     </button>
                     <div class="text-right">
-                        <h3 class="text-2xl font-black text-white italic uppercase">{{ selectedHolding.stock.symbol }}
-                        </h3>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{{
-                            selectedHolding.stock.name }}</p>
+                        <h3 class="text-2xl font-black text-white italic uppercase">{{ selectedHolding.stock.symbol }}</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ selectedHolding.stock.name }}</p>
                     </div>
                 </div>
 
@@ -202,30 +185,27 @@
                     </div>
                     <div class="space-y-6">
                         <div class="glass-panel p-6">
-                            <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-4 italic">
-                                Position Insight</p>
+                            <p class="text-xs text-slate-400 font-semibold uppercase tracking-widest mb-4">Position Insight</p>
                             <div class="space-y-4">
-                                <div class="flex justify-between border-b border-white/5 pb-2">
-                                    <span class="text-[11px] text-slate-400 uppercase font-bold">Total Gain</span>
-                                    <span class="text-xs font-black"
-                                        [ngClass]="selectedHolding.profit >= 0 ? 'text-status-green' : 'text-red-500'">
+                                <div class="flex justify-between border-b border-white/5 pb-3">
+                                    <span class="text-xs text-slate-400">Total Gain</span>
+                                    <span class="text-sm font-bold"
+                                        [ngClass]="selectedHolding.profit >= 0 ? 'text-emerald-400' : 'text-red-400'">
                                         {{ selectedHolding.profit | currency }}
                                     </span>
                                 </div>
-                                <div class="flex justify-between border-b border-white/5 pb-2">
-                                    <span class="text-[11px] text-slate-400 uppercase font-bold">Market Value</span>
-                                    <span class="text-xs font-black text-white">{{ selectedHolding.current_value |
-                                        currency }}</span>
+                                <div class="flex justify-between border-b border-white/5 pb-3">
+                                    <span class="text-xs text-slate-400">Market Value</span>
+                                    <span class="text-sm font-bold text-white">{{ selectedHolding.current_value | currency }}</span>
                                 </div>
-                                <div class="flex justify-between border-b border-white/5 pb-2">
-                                    <span class="text-[11px] text-slate-400 uppercase font-bold">Allocated %</span>
-                                    <span class="text-xs font-black text-primary">{{ (selectedHolding.current_value /
-                                        totalNetWorth) | percent:'1.1-2' }}</span>
+                                <div class="flex justify-between border-b border-white/5 pb-3">
+                                    <span class="text-xs text-slate-400">Allocated</span>
+                                    <span class="text-sm font-bold text-blue-400">{{ (selectedHolding.current_value / totalNetWorth) | percent:'1.1-2' }}</span>
                                 </div>
                             </div>
                         </div>
                         <button (click)="openSellModal(selectedHolding)"
-                            class="w-full py-4 rounded-xl bg-white/[0.03] border border-white/10 text-slate-400 font-black uppercase tracking-[0.2em] hover:bg-white/10 hover:text-white hover:border-white/20 transition-all flex items-center justify-center gap-2 group">
+                            class="w-full py-4 rounded-xl bg-white/[0.03] border border-white/10 text-slate-300 font-semibold hover:bg-white/10 hover:text-white hover:border-white/20 transition-all flex items-center justify-center gap-2 group">
                             <span class="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:animate-ping"></span>
                             Close Position
                         </button>
@@ -237,33 +217,21 @@
 
     <!-- Portfolio Insight Section -->
     <div class="glass-panel p-10 relative overflow-hidden group">
-        <div
-            class="absolute top-0 right-0 w-96 h-full bg-gradient-to-l from-primary/10 to-transparent pointer-events-none">
-        </div>
+        <div class="absolute top-0 right-0 w-96 h-full bg-gradient-to-l from-primary/10 to-transparent pointer-events-none"></div>
         <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-            <div
-                class="size-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <div class="size-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                 <span class="material-symbols-outlined text-4xl text-primary">lightbulb</span>
             </div>
-            <div class="flex-1 space-y-3 text-center md:text-left">
-                <h3 class="text-2xl font-black text-white italic uppercase tracking-widest">Portfolio Terminal Insight
-                </h3>
-                <p class="text-slate-400 leading-relaxed text-sm font-medium">
-                    Your allocation strategy is currently weighted <span
-                        class="text-primary font-black uppercase italic">{{ (totalStockValue / totalNetWorth) | percent
-                        }}</span> in equities.
-                    Maintaining an available liquidity of <span
-                        class="text-accent-purple font-black uppercase italic">{{ (cashBalance / totalNetWorth) |
-                        percent }}</span>
-                    provides tactical flexibility for high-alpha market signals.
+            <div class="flex-1 space-y-2 text-center md:text-left">
+                <h3 class="text-xl font-black text-white uppercase tracking-widest">Portfolio Insight</h3>
+                <p class="text-slate-300 leading-relaxed text-sm">
+                    Your allocation is <span class="text-blue-400 font-bold">{{ (totalStockValue / totalNetWorth) | percent }}</span> in equities,
+                    with <span class="text-violet-400 font-bold">{{ (cashBalance / totalNetWorth) | percent }}</span> available liquidity.
                 </p>
             </div>
-            <div class="flex gap-4">
-                <div class="text-center px-6 border-l border-white/10">
-                    <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1 text-primary">Risk
-                        Factor</p>
-                    <p class="text-lg font-black text-white uppercase italic">Optimal</p>
-                </div>
+            <div class="text-center px-6 border-l border-white/10">
+                <p class="text-[9px] text-slate-500 font-semibold uppercase tracking-widest mb-1">Risk Factor</p>
+                <p class="text-lg font-black text-white">Optimal</p>
             </div>
         </div>
     </div>

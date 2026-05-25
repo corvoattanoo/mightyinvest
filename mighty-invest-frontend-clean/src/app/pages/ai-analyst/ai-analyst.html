@@ -56,8 +56,8 @@
           </div>
 
           <!-- Image Preview Area -->
-          <div *ngIf="imagePreview" class="relative rounded-2xl overflow-hidden flex-1 border border-slate-800 bg-black/40 min-h-[300px] flex items-center justify-center group">
-            <img [src]="imagePreview" alt="Chart Preview" class="max-h-[400px] w-auto object-contain rounded-xl transition-all" />
+          <div *ngIf="imagePreview" class="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950/40">
+  <img [src]="imagePreview" alt="Chart Preview" class="w-full h-auto object-cover rounded-xl transition-all" />
             
             <!-- Floating control to remove -->
             <button *ngIf="!loading" 
@@ -104,18 +104,15 @@
         </p>
       </div>
 
-      <!-- Loading State -->
-      <div *ngIf="loading" class="glass-card rounded-3xl p-12 flex-1 flex flex-col items-center justify-center text-center relative overflow-hidden">
-        <div class="spinner-container mb-6">
-          <div class="double-spin-ring ring-1"></div>
-          <div class="double-spin-ring ring-2"></div>
-          <div class="inner-orb"></div>
-        </div>
-        <h3 class="text-xl font-bold text-white mb-2 tracking-wide animate-pulse">Analyzing Chart...</h3>
-        <p class="text-sm text-slate-400 max-w-xs leading-relaxed">
-          Gemini 2.0 Flash is analyzing the image, calculating support/resistance levels, and plotting trading targets...
-        </p>
-      </div>
+      <div *ngIf="loading" class="glass-card rounded-3xl p-12 flex-1 flex flex-col items-center justify-center text-center">
+  <div class="loader-ring mb-6">
+    <div class="lr-inner"></div>
+  </div>
+  <h3 class="text-lg font-bold text-white mb-2">Analyzing Chart...</h3>
+  <p class="text-sm text-slate-400 max-w-xs leading-relaxed">
+    Reading chart patterns and calculating price levels...
+  </p>
+</div>
 
       <!-- Analysis Result Cards -->
       <div *ngIf="!loading && analysisResult" class="flex flex-col gap-6 animate-slideUp">

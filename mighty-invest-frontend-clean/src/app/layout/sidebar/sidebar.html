@@ -34,43 +34,64 @@
         </a>
 
         <!-- Markets Sub-menu (Conditional) -->
-        <div *ngIf="isMarketsPage" class="pl-12 py-2 space-y-1 animate-fadeIn">
-            <div class="mb-4">
-                <p class="text-[10px] font-black text-primary uppercase tracking-widest mb-2 opacity-60">Equities</p>
-                <div class="space-y-1">
-                    <a [routerLink]="['/markets']" [queryParams]="{category: 'most-traded'}"
-                       [routerLinkActiveOptions]="{exact: true}"
-                       routerLinkActive="sub-active"
-                       class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Most Traded</a>
-                    <a [routerLink]="['/markets']" [queryParams]="{category: 'etfs'}"
-                       [routerLinkActiveOptions]="{exact: true}"
-                       routerLinkActive="sub-active"
-                       class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">ETFs</a>
-                </div>
-            </div>
-            
-            <div class="mb-4">
-                <p class="text-[10px] font-black text-primary uppercase tracking-widest mb-2 opacity-60">Markets</p>
-                <div class="space-y-1">
-                    <a [routerLink]="['/markets']" [queryParams]="{category: 'crypto'}"
-                       [routerLinkActiveOptions]="{exact: true}"
-                       routerLinkActive="sub-active"
-                       class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Crypto</a>
-                    <a [routerLink]="['/markets']" [queryParams]="{category: 'forex'}"
-                       [routerLinkActiveOptions]="{exact: true}"
-                       routerLinkActive="sub-active"
-                       class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Forex</a>
-                    <a [routerLink]="['/markets']" [queryParams]="{category: 'indices'}"
-                       [routerLinkActiveOptions]="{exact: true}"
-                       routerLinkActive="sub-active"
-                       class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Indices</a>
-                    <a [routerLink]="['/markets']" [queryParams]="{category: 'commodities'}"
-                       [routerLinkActiveOptions]="{exact: true}"
-                       routerLinkActive="sub-active"
-                       class="block text-[10px] font-black uppercase tracking-widest py-1.5 opacity-50 hover:opacity-100 transition-all">Commodities</a>
-                </div>
-            </div>
+<div *ngIf="isMarketsPage" class="pl-4 pt-1 pb-2 animate-fadeIn">
+    
+    <!-- Equities Section -->
+    <div class="mb-3">
+        <div class="flex items-center gap-2 px-4 mb-1.5">
+            <span class="text-[9px] font-semibold text-slate-600 uppercase tracking-widest">Equities</span>
+            <div class="flex-1 h-px bg-slate-800"></div>
         </div>
+        <div class="space-y-0.5">
+            <a [routerLink]="['/markets']" [queryParams]="{category: 'most-traded'}"
+               routerLinkActive="sub-active"
+               class="sub-link flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm text-slate-500 hover:text-white transition-all">
+                <span class="w-1 h-1 rounded-full bg-slate-700 sub-dot"></span>
+                Most Traded
+            </a>
+            <a [routerLink]="['/markets']" [queryParams]="{category: 'etfs'}"
+               routerLinkActive="sub-active"
+               class="sub-link flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm text-slate-500 hover:text-white transition-all">
+                <span class="w-1 h-1 rounded-full bg-slate-700 sub-dot"></span>
+                ETFs
+            </a>
+        </div>
+    </div>
+
+    <!-- Markets Section -->
+    <div class="mb-2">
+        <div class="flex items-center gap-2 px-4 mb-1.5">
+            <span class="text-[9px] font-semibold text-slate-600 uppercase tracking-widest">Markets</span>
+            <div class="flex-1 h-px bg-slate-800"></div>
+        </div>
+        <div class="space-y-0.5">
+            <a [routerLink]="['/markets']" [queryParams]="{category: 'crypto'}"
+               routerLinkActive="sub-active"
+               class="sub-link flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm text-slate-500 hover:text-white transition-all">
+                <span class="w-1 h-1 rounded-full bg-slate-700 sub-dot"></span>
+                Crypto
+            </a>
+            <a [routerLink]="['/markets']" [queryParams]="{category: 'forex'}"
+               routerLinkActive="sub-active"
+               class="sub-link flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm text-slate-500 hover:text-white transition-all">
+                <span class="w-1 h-1 rounded-full bg-slate-700 sub-dot"></span>
+                Forex
+            </a>
+            <a [routerLink]="['/markets']" [queryParams]="{category: 'indices'}"
+               routerLinkActive="sub-active"
+               class="sub-link flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm text-slate-500 hover:text-white transition-all">
+                <span class="w-1 h-1 rounded-full bg-slate-700 sub-dot"></span>
+                Indices
+            </a>
+            <a [routerLink]="['/markets']" [queryParams]="{category: 'commodities'}"
+               routerLinkActive="sub-active"
+               class="sub-link flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm text-slate-500 hover:text-white transition-all">
+                <span class="w-1 h-1 rounded-full bg-slate-700 sub-dot"></span>
+                Commodities
+            </a>
+        </div>
+    </div>
+</div>
 
         <a routerLink="/portfolio" routerLinkActive="active"
             class="flex items-center gap-3 px-4 py-3 rounded-xl nav-link group transition-all">
