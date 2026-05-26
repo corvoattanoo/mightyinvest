@@ -32,7 +32,7 @@ import { Subject, takeUntil } from 'rxjs';
 export class PortfolioChartComponent implements AfterViewInit, OnDestroy {
     @ViewChild('chartContainer') chartContainer!: ElementRef;
     
-    currentRange: string = '1D';
+    currentRange: string = '1W';
     private chart: IChartApi | null = null;
     private areaSeries: ISeriesApi<'Area'> | null = null;
     private destroy$ = new Subject<void>();
