@@ -47,7 +47,12 @@ export class RegisterComponent {
             },
             error: (err) => {
                 this.isLoading = false;
-                this.errorMessage = err.error?.message || 'Registration failed. Please try again.';
+                if (err.error?.errors) {
+                    const firstKey = Object.keys(err.error.errors)[0];
+                    this.errorMessage = err.error.errors[firstKey][0];
+                } else {
+                    this.errorMessage = err.error?.message || 'Registration failed. Please try again.';
+                }
             },
         });
     }

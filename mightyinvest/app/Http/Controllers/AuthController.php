@@ -14,6 +14,16 @@ class AuthController extends Controller
 
     // REGISTER
     public function register(Request $request){ // frontendden gelen verileri al
+        $userExists = User::where('email', $request->email)->exists();
+        if ($userExists) {
+            return response()->json([
+                'message' => 'This email address is already registered. Check your inbox or log in to verify your email address.',
+                'errors' => [
+                    'email' => ['This email address is already registered.']
+                ]
+            ], 422);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
