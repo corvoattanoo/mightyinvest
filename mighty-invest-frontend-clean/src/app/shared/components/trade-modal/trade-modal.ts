@@ -10,39 +10,39 @@ import { NotificationService } from '../../../core/services/notification.service
   imports: [CommonModule, FormsModule],
   styleUrl: './trade-modal.css',
   template: `
-    <!-- Backdrop: Modal dışına tıklayınca kapansın -->
-    <div class="modal-backdrop" (click)="close.emit()" *ngIf="visible">
-      <!-- Modal içeriği: event.stopPropagation() ile iç tıklamalar backdrop'a gitmesin -->
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <h2>{{ mode === 'buy' ? '📈 Hisse Satın Al' : '📉 Hisse Sat' }}</h2>
-        <p class="stock-name">{{ stockSymbol }} — {{ stockName }}</p>
-        <!-- Miktar girişi -->
-        <label>Miktar (Adet)</label>
-        <input type="number" [(ngModel)]="quantity" min="1" placeholder="Kaç adet?">
-        <!-- Anlık fiyat (API'den gelen) -->
-        <p class="price-info">
-          Birim Fiyat: <strong>{{ currentPrice | currency }}</strong>
-        </p>
-        <!-- Toplam maliyet hesabı -->
-        <p class="total">
-          Toplam: <strong>{{ quantity * currentPrice | currency }}</strong>
-        </p>
-        <!-- Hata mesajı -->
-        <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-        <!-- Aksiyon butonları -->
-        <div class="actions">
-          <button class="btn-cancel" (click)="close.emit()">İptal</button>
-          <button
-            class="btn-confirm"
-            [class.buy]="mode === 'buy'"
-            [class.sell]="mode === 'sell'"
-            (click)="onConfirm()"
-            [disabled]="loading">
-            {{ loading ? 'İşleniyor...' : (mode === 'buy' ? 'Satın Al' : 'Sat') }}
-          </button>
-        </div>
-      </div>
-    </div>`
+    <!-- Backdrop: closes when clicking outside the modal -->
+<div class="modal-backdrop" (click)="close.emit()" *ngIf="visible">
+  <!-- Modal content: stopPropagation prevents inner clicks from reaching backdrop -->
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ mode === 'buy' ? '📈 Buy Stock' : '📉 Sell Stock' }}</h2>
+    <p class="stock-name">{{ stockSymbol }} — {{ stockName }}</p>
+    <!-- Quantity input -->
+    <label>Quantity (Shares)</label>
+    <input type="number" [(ngModel)]="quantity" min="1" placeholder="How many shares?">
+    <!-- Current price (from API) -->
+    <p class="price-info">
+      Unit Price: <strong>{{ currentPrice | currency }}</strong>
+    </p>
+    <!-- Total cost calculation -->
+    <p class="total">
+      Total: <strong>{{ quantity * currentPrice | currency }}</strong>
+    </p>
+    <!-- Error message -->
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <!-- Action buttons -->
+    <div class="actions">
+      <button class="btn-cancel" (click)="close.emit()">Cancel</button>
+      <button
+        class="btn-confirm"
+        [class.buy]="mode === 'buy'"
+        [class.sell]="mode === 'sell'"
+        (click)="onConfirm()"
+        [disabled]="loading">
+        {{ loading ? 'Processing...' : (mode === 'buy' ? 'Buy' : 'Sell') }}
+      </button>
+    </div>
+  </div>
+</div>`
 })
 
 export class TradeModalComponent {
