@@ -20,7 +20,7 @@ export class StockChartComponent implements AfterViewInit, OnChanges, OnDestroy 
     private chart: IChartApi | null = null;
     private candlestickSeries: ISeriesApi<'Candlestick'> | null = null;
     private destroy$ = new Subject<void>();
-    currentRange: string = '1W'; // Varsayılan zaman aralıgı
+    currentRange: string =  '1W';
 
     private isBrowser: boolean;
 
