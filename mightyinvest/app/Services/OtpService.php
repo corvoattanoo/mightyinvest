@@ -21,9 +21,16 @@ class OtpService{
             'expires_at' => now()->addMinutes(10)
         ]);
 
+        $emailContent = "Dear User,\n\n"
+            . "Your MightyInvest login verification code is: {$code}\n\n"
+            . "Please use this code to complete your login. For your security, this code will expire in 10 minutes.\n\n"
+            . "If you did not request this code, please ignore this email or contact our support team immediately.\n\n"
+            . "Best regards,\n"
+            . "MightyInvest Security Team";
+
         //sending an email
-        Mail::raw("MightyInvest Security Code: {$code}\n\nBu kod 10 dakika süreyle geçerlidir.", function ($msg) use ($user){
-            $msg->to($user->email)->subject('Login Verification Code');
+        Mail::raw($emailContent, function ($msg) use ($user){
+            $msg->to($user->email)->subject('MightyInvest - Login Verification Code');
         });
     }
 
