@@ -3,6 +3,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Event;
+use Laravel\Cashier\Events\WebhookHandled;
+use App\Listeners\SyncPremiumStatus;
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void {}
@@ -19,5 +22,9 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
         });
+        Event::listen(
+            WebhookHandled::class,
+            SyncPremiumStatus::class
+        );
     }
 }
