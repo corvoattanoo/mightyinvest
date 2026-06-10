@@ -11,6 +11,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\PortfolioChartController;
 use App\Http\Controllers\ChartAnalysisController;
+use App\Http\Controllers\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,7 @@ Route::get('/stocks/market-status', [StockController::class, 'marketStatus']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 // Email verification — API route üzerinden (nginx api/* → Laravel)
 Route::get('/email/verify/{id}/{hash}',[AuthController::class, 'verifyEmail'])->name('verification.verify');
+Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +79,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/chart/analyze', [ChartAnalysisController::class, 'analyze'])
         ->middleware('premium');
     Route::get('/chart/history', [ChartAnalysisController::class, 'history']);
+
+    // Subscription / Premium
+    Route::post('/subscription/checkout', [SubscriptionController::class, 'createCheckoutSession']);
+    Route::get('/subscription/status', [SubscriptionController::class, 'getStatus']);
         
 });
    

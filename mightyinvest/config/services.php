@@ -47,7 +47,14 @@ return [
 
     'reddit' => [
         'proxy_url' => env('REDDIT_PROXY_URL'),
-    ]
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'monthly_price_id' => env('STRIPE_MONTHLY_PRICE_ID'),
+        'yearly_price_id' => env('STRIPE_YEARLY_PRICE_ID'),
+    ],
 
 
 ];
