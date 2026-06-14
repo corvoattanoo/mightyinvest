@@ -4,6 +4,8 @@ namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Laravel\Cashier\Events\WebhookHandled;
+use App\Models\User;
 
 class SyncPremiumStatus
 {
@@ -18,7 +20,7 @@ class SyncPremiumStatus
     /**
      * Handle the event.
      */
-    public function handle(object $event): void
+    public function handle(WebhookHandled $event): void
     {
         $payload = $event->payload;
 

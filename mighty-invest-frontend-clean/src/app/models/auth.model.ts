@@ -6,6 +6,7 @@ export interface User { // interface is a blueprint for an object, nasil gozukme
     password?: string;
     created_at?: string;
     updated_at?: string;
+    is_premium?: boolean;
 }
 
 export interface RegisterRequest { //register response model 
