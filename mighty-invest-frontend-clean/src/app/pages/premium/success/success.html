@@ -1,0 +1,48 @@
+<div class="success-page-container">
+  <div class="status-card glass-card">
+    
+    <!-- State: Verifying -->
+    <div class="state-content" *ngIf="state === 'verifying'">
+      <div class="spinner-container">
+        <div class="spinner-large"></div>
+      </div>
+      <h2>Confirming Your Payment</h2>
+      <p class="description">
+        We are verifying your transaction with Stripe. Please hold tight, this should only take a few seconds...
+      </p>
+    </div>
+
+    <!-- State: Success -->
+    <div class="state-content animate-zoom-in" *ngIf="state === 'success'">
+      <div class="success-icon-container">
+        <svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h2>Payment Successful!</h2>
+      <p class="description">
+        Welcome to <strong>MightyInvest Pro</strong>. Your subscription is now fully active! All advanced charts, Reddit sentiments, and AI analyses have been unlocked for your account.
+      </p>
+      <div class="action-container">
+        <a routerLink="/dashboard" class="btn-primary-action">Go to Dashboard</a>
+      </div>
+    </div>
+
+    <!-- State: Processing (Timeout / Background processing) -->
+    <div class="state-content animate-zoom-in" *ngIf="state === 'processing'">
+      <div class="processing-icon-container">
+        <svg class="processing-icon animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h2>Payment Processing</h2>
+      <p class="description">
+        Stripe is finalizing your transaction. Your Pro features will be activated automatically in the background shortly. You can safely return to the dashboard.
+      </p>
+      <div class="action-container">
+        <a routerLink="/dashboard" class="btn-primary-action">Go to Dashboard</a>
+      </div>
+    </div>
+
+  </div>
+</div>

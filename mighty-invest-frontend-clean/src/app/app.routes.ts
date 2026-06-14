@@ -13,6 +13,8 @@ import { LandingComponent } from './pages/landing/landing';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email';
 import { SettingsComponent } from './pages/settings/settings';
 import { AiAnalystComponent } from './pages/ai-analyst/ai-analyst';
+import { PremiumSuccessComponent } from './pages/premium/success/success';
+import { PremiumCancelComponent } from './pages/premium/cancel/cancel';
 export const routes: Routes = [
     // 1. Giriş Sayfası (Landing Page)
     { path: '', component: LandingComponent },
@@ -47,6 +49,8 @@ export const routes: Routes = [
             { path: 'dashboard', component: DashboardComponent },
             { path: 'portfolio', component: PortfolioComponent },
             { path: 'ai-analyst', component: AiAnalystComponent },
+            { path: 'premium/success', component: PremiumSuccessComponent },
+            { path: 'premium/cancel', component: PremiumCancelComponent },
         ]
     },
 

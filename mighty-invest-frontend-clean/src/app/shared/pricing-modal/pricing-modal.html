@@ -1,0 +1,118 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Close Button -->
+    <button class="close-btn" (click)="closeModal()" aria-label="Close modal">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2>Upgrade to MightyInvest Pro</h2>
+      <p>Unlock advanced features and maximize your investing potential.</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-banner" *ngIf="errorMessage">
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Pricing Grid -->
+    <div class="pricing-grid">
+      <!-- Monthly Plan -->
+      <div class="pricing-card">
+        <div class="card-header">
+          <h3>Monthly Plan</h3>
+          <p class="price">$15<span>/mo</span></p>
+          <p class="billing-cycle">Billed monthly</p>
+        </div>
+
+        <div class="card-body">
+          <ul class="features-list">
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              AI chart analysis
+            </li>
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              Reddit sentiment
+            </li>
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              Portfolio tracking
+            </li>
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              Unlimited alerts
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn-action" [disabled]="loadingPlan !== null" (click)="selectPlan('monthly')">
+            <span *ngIf="loadingPlan !== 'monthly'">Get Started</span>
+            <span *ngIf="loadingPlan === 'monthly'" class="spinner"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Yearly Plan (Recommended) -->
+      <div class="pricing-card recommended">
+        <div class="badge-recommended">Recommended</div>
+        <div class="card-header">
+          <div class="title-row">
+            <h3>Yearly Plan</h3>
+            <span class="save-badge">Save 17%</span>
+          </div>
+          <p class="price">$99.99<span>/yr</span></p>
+          <p class="billing-cycle">Billed annually ($8.33/mo value)</p>
+        </div>
+
+        <div class="card-body">
+          <ul class="features-list">
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              AI chart analysis
+            </li>
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              Reddit sentiment
+            </li>
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              Portfolio tracking
+            </li>
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              Unlimited alerts
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn-action btn-primary" [disabled]="loadingPlan !== null" (click)="selectPlan('yearly')">
+            <span *ngIf="loadingPlan !== 'yearly'">Get Started</span>
+            <span *ngIf="loadingPlan === 'yearly'" class="spinner"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
