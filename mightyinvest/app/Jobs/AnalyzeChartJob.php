@@ -39,8 +39,11 @@ class AnalyzeChartJob implements ShouldQueue
         try {
             $apiKey = config('services.anthropic.key');
 
+            $fullPath = parse_url($analysis->image_path, PHP_URL_PATH);
+            $relativePath = str_replace('/storage/', '', $fullPath);
+
             $imageContent = Storage::disk(env('FILESYSTEM_DISK', 'public'))
-                ->get(parse_url($analysis->image_path, PHP_URL_PATH));
+                ->get($relativePath);
             $base64 = base64_encode($imageContent);
 
             //mime type

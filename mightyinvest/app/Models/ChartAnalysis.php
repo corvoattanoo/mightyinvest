@@ -16,6 +16,8 @@ class ChartAnalysis extends Model
         'result',
         'trend',
         'risk_level',
+        'status',
+        'error_message'
     ];
 
     protected $casts = [

@@ -77,6 +77,23 @@ class ChartAnalysisController extends Controller
                 'data' => $analyses,
                 'remaining' => max(0, 100 - $monthlyCount)
             ]);
-        }
+    }
+
+    public function status(Request $request, int $id){
+        $analysis = ChartAnalysis::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        return response()->json([
+            'id' => $analysis->id, 
+            'result' => $analysis->result,
+            'trend' => $analysis->trend,
+            'risk_level' => $analysis->risk_level,
+            'status' => $analysis->status,
+            'error_message' => $analysis->error_message,
+        ]);
+    }      
+    
+    
     
 }

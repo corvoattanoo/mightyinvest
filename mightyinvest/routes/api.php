@@ -79,6 +79,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/chart/analyze', [ChartAnalysisController::class, 'analyze'])
         ->middleware('premium');
     Route::get('/chart/history', [ChartAnalysisController::class, 'history']);
+    Route::get('/chart/{id}/status', [ChartAnalysisController::class, 'status']);
 
     // Subscription / Premium
     Route::post('/subscription/checkout', [SubscriptionController::class, 'createCheckoutSession']);
