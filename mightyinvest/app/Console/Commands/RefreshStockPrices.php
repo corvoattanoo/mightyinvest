@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\FinnhubService; 
+use App\Jobs\RefreshStockPriceJob;
 class RefreshStockPrices extends Command
 {
     /**
@@ -23,7 +23,7 @@ class RefreshStockPrices extends Command
     /**
      * Execute the console command.
      */
-    public function handle(FinnhubService $finnhub)
+    public function handle()
     {
         // all watchlist and portfolio symbols
         $symbols = \App\Models\Watchlist::pluck('symbol')// takes all watchlist and stocks stocks merge and prevents duplications
@@ -33,21 +33,7 @@ class RefreshStockPrices extends Command
         $this->info("Updating" . $symbols->count() . " stocks...");
 
         foreach ($symbols as $symbol){
-            $data = $finnhub->getQuote($symbol);
-            
-        
-        \App\Models\Stock::updateOrCreate(
-            ['symbol' => $symbol],
-            [
-                'price' => $data['current_price'],
-                'percent_change' => $data['percent_change'],
-                'daily_high'     => $data['high_price'],
-                'daily_low'      => $data['low_price'],
-                'volume'         => $data['volume'] ?? 0,    // Finnhub 
-            ]
-            );
-
-        $this->line("✅ Updated: {$symbol} ({$data['percent_change']}%)");
+            RefreshStockPriceJob::dispatch($symbol);        
         }
         $this->info("🎯 All stocks updated successfully.");
     }
