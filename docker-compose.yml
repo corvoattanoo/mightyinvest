@@ -134,7 +134,7 @@ services:
       - ./mightyinvest/.env.docker
     volumes:
       - ./mightyinvest:/var/www/html
-    # Senin istediğin o sihirli komut burada:
+    # 
     command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
     depends_on:
       db:

@@ -12,14 +12,16 @@ class RefreshStockPriceJob implements ShouldQueue
 {
     use Queueable;
 
-    public int $tries = 3;
+    public int $tries = 5;
+    public int $backoff = 15; // wait 15 sec before every try
     public int $timeout = 30;
 
     public function __construct(public string $symbol) {}
 
     public function handle(FinnhubService $finnhub): void
     {
-        $data = $finnhub->getQuote($this->symbol);
+        try {
+            $data = $finnhub->getQuote($this->symbol);
 
         Stock::updateOrCreate(
             ['symbol' => $this->symbol],
@@ -33,5 +35,10 @@ class RefreshStockPriceJob implements ShouldQueue
         );
 
         Log::info("✅ Stock updated: {$this->symbol}");
+        } catch (\Throwable $th) {
+             Log::warning("⚠️ Stock update failed for {$this->symbol}: " . $th->getMessage());
+             throw $th;
+        }
+        
     }
 }

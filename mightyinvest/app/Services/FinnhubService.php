@@ -31,20 +31,29 @@ if (Cache::has($cacheKey)) {
 $response = Http::get("{$this->baseUrl}/quote", [
     'symbol' => $symbol,
     'token'  => $this->apiKey
-])->json();
+]);
+    if($response->failed()){
+        throw new \Exception("Finnhub API request failed: {$symbol}");
+    }
+
+    $data = $response->json();
+
+    if(empty($data['c']) || $data['c'] <= 0){
+        throw new \Exception("Finnhub returned invalid: {$symbol}");
+    }
 
 $mappedData = [
-    'current_price'  => $response['c']  ?? 0,
-    'high_price'     => $response['h']  ?? 0,
-    'low_price'      => $response['l']  ?? 0,
-    'open_price'     => $response['o']  ?? 0,
-    'previous_close' => $response['pc'] ?? 0,
-    'change'         => $response['d']  ?? 0,
-    'percent_change' => $response['dp'] ?? 0,
-    'timestamp'      => $response['t']  ?? 0,
+    'current_price'  => $data['c']  ?? 0,
+    'high_price'     => $data['h']  ?? 0,
+    'low_price'      => $data['l']  ?? 0,
+    'open_price'     => $data['o']  ?? 0,
+    'previous_close' => $data['pc'] ?? 0,
+    'change'         => $data['d']  ?? 0,
+    'percent_change' => $data['dp'] ?? 0,
+    'timestamp'      => $data['t']  ?? 0,
 ];
 
-// Sadece geçerli veri gelirse cache'e yaz
+// Sadece geçerli veri gelirse cache e yaz
 if ($mappedData['current_price'] > 0) {
     Cache::put($cacheKey, $mappedData, 60);
 }
