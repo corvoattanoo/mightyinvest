@@ -56,5 +56,9 @@ return [
         'yearly_price_id' => env('STRIPE_YEARLY_PRICE_ID'),
     ],
 
+    'voyageai' => [
+        'key' => env('VOYAGEAI_API_KEY'),
+    ]
+
 
 ];
