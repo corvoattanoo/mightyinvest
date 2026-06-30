@@ -132,11 +132,31 @@ Use the following JSON schema:
                 throw new \Exception('JSON parse error: ' . $textResponse);
             }
 
+            $ticker = $parsedJson['ticker'] ?? null;
+            $stockId = null;
+
+            if($ticker){
+                $stock = \App\Models\Stock::where('symbol', $ticker)->first();
+
+                if($stock){
+                    $finnhub = app(FinnhubService::class);
+                    $quote = $finnhub->getQuote($ticker);
+                    $stock = \App\Models\Stocks::create([
+                        'symbol' => $ticker,
+                        'price' =>$quote('current_price') ?? 0,
+                    ]);
+
+                }
+
+                $stockId = $stock->id;
+            }
+
             $analysis->update([
                 'status' => 'completed',
                 'result' => $parsedJson,
                 'trend' => $parsedJson['trend'] ?? null,
                 'risk_level' => $parsedJson['risk_level'] ?? null,
+                'sstock_id' => $stockId,
             ]);
 
             Log::info("ChartAnalysis #{$this->analysisId} completed");
