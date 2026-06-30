@@ -16,11 +16,11 @@ class StockEmbedding extends Model
         return $this->belongsTo(Stock::class);
     }
 
-    public function setEmbeddingAttrabute($value){
+    public function setEmbeddingAttribute($value){
         if(is_array($value)){
             $this->attributes['embedding'] = '[' . implode(',', $value)     .']';
         }else{
-            $this->attribute['embedding'] = $value;
+            $this->attributes['embedding'] = $value;
         }
     }
 }

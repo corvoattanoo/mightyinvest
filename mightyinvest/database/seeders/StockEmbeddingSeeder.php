@@ -20,7 +20,7 @@ class StockEmbeddingSeeder extends Seeder
         $stocks = Stock::all();
 
         foreach($stocks as $stock){
-            $content = "{$stock->name} ({$stock->symbol}) - Price: {$stock->price}";
+            $content = "{$stock->symbol} - Price: {$stock->price}";
 
             $embedding = $service->embed($content);
 
