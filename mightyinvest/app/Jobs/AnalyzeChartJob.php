@@ -61,6 +61,7 @@ You MUST respond with a single, highly structured JSON object.
 DO NOT wrap the response in markdown blocks like \`\`\`json or add any surrounding text. Return ONLY the raw JSON string starting with { and ending with }.
 Use the following JSON schema:
 {
+  \"ticker\": \"Stock ticker symbol visible on the chart, e.g. AAPL, NVDA, BTCUSDT. If not clearly visible, make your best guess based on context, or use null.\",
   \"trend\": \"bullish\" | \"bearish\" | \"sideways\",
   \"trend_rationale\": \"Brief explanation of why this trend was identified\",
   \"support_levels\": [
@@ -136,19 +137,12 @@ Use the following JSON schema:
             $stockId = null;
 
             if($ticker){
-                $stock = \App\Models\Stock::where('symbol', $ticker)->first();
-
-                if($stock){
-                    $finnhub = app(FinnhubService::class);
-                    $quote = $finnhub->getQuote($ticker);
-                    $stock = \App\Models\Stocks::create([
-                        'symbol' => $ticker,
-                        'price' =>$quote('current_price') ?? 0,
-                    ]);
-
+                try {
+                    app(\App\Services\FinnhubService::class)->getQuote($ticker);
+                    $stockId = \App\Models\Stock::where('symbol', $ticker)->value('id');
+                } catch (\Throwable $e) {
+                    Log::warning("Finnhub quote failed for {$ticker}: " . $e->getMessage());
                 }
-
-                $stockId = $stock->id;
             }
 
             $analysis->update([
@@ -156,7 +150,7 @@ Use the following JSON schema:
                 'result' => $parsedJson,
                 'trend' => $parsedJson['trend'] ?? null,
                 'risk_level' => $parsedJson['risk_level'] ?? null,
-                'sstock_id' => $stockId,
+                'stock_id' => $stockId,
             ]);
 
             Log::info("ChartAnalysis #{$this->analysisId} completed");
